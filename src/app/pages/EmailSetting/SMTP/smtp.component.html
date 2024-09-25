@@ -1,0 +1,164 @@
+<div class="card">
+  <div class="card-header border-0 pt-6">
+    <div class="card-title">
+      <div class="d-flex align-items-center position-relative my-1">
+      </div>
+    </div>
+    <div class="card-toolbar">
+      <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-primary" (click)="openFormModal(formModal, 'create')"  data-action="create">
+          Add SMTP Setting
+        </button>
+      </div>
+   </div>
+  </div>
+
+  <div class="card-body pt-0">
+    <table
+  datatable
+  class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+>
+  <thead>
+    <tr>
+              <th>User Name </th>
+        <th>Host </th>
+        <th>PORT</th>
+        <th>IS Default</th>
+        <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody class="fw-semibold text-gray-600">
+    <tr *ngFor="let setting of smtpSettings">
+      <td class="d-flex align-items-center sorting_1">
+
+        <div class="d-flex flex-column" data-action="view" data-id="452">
+          <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1"
+            >{{ setting.userName }}</a
+          >
+        
+        </div>
+      </td>
+      <td><div class=" fw-bold">{{setting.host}}</div></td>
+      <td>{{setting.port}}</td>
+      <td>{{setting.isDefault}}</td>
+      
+      <td>
+        <button
+        (click)="openFormModal(formModal, 'edit', setting)"
+          class="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
+          data-action="edit"
+          data-id="452"
+        >
+          <i class="ki-duotone ki-pencil fs-3"
+            ><span class="path1"></span><span class="path2"></span
+          ></i>
+        </button>
+        <button
+        (click)="openDeleteSwal(setting.id)"
+          class="btn btn-icon btn-active-light-primary w-30px h-30px"
+          data-action="delete"
+          data-id="452"
+        >
+          <i class="ki-duotone ki-trash fs-3">
+            <span class="path1"></span><span class="path2"></span>
+            <span class="path3"></span><span class="path4"></span
+            ><span class="path5"></span>
+          </i>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<ng-template #formModal let-modal>
+  <form #myForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">{{ isEditMode ? 'Edit SMTP Setting' : 'Add SMTP Setting' }}</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+
+    <div class="modal-body">
+      <!-- User Information -->
+      <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
+        <div class="mb-7">
+          <!-- Host -->
+          <label class="required fw-semibold fs-6 mb-2">Host</label>
+          <input type="text" class="form-control form-control-solid" name="host" [(ngModel)]="selectedAction.host" required />
+          <div *ngIf="myForm.submitted && !selectedAction.host" class="invalid-feedback">Host is required</div>
+        </div>
+
+        <div class="mb-7">
+          <!-- Username -->
+          <label class="required fw-semibold fs-6 mb-2">Username</label>
+          <input type="text" class="form-control form-control-solid" name="username" [(ngModel)]="selectedAction.userName" required />
+          <div *ngIf="myForm.submitted && !selectedAction.userName" class="invalid-feedback">Username is required</div>
+        </div>
+
+        <div class="mb-7">
+          <!-- Password -->
+          <label class="required fw-semibold fs-6 mb-2">Password</label>
+          <input type="password" class="form-control form-control-solid" name="password" [(ngModel)]="selectedAction.password" required />
+          <div *ngIf="myForm.submitted && !selectedAction.password" class="invalid-feedback">Password is required</div>
+        </div>
+
+        <div class="mb-7">
+          <!-- Port -->
+          <label class="required fw-semibold fs-6 mb-2">Port</label>
+          <input type="number" class="form-control form-control-solid" name="port" [(ngModel)]="selectedAction.port" required />
+          <div *ngIf="myForm.submitted && !selectedAction.port" class="invalid-feedback">Port is required</div>
+        </div>
+
+        <div class="mb-7">
+          <!-- SSL Checkbox -->
+          <label class="fw-semibold fs-6 mb-2">Use SSL</label>
+          <input type="checkbox" [(ngModel)]="selectedAction.isMainSSL" name="isMainSSL" />
+        </div>
+
+        <div class="mb-7">
+          <!-- Default Checkbox -->
+          <label class="fw-semibold fs-6 mb-2">Set as Default</label>
+          <input type="checkbox" [(ngModel)]="selectedAction.isDefault" name="isDefault" />
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer flex-center">
+      <!-- Cancel Button -->
+      <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Discard</button>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary" [attr.data-kt-indicator]="isLoading ? 'on' : 'off'">
+        <span class="indicator-label">
+          {{ isEditMode ? 'Update' : 'Create' }}
+        </span>
+        <span class="indicator-progress">
+          Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+        </span>
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<swal
+  #deleteSwal
+  title="Are you sure to delete?"
+  text="This cannot be undone"
+  icon="warning"
+  [showCancelButton]="true"
+  [focusCancel]="true"
+  (confirm)="triggerDelete(selectedSMTPId)"
+  [customClass]="{
+    confirmButton: 'btn btn-danger',
+    cancelButton: 'btn btn-active-light'
+  }"
+></swal>
+
+<!-- Success Swal -->
+<swal
+  #successSwal
+  title="Delete successfully!"
+  text=""
+  icon="success"
+  [customClass]="{ confirmButton: 'btn btn-success' }"
+></swal>
