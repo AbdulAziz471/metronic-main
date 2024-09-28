@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { TranslationService } from './modules/i18n';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 // language list
 import { locale as enLang } from './modules/i18n/vocabs/en';
 import { locale as chLang } from './modules/i18n/vocabs/ch';

@@ -1,10 +1,10 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { SweetAlertOptions } from 'sweetalert2';
-import { Observable } from 'rxjs';
-import { DataTablesResponse, IUserModel, UserService } from 'src/app/_fake/services/user-service';
 import Swal from 'sweetalert2'; 
+import { Observable } from 'rxjs';
+
 import moment from 'moment';
 import { Config } from 'datatables.net';
 
@@ -23,7 +23,7 @@ export class EmailtemplateComponent implements OnInit, AfterViewInit, OnDestroy 
   isLoading: boolean = false;  
   isCollapsed1 = false;
   isCollapsed2 = true;
-  users: DataTablesResponse;
+
   datatableConfig: Config = {};
   public emailtemplateSetting: any[] = []; 
   selectedAction: Emailtemplate = { 
@@ -34,8 +34,6 @@ export class EmailtemplateComponent implements OnInit, AfterViewInit, OnDestroy 
      };  
   reloadEvent: EventEmitter<boolean> = new EventEmitter();
 
-  aUser: Observable<IUserModel>;
-  userModel: IUserModel = { id: 0, name: '', email: '', role: '' };
   @ViewChild('deleteSwal') deleteSwal: any;  // Reference to the confirmation Swal
   @ViewChild('successSwal') successSwal: any;  // Reference to the success Swal
   @ViewChild('noticeSwal') noticeSwal!: SwalComponent;

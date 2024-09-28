@@ -6,7 +6,7 @@ import { AppSettingService } from 'src/app/Service/AppSettingApi.service';
 import { AppSetting } from './app-setting.model'; // Ensure this path is correct
 import { Config } from 'datatables.net';
 import { Observable } from 'rxjs';
-import { IUserModel } from 'src/app/_fake/services/user-service';
+
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 
@@ -32,8 +32,7 @@ export class AppSettingComponent implements OnInit {
      };  
   reloadEvent: EventEmitter<boolean> = new EventEmitter();
 
-  aUser: Observable<IUserModel>;
-  userModel: IUserModel = { id: 0, name: '', email: '', role: '' };
+
   @ViewChild('deleteSwal') deleteSwal: any;  // Reference to the confirmation Swal
   @ViewChild('successSwal') successSwal: any;  // Reference to the success Swal
   @ViewChild('noticeSwal') noticeSwal!: SwalComponent;

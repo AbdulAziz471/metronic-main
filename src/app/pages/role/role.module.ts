@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RoleListingComponent } from './role-listing/role-listing.component';
-import { RoleDetailsComponent } from './role-details/role-details.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgbNavModule, NgbDropdownModule, NgbCollapseModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
@@ -12,7 +11,7 @@ import { CrudModule } from 'src/app/modules/crud/crud.module';
 
 
 @NgModule({
-  declarations: [RoleDetailsComponent, RoleListingComponent],
+  declarations: [ RoleListingComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -21,10 +20,6 @@ import { CrudModule } from 'src/app/modules/crud/crud.module';
       {
         path: '',
         component: RoleListingComponent,
-      },
-      {
-        path: ':id',
-        component: RoleDetailsComponent,
       },
     ]),
     CrudModule,

@@ -3,154 +3,214 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
-import { Observable } from 'rxjs';
-import { DataTablesResponse, IRoleModel, RoleService } from 'src/app/_fake/services/role.service';
 import { SweetAlertOptions } from 'sweetalert2';
+import Swal from 'sweetalert2'; 
+import { Config } from 'datatables.net';
+import { Observable } from 'rxjs';
 
+import { Roles } from './role-listing.model';
+import { EditRoleService } from 'src/app/Service/EditRole.Service';
+import { RolesApiService } from 'src/app/Service/RolesApi.service';
+import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-role-listing',
   templateUrl: './role-listing.component.html',
   styleUrls: ['./role-listing.component.scss']
 })
 export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
-
+  private modalRef: any;
+  selectedEmailTemapletSettingID: number | null = null;
+  isEditMode: boolean = false;  
+  isLoading: boolean = false;  
   isCollapsed1 = false;
-
-  isLoading = false;
-
-  roles$: Observable<DataTablesResponse>;
-
+  isCollapsed2 = true;
+  datatableConfig: Config = {};
+  public emailtemplateSetting: any[] = []; 
+  public pagesList: any[] = []; 
+  public actionList: any[] = []; 
+  
+  selectedAction: Roles = { 
+    id: null, 
+    name: '' ,  
+    body: "",
+    subject: "",
+     };  
   reloadEvent: EventEmitter<boolean> = new EventEmitter();
 
-  // Single model
-  role$: Observable<IRoleModel>;
-  roleModel: IRoleModel = { id: 0, name: '', permissions: [], users: [] };
-
-  @ViewChild('formModal')
-  formModal: TemplateRef<any>;
-
-  @ViewChild('noticeSwal')
-  noticeSwal!: SwalComponent;
-
+  @ViewChild('deleteSwal') deleteSwal: any;  // Reference to the confirmation Swal
+  @ViewChild('successSwal') successSwal: any;  // Reference to the success Swal
+  @ViewChild('noticeSwal') noticeSwal!: SwalComponent;
+  @ViewChild('formModal') formModal: any;  // Reference to modal
   swalOptions: SweetAlertOptions = {};
-
-  modalConfig: NgbModalOptions = {
-    modalDialogClass: 'modal-dialog modal-dialog-centered mw-650px',
-  };
-
-  private clickListener: () => void;
-
-  constructor(private apiService: RoleService, private cdr: ChangeDetectorRef, private renderer: Renderer2, private modalService: NgbModal) { }
+    constructor(
+    private roleServices: RolesApiService,
+    private editroleservice: EditRoleService,
+    private modalService: NgbModal,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngAfterViewInit(): void {
-    this.clickListener = this.renderer.listen(document, 'click', (event) => {
-      const closestBtn = event.target.closest('.btn');
-      if (closestBtn) {
-        const { action, id } = closestBtn.dataset;
+  }
 
-        switch (action) {
-          case 'view':
-            break;
+openFormModal(content: any, action: 'create' | 'edit', eTemplate?: Roles): void {
+  if (action === 'edit' && eTemplate) {
+      this.isEditMode = true;
+      this.selectedAction = { ...eTemplate };
+  } else {
+      this.isEditMode = false;
+      this.callApis();
+      this.selectedAction = {
+          id: null,
+          name: '',
+          subject: '',
+          body: ''
+      };
+  }
+  this.modalRef = this.modalService.open(content);  // Store the modal reference
+}
+callApis() {
+  forkJoin({
+    requestOne: this.editroleservice.getAllPages(),
+    requestTwo: this.editroleservice.getAllActions(),
+    requestThree: this.editroleservice.getAllPagesActions()
+  }).subscribe({
+    next: (results) => {
+      console.log('All requests successful', results);
+      this.pagesList = results.requestOne; 
+      this.actionList = results.requestTwo;
+       this.actionList = results.requestTwo;
+    },
+    error: (error) => {
+      console.error('Error in one of the requests', error);
+      // Handle error here
+    }
+  });
+}
+closeModal(): void {
+  if (this.modalRef) {
+      this.modalRef.close()
+    }
+}
+// checkPageAction(pageId: string, actionId: string): boolean {
+//   return this.pageActions.some(c => c.pageId === pageId && c.actionId === actionId);
+// }
 
-          case 'create':
-            this.create();
-            this.modalService.open(this.formModal, this.modalConfig);
-            break;
+// checkPermission(pageId: string, actionId: string): boolean {
+//   return this.role.roleClaims.some(c => c.pageId === pageId && c.actionId === actionId);
+// }
 
-          case 'edit':
-            this.edit(id);
-            this.modalService.open(this.formModal, this.modalConfig);
-            break;
-
-          case 'delete':
-            break;
-        }
+  openModal(content: any): void {
+    this.modalService.open(content);
+  }
+  ngOnInit(): void {
+    this.loadEmailTemplateSettings();
+    this.datatableConfig = {
+      serverSide: true,
+    };
+  }
+  loadEmailTemplateSettings(): void {
+    this.roleServices.getAllRoles().subscribe(
+      
+      (response) => {
+        this.emailtemplateSetting = response;  
+        this.cdr.detectChanges();  
+        console.log('SMTP Settings loaded:', this.emailtemplateSetting);
+      },
+      (error) => {
+        console.error('Error fetching SMTP settings:', error); 
+      }
+    );
+  } 
+  createEmailTemplateSetting(): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to create this SMTP setting?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, create it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isLoading = true;
+        this.roleServices.createRole(this.selectedAction).subscribe(
+          (response) => {
+            this.isLoading = false;
+            Swal.fire('Success', 'SMTP setting created successfully!', 'success'); // Success message
+            this.loadEmailTemplateSettings(); // Reload the settings
+            this.formModal.dismiss(""); // Close the modal
+          },
+          (error) => {
+            this.isLoading = false;
+            console.error('Error creating SMTP setting:', error);
+            Swal.fire('Error', 'There was a problem creating the SMTP setting.', 'error'); // Error message
+          }
+        );
       }
     });
-  }
-
-  ngOnInit(): void {
-    this.roles$ = this.apiService.getRoles();
-  }
-
-  delete(id: number) {
-    this.apiService.deleteRole(id).subscribe(() => {
-    });
-  }
-
-  edit(id: number) {
-    this.role$ = this.apiService.getRole(id);
-    this.role$.subscribe((user: IRoleModel) => {
-      this.roleModel = user;
-    });
-  }
-
-  create() {
-    this.roleModel = { id: 0, name: '', permissions: [], users: [] };
-  }
-
-  onSubmit(event: Event, myForm: NgForm) {
-    if (myForm && myForm.invalid) {
-      return;
-    }
-
+  } 
+  // Update existing SMTP setting
+  updateEmailTemplateSetting(id: number, config: Roles): void {
     this.isLoading = true;
-
-    const successAlert: SweetAlertOptions = {
-      icon: 'success',
-      title: 'Success!',
-      text: this.roleModel.id > 0 ? 'User updated successfully!' : 'User created successfully!',
-    };
-    const errorAlert: SweetAlertOptions = {
-      icon: 'error',
-      title: 'Error!',
-      text: '',
-    };
-
-    const completeFn = () => {
-      this.isLoading = false;
-      this.modalService.dismissAll();
-      this.roles$ = this.apiService.getRoles();
-      this.cdr.detectChanges();
-    };
-
-    const updateFn = () => {
-      this.apiService.updateRole(this.roleModel.id, this.roleModel).subscribe({
-        next: () => {
-          this.showAlert(successAlert);
-          this.reloadEvent.emit(true);
+    this.roleServices.updateRole(id, config).subscribe(
+      (response) => {
+        this.isLoading = false;
+        this.formModal.close();  
+        Swal.fire('Success', 'SMTP setting updated successfully!', 'success');
+        this.loadEmailTemplateSettings();  
+      },
+      (error) => {
+        this.isLoading = false;
+        console.error('Error updating SMTP setting:', error);
+      }
+    );
+  }
+  deleteEmailTemplateSetting(id: number): void {
+    if (confirm("Are you sure you want to delete this SMTP setting?")) { 
+      this.roleServices.deleteRole(id).subscribe(
+        (response) => {
+          console.log('SMTP Setting deleted:', response);
+          // After deletion, reload the SMTP settings
+          this.loadEmailTemplateSettings();
         },
-        error: (error) => {
-          errorAlert.text = this.extractText(error.error);
-          this.showAlert(errorAlert);
-          this.isLoading = false;
-        },
-        complete: completeFn,
-      });
-    };
-
-    const createFn = () => {
-      this.apiService.createRole(this.roleModel).subscribe({
-        next: () => {
-          this.showAlert(successAlert);
-          this.reloadEvent.emit(true);
-        },
-        error: (error) => {
-          errorAlert.text = this.extractText(error.error);
-          this.showAlert(errorAlert);
-          this.isLoading = false;
-        },
-        complete: completeFn,
-      });
-    };
-
-    if (this.roleModel.id > 0) {
-      updateFn();
+        (error) => {
+          console.error('Error deleting SMTP setting:', error);
+        }
+      );
+    }
+  } 
+  openDeleteSwal(id: number): void {
+    if (id !== null) {
+      this.selectedEmailTemapletSettingID = id; 
+      this.deleteSwal.fire();  
     } else {
-      createFn();
+      console.error('Error: Invalid SMTP setting ID');
     }
   }
-
+  triggerDelete(id: number | null): void {
+    if (id !== null) {  // Check if the ID is not null
+      this.roleServices.deleteRole(id).subscribe(
+        (response) => {
+          console.log('SMTP Setting deleted:', response);
+          this.successSwal.fire();  // Show the success Swal after deletion
+          this.loadEmailTemplateSettings();  // Reload SMTP settings after deletion
+        },
+        (error) => {
+          console.error('Error deleting SMTP setting:', error);
+        }
+      );
+    } else {
+      console.error('Error: Invalid SMTP setting ID');
+    }
+  }
+   // Handle form submission for create or update
+   onSubmit(): void {
+    if (this.isEditMode) {
+      this.updateEmailTemplateSetting(this.selectedAction.id!, this.selectedAction);  // Update logic
+  } else {
+      this.createEmailTemplateSetting();  // Create logic
+  }
+  }
   extractText(obj: any): string {
     var textArray: string[] = [];
 
@@ -172,7 +232,6 @@ export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
 
     return text;
   }
-
   showAlert(swalOptions: SweetAlertOptions) {
     let style = swalOptions.icon?.toString() || 'success';
     if (swalOptions.icon === 'error') {
@@ -190,9 +249,6 @@ export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.clickListener) {
-      this.clickListener();
-    }
-    this.modalService.dismissAll();
+    this.reloadEvent.unsubscribe();
   }
 }

@@ -1,224 +1,209 @@
 <div class="card">
   <div class="card-header border-0 pt-6">
-    <!--begin::Card title-->
-    <div class="card-title">
-      <!--begin::Search-->
-      <div class="d-flex align-items-center position-relative my-1">
+    <div class="card-title gap-4">
+      <div class="d-flex gap-3 align-items-center position-relative my-1">
+        
         <app-keenicon name="magnifier" class="fs-3 position-absolute ms-5"></app-keenicon>
-        <input type="text" data-action="filter" class="form-control form-control-solid w-250px ps-12" placeholder="Search Users">
-      </div>
+        <input type="text"
+        [(ngModel)]="selectedAction.email"
+        (ngModelChange)="loadUsers()" 
+        data-action="filter" class="form-control form-control-solid w-250px ps-12" placeholder="Search Email ">
+        <mat-slide-toggle 
+        [(ngModel)]="selectedAction.isActive"
+        (ngModelChange)="loadUsers()" 
+         color="primary">
+         Active Status
+        </mat-slide-toggle>
+    </div>
+    <div class="d-flex align-items-center position-relative my-1">
+      <app-keenicon name="magnifier" class="fs-3 position-absolute ms-5"></app-keenicon>
+      <input type="text"
+      [(ngModel)]="selectedAction.firstName"
+      (ngModelChange)="loadUsers()" 
+      data-action="filter" class="form-control form-control-solid w-250px ps-12" placeholder="Search Name ">
+    
+  </div>
     </div>
     <div class="card-toolbar">
       <div class="d-flex justify-content-end">
-        <button type="button" class="btn btn-primary" data-action="create">
+        <button type="button" class="btn btn-primary" (click)="openFormModal(formModal, 'create')"  data-action="create">
           Add User
         </button>
       </div>
-    </div>
+   </div>
   </div>
 
   <div class="card-body pt-0">
-    <app-crud [datatableConfig]="datatableConfig" route="/apps/users" (deleteEvent)="delete($event)" (editEvent)="edit($event)" (createEvent)="create()" [reload]="reloadEvent" [modal]="formModal"></app-crud>
+    <table
+  datatable
+  class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+>
+  <thead>
+    <tr>
+        <th>FullName</th>
+        <th>Email</th>
+        <th>Phone Number</th>
+        <th>Status</th>
+        <th>Actions</th>
+        
+    </tr>
+  </thead>
+  <tbody class="fw-semibold text-gray-600">
+    <tr  *ngFor="let user of users" >
+      <td class="d-flex align-items-center sorting_1">
+        <div class="d-flex flex-column" data-action="view" data-id="452">
+          <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1"
+            >{{ user.firstName }}  </a
+          >
+        
+        </div>
+      </td>
+      <td>{{user.email}}</td>
+      <td>{{user.phoneNumber}}</td>
+      <td>{{user.isActive}}</td>
+      <td>
+         <!-- <button
+        (click)="openFormModal(formModal, 'edit', user)"
+          class="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
+          data-action="edit"
+          data-id="452"
+        >
+          <i class="ki-duotone ki-pencil fs-3"
+            ><span class="path1"></span><span class="path2"></span
+          ></i>
+        </button> -->
+       <button
+        (click)="openDeleteSwal(user.id)"
+          class="btn btn-icon btn-active-light-primary w-30px h-30px"
+          data-action="delete"
+          data-id="452"
+        >
+          <i class="ki-duotone ki-trash fs-3">
+            <span class="path1"></span><span class="path2"></span>
+            <span class="path3"></span><span class="path4"></span
+            ><span class="path5"></span>
+          </i>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+    </table>
   </div>
 </div>
-
-<swal #noticeSwal [swalOptions]="swalOptions">
-</swal>
-
 <ng-template #formModal let-modal>
-  <form #myForm="ngForm" (ngSubmit)="onSubmit($event, myForm)">
+  <form #myForm="ngForm" (ngSubmit)="onSubmit()">
     <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">User Details</h4>
+      <h4 class="modal-title" id="modal-basic-title">{{ isEditMode ? 'Edit SMTP Setting' : 'Add SMTP Setting' }}</h4>
       <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
-      <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px" id="kt_modal_update_customer_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_update_customer_header" data-kt-scroll-wrappers="#kt_modal_update_customer_scroll"
-        data-kt-scroll-offset="300px">
-        <div class="notice d-flex bg-light-primary rounded border-primary border border-dashed mb-9 p-6">
-          <app-keenicon name="information" class="fs-2tx text-primary me-4"></app-keenicon>
-          <div class="d-flex flex-stack flex-grow-1">
-            <div class="fw-semibold">
-              <div class="fs-6 text-gray-700">Updating customer details will receive a privacy audit. For more info,
-                please read our
-                <a href="#">Privacy Policy</a>
+      <!-- User Information -->
+      <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
+      <div class="d-flex gap-3 justify-content-between">
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">First Name</label>
+          <input type="text" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.firstName" required />
+          <div *ngIf="myForm.submitted && !crateAction.firstName" class="invalid-feedback">First Name is required</div>
+          
+        </div>
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Last Name</label>
+          <input type="text" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.lastName" required />
+          <div *ngIf="myForm.submitted && !crateAction.lastName" class="invalid-feedback">Last Name is required</div>
+          
+        </div>
+      </div>
+      <div class="d-flex gap-3 justify-content-between">
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Mobile Number</label>
+          <input type="number" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.phoneNumber" required />
+          <div *ngIf="myForm.submitted && !crateAction.phoneNumber" class="invalid-feedback">Mobile Number is required</div>
+          
+        </div>
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Email</label>
+          <input type="email" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.email" required />
+          <div *ngIf="myForm.submitted && !crateAction.email" class="invalid-feedback">Email is required</div>
+          
+        </div>
+      </div>
+      <div class="d-flex gap-3 justify-content-between">
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Password</label>
+          <input type="text" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.password" required />
+          <div *ngIf="myForm.submitted && !crateAction.password" class="invalid-feedback">Host is required</div>
+          
+        </div>
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Confirm Password</label>
+          <input type="text" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.confirmpassword" required />
+          <div *ngIf="myForm.submitted && !crateAction.confirmpassword" class="invalid-feedback">Host is required</div>
+          
+        </div>
+      </div>
+
+        <!-- <table
+        datatable
+        class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+      >
+        <thead>
+          <tr>
+              <th>Name</th>
+              
+          </tr>
+        </thead>
+        <tbody class="fw-semibold text-gray-600">
+          <tr *ngFor="let page of pagesList ">
+            <td class="d-flex align-items-center sorting_1">
+              <div class="d-flex flex-column" data-action="view" data-id="452">
+                <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1"
+                  >{{ page.name }}({{page.url}})</a
+                >
+              
               </div>
-            </div>
-          </div>
-        </div>
-        <div class="fw-bold fs-3 rotate collapsible mb-7" data-bs-toggle="collapse" role="button" (click)="collapse1.toggle()" [attr.aria-expanded]="!isCollapsed1" aria-controls="kt_modal_update_customer_user_info">User Information
-          <span class="ms-2 rotate-180">
-            <i class="ki-duotone ki-down fs-3" [ngClass]="{ 'ki-up': !isCollapsed1 }"></i>
-          </span>
-        </div>
-        <div class="collapse show" #collapse1="ngbCollapse" [(ngbCollapse)]="isCollapsed1">
-        <div  class="d-flex mb-7 gap-4 justify-content-between ">
-        <div class="w-100">
-            <label class="required fw-semibold fs-6 mb-2">First Name</label>
-            <input type="text" class="form-control form-control-solid" name="name" [(ngModel)]="userModel.name" #name="ngModel" required minlength="4" />
-            <div *ngIf="myForm.submitted && myForm.invalid" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-              <div *ngIf="name.errors?.['required']">Name is required</div>
-              <div *ngIf="name.errors?.['minlength']">Name must be at least 4 characters long</div>
-            </div>
-          </div>
-          <div class="w-100">
-            <label class="required fw-semibold fs-6 mb-2">
-              <span>Last Name</span>
-              <span class="ms-1" placement="end" ngbTooltip="Email address must be active">
-                <app-keenicon name="information" class="fs-7"></app-keenicon>
-              </span>
-            </label>
-            <input type="email" class="form-control form-control-solid" name="email" [(ngModel)]="userModel.email" #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" />
-            <div *ngIf="myForm.submitted && myForm.invalid" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-              <div *ngIf="email.errors?.['required']">Email is required</div>
-              <div *ngIf="email.errors?.['pattern']">Email is not valid</div>
-            </div>
-          </div>
-        </div>
-        <div  class="d-flex mb-7 gap-4 justify-content-between ">
-          <div class="w-100">
-            <label class="required fw-semibold fs-6 mb-2">Mobile Number</label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <input type="text" class="form-control form-control-solid" name="name" [(ngModel)]="userModel.name" #name="ngModel" required minlength="4" />
-            <div *ngIf="myForm.submitted && myForm.invalid" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-              <div *ngIf="name.errors?.['required']">Name is required</div>
-              <div *ngIf="name.errors?.['minlength']">Name must be at least 4 characters long</div>
-            </div>
-            <!--end::Input-->
-          </div>
-          <!--end::Input group-->
-          <!--begin::Input group-->
-          <div class="w-100">
-            <!--begin::Label-->
-            <label class="required fw-semibold fs-6 mb-2">
-              <span>Email</span>
-              <span class="ms-1" placement="end" ngbTooltip="Email address must be active">
-                <app-keenicon name="information" class="fs-7"></app-keenicon>
-              </span>
-            </label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <input type="email" class="form-control form-control-solid" name="email" [(ngModel)]="userModel.email" #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" />
-            <div *ngIf="myForm.submitted && myForm.invalid" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-              <div *ngIf="email.errors?.['required']">Email is required</div>
-              <div *ngIf="email.errors?.['pattern']">Email is not valid</div>
-            </div>
-            <!--end::Input-->
-          </div>
-          <!--end::Input group-->
-        </div>
-        <div  class="d-flex mb-7 gap-4 justify-content-between ">
-
-          <div class="w-100">
-            <!--begin::Label-->
-            <label class="required fw-semibold fs-6 mb-2">Password</label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <input type="text" class="form-control form-control-solid" name="name" [(ngModel)]="userModel.name" #name="ngModel" required minlength="4" />
-            <div *ngIf="myForm.submitted && myForm.invalid" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-              <div *ngIf="name.errors?.['required']">Name is required</div>
-              <div *ngIf="name.errors?.['minlength']">Name must be at least 4 characters long</div>
-            </div>
-            <!--end::Input-->
-          </div>
-          <!--end::Input group-->
-          <!--begin::Input group-->
-          <div class="w-100">
-            <!--begin::Label-->
-            <label class="required fw-semibold fs-6 mb-2">
-              <span>Confirm Passoword</span>
-              <span class="ms-1" placement="end" ngbTooltip="Email address must be active">
-                <app-keenicon name="information" class="fs-7"></app-keenicon>
-              </span>
-            </label>
-            <!--end::Label-->
-            <!--begin::Input-->
-            <input type="email" class="form-control form-control-solid" name="email" [(ngModel)]="userModel.email" #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" />
-            <div *ngIf="myForm.submitted && myForm.invalid" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-              <div *ngIf="email.errors?.['required']">Email is required</div>
-              <div *ngIf="email.errors?.['pattern']">Email is not valid</div>
-            </div>
-            <!--end::Input-->
-          </div>
-          <!--end::Input group-->
-        </div>
-        <div class="w-100">
-          <!--begin::Label-->
-          <label class="required fw-semibold fs-6 mb-2">
-            <span>Address</span>
-            <span class="ms-1" placement="end" ngbTooltip="Email address must be active">
-              <app-keenicon name="information" class="fs-7"></app-keenicon>
-            </span>
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <input type="email" class="form-control form-control-solid" name="email" [(ngModel)]="userModel.email" #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" />
-          <div *ngIf="myForm.submitted && myForm.invalid" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-            <div *ngIf="email.errors?.['required']">Email is required</div>
-            <div *ngIf="email.errors?.['pattern']">Email is not valid</div>
-          </div>
-          <!--end::Input-->
-        </div>
-        <div class="w-100">
-          <!--begin::Label-->
-          <label class="required fw-semibold fs-6 mb-2">
-            <span>Allow User With Specific ID</span>
-            <span class="ms-1" placement="end" ngbTooltip="Email address must be active">
-              <app-keenicon name="information" class="fs-7"></app-keenicon>
-            </span>
-          </label>
-          <!--end::Label-->
-          <!--begin::Input-->
-          <input type="email" class="form-control form-control-solid" name="email" [(ngModel)]="userModel.email" #email="ngModel" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" />
-          <div *ngIf="myForm.submitted && myForm.invalid" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-            <div *ngIf="email.errors?.['required']">Email is required</div>
-            <div *ngIf="email.errors?.['pattern']">Email is not valid</div>
-          </div>
-          <!--end::Input-->
-        </div>
-          <div class="mb-7">
-            <label class="required fw-semibold fs-6 mb-5">Role</label>
-
-            <div *ngFor="let role of (roles$ | async)?.data; let last = last">
-              <div class="d-flex fv-row">
-                <div class="form-check form-check-custom form-check-solid">
-                  <input class="form-check-input me-3" id="kt_modal_update_role_option_{{ role.id }}" name="role" #role="ngModel" [(ngModel)]="userModel.role" type="radio" [value]="role.name" [checked]="last" />
-                  <label class="form-check-label" for="kt_modal_update_role_option_{{ role.id }}">
-                    <div class="fw-bold text-gray-800">
-                      {{ role.name | titlecase }}
-                    </div>
-                    <div class="text-gray-600">
-                      {{ role.name }}
-                    </div>
-                  </label>
-                </div>
-              </div>
-              <div *ngIf="!last" class="separator separator-dashed my-5"></div>
-            </div>
-
-          </div>
-
-        </div>
-        <!--end::User form-->
+          </tr>
+        </tbody>
+          </table> -->
+      
       </div>
     </div>
-    <div class="modal-footer flex-center">
-      <!--begin::Button-->
-      <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">
-        Discard
-      </button>
-      <!--end::Button-->
 
-      <!--begin::Button-->
-      <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary" [attr.data-kt-indicator]="isLoading ? 'on' : 'off'">
+    <div class="modal-footer flex-center">
+      <!-- Cancel Button -->
+      <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Discard</button>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary" [attr.data-kt-indicator]="isLoading ? 'on' : 'off'">
         <span class="indicator-label">
-          Submit
+          {{ isEditMode ? 'update' : 'Create' }}
         </span>
         <span class="indicator-progress">
           Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
         </span>
       </button>
-      <!--end::Button-->
     </div>
   </form>
 </ng-template>
+
+<swal
+  #deleteSwal
+  title="Are you sure to delete?"
+  text="This cannot be undone"
+  icon="warning"
+  [showCancelButton]="true"
+  [focusCancel]="true"
+  (confirm)="triggerDelete(selectedEmailTemapletSettingID)"
+  [customClass]="{
+    confirmButton: 'btn btn-danger',
+    cancelButton: 'btn btn-active-light'
+  }"
+></swal>
+
+<!-- Success Swal -->
+<swal
+  #successSwal
+  title="Delete successfully!"
+  text=""
+  icon="success"
+  [customClass]="{ confirmButton: 'btn btn-success' }"
+></swal>

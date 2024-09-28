@@ -1,136 +1,146 @@
-<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-5 g-xl-9">
-    <ng-container *ngIf="(roles$ | async) as roles">
-        <ng-container *ngFor="let role of roles.data">
-            <!--begin::Col-->
-            <div class="col-md-4">
-                <!--begin::Card-->
-                <div class="card card-flush h-md-100">
-                    <!--begin::Card header-->
-                    <div class="card-header">
-                        <!--begin::Card title-->
-                        <div class="card-title">
-                            <h2>{{ role.name | titlecase }}</h2>
-                        </div>
-                        <!--end::Card title-->
-                    </div>
-                    <!--end::Card header-->
-                    <!--begin::Card body-->
-                    <div class="card-body pt-1">
-                        <!--begin::Users-->
-                        <div class="fw-bold text-gray-600 mb-5">Total users with this role: {{ role.users.length }}</div>
-                        <!--end::Users-->
-                        <!--begin::Permissions-->
-                        <div class="d-flex flex-column text-gray-600">
-                          <ng-container *ngFor="let permission of role.permissions.slice(0, 5); let i = index">
-                            <div class="d-flex align-items-center py-2">
-                              <span class="bullet bg-primary me-3"></span>{{ permission.name | titlecase }}
-                            </div>
-                          </ng-container>
-                          
-                          <div *ngIf="role.permissions.length > 5 || role.permissions.length === 0" class='d-flex align-items-center py-2'>
-                            <span class='bullet bg-primary me-3'></span>
-                            <em>
-                              {{ role.permissions.length === 0 ? 'No permissions given...' : 'and ' + (role.permissions.length - 5) + ' more...' }}
-                            </em>
-                          </div>
-                        </div>
-                        <!--end::Permissions-->
-                    </div>
-                    <!--end::Card body-->
-                    <!--begin::Card footer-->
-                    <div class="card-footer flex-wrap pt-0">
-                        <a [routerLink]="['/apps/roles', role.id]" class="btn btn-light btn-active-primary my-1 me-2">View Role</a>
-                        <button type="button" class="btn btn-light btn-active-light-primary my-1" [attr.data-id]="role.id" data-action="edit">Edit Role</button>
-                    </div>
-                    <!--end::Card footer-->
-                </div>
-                <!--end::Card-->
-            </div>
-            <!--end::Col-->
-        </ng-container>
-    </ng-container>
-
-    <!--begin::Add new card-->
-    <div class="ol-md-4">
-        <!--begin::Card-->
-        <div class="card h-md-100">
-            <!--begin::Card body-->
-            <div class="card-body d-flex flex-center">
-                <!--begin::Button-->
-                <button type="button" class="btn btn-clear d-flex flex-column flex-center" data-action="create">
-                    <!--begin::Illustration-->
-                    <img src="assets/media/illustrations/sketchy-1/4.png" alt="" class="mw-100 mh-150px mb-7" />
-                    <!--end::Illustration-->
-                    <!--begin::Label-->
-                    <div class="fw-bold fs-3 text-gray-600 text-hover-primary">Add New Role</div>
-                    <!--end::Label-->
-                </button>
-                <!--begin::Button-->
-            </div>
-            <!--begin::Card body-->
-        </div>
-        <!--begin::Card-->
+<div class="card">
+  <div class="card-header border-0 pt-6">
+    <div class="card-title">
+      <div class="d-flex align-items-center position-relative my-1">
+      </div>
     </div>
-    <!--begin::Add new card-->
-</div>
-
-
-<swal #noticeSwal [swalOptions]="swalOptions">
-</swal>
-
-<ng-template #formModal let-modal>
-    <form #myForm="ngForm" (ngSubmit)="onSubmit($event, myForm)">
-      <div class="modal-header">
-        <h4 class="modal-title" id="modal-basic-title">Role Details</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    <div class="card-toolbar">
+      <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-primary" (click)="openFormModal(formModal, 'create')"  data-action="create">
+          Add Role
+        </button>
       </div>
-      <div class="modal-body">
-        <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px" id="kt_modal_update_customer_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_update_customer_header" data-kt-scroll-wrappers="#kt_modal_update_customer_scroll"
-          data-kt-scroll-offset="300px">
-          <!--begin::User toggle-->
-          <div class="fw-bold fs-3 rotate collapsible mb-7" data-bs-toggle="collapse" role="button" (click)="collapse1.toggle()" [attr.aria-expanded]="!isCollapsed1" aria-controls="kt_modal_update_customer_user_info">User Information
-            <span class="ms-2 rotate-180">
-              <i class="ki-duotone ki-down fs-3" [ngClass]="{ 'ki-up': !isCollapsed1 }"></i>
-            </span>
-          </div>
-          <!--end::User toggle-->
-          <!--begin::User form-->
-          <div class="collapse show" #collapse1="ngbCollapse" [(ngbCollapse)]="isCollapsed1">
-            <!--begin::Input group-->
-            <div class="fv-row mb-7">
-              <!--begin::Label-->
-              <label class="required fw-semibold fs-6 mb-2">Role Name</label>
-              <!--end::Label-->
-              <!--begin::Input-->
-              <input type="text" class="form-control form-control-solid" name="name" [(ngModel)]="roleModel.name" #name="ngModel" required minlength="4" />
-              <div *ngIf="myForm.submitted && myForm.invalid" class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                <div *ngIf="name.errors?.['required']">Role name is required</div>
-                <div *ngIf="name.errors?.['minlength']">Role name must be at least 4 characters long</div>
-              </div>
-              <!--end::Input-->
-            </div>
-            <!--end::Input group-->
-          </div>
-          <!--end::User form-->
+   </div>
+  </div>
+
+  <div class="card-body pt-0">
+    <table
+  datatable
+  class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+>
+  <thead>
+    <tr>
+        <th>Name</th>
+        
+    </tr>
+  </thead>
+  <tbody class="fw-semibold text-gray-600">
+    <tr *ngFor="let setting of emailtemplateSetting">
+      <td class="d-flex align-items-center sorting_1">
+        <div class="d-flex flex-column" data-action="view" data-id="452">
+          <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1"
+            >{{ setting.name }}</a
+          >
+        
         </div>
-      </div>
-      <div class="modal-footer flex-center">
-        <!--begin::Button-->
-        <button type="reset" id="kt_modal_update_customer_cancel" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">
-          Discard
+      </td>
+      <td>{{setting.subject}}</td>
+      <td>
+        <button
+        (click)="openFormModal(formModal, 'edit', setting)"
+          class="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
+          data-action="edit"
+          data-id="452"
+        >
+          <i class="ki-duotone ki-pencil fs-3"
+            ><span class="path1"></span><span class="path2"></span
+          ></i>
         </button>
-        <!--end::Button-->
-  
-        <!--begin::Button-->
-        <button type="submit" id="kt_modal_update_customer_submit" class="btn btn-primary" [attr.data-kt-indicator]="isLoading ? 'on' : 'off'">
-          <span class="indicator-label">
-            Submit
-          </span>
-          <span class="indicator-progress">
-            Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-          </span>
+        <button
+        (click)="openDeleteSwal(setting.id)"
+          class="btn btn-icon btn-active-light-primary w-30px h-30px"
+          data-action="delete"
+          data-id="452"
+        >
+          <i class="ki-duotone ki-trash fs-3">
+            <span class="path1"></span><span class="path2"></span>
+            <span class="path3"></span><span class="path4"></span
+            ><span class="path5"></span>
+          </i>
         </button>
-        <!--end::Button-->
+      </td>
+    </tr>
+  </tbody>
+    </table>
+  </div>
+</div>
+<ng-template #formModal let-modal>
+  <form #myForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">{{ isEditMode ? 'Edit SMTP Setting' : 'Add SMTP Setting' }}</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <!-- User Information -->
+      <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
+        <div class="mb-7">
+          <!-- Host -->
+          <label class="required fw-semibold fs-6 mb-2">Name</label>
+          <input type="text" class="form-control form-control-solid" name="host" [(ngModel)]="selectedAction.name" required />
+          <div *ngIf="myForm.submitted && !selectedAction.name" class="invalid-feedback">Host is required</div>
+        </div>
+        <table
+        datatable
+        class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+      >
+        <thead>
+          <tr>
+              <th>Name</th>
+              
+          </tr>
+        </thead>
+        <tbody class="fw-semibold text-gray-600">
+          <tr *ngFor="let page of pagesList ">
+            <td class="d-flex align-items-center sorting_1">
+              <div class="d-flex flex-column" data-action="view" data-id="452">
+                <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1"
+                  >{{ page.name }}({{page.url}})</a
+                >
+              
+              </div>
+          </tr>
+        </tbody>
+          </table>
+      
       </div>
-    </form>
+    </div>
+
+    <div class="modal-footer flex-center">
+      <!-- Cancel Button -->
+      <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Discard</button>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary" [attr.data-kt-indicator]="isLoading ? 'on' : 'off'">
+        <span class="indicator-label">
+          {{ isEditMode ? 'update' : 'Create' }}
+        </span>
+        <span class="indicator-progress">
+          Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+        </span>
+      </button>
+    </div>
+  </form>
 </ng-template>
+
+<swal
+  #deleteSwal
+  title="Are you sure to delete?"
+  text="This cannot be undone"
+  icon="warning"
+  [showCancelButton]="true"
+  [focusCancel]="true"
+  (confirm)="triggerDelete(selectedEmailTemapletSettingID)"
+  [customClass]="{
+    confirmButton: 'btn btn-danger',
+    cancelButton: 'btn btn-active-light'
+  }"
+></swal>
+
+<!-- Success Swal -->
+<swal
+  #successSwal
+  title="Delete successfully!"
+  text=""
+  icon="success"
+  [customClass]="{ confirmButton: 'btn btn-success' }"
+></swal>

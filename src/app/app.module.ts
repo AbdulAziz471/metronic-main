@@ -13,6 +13,9 @@ import { AuthService } from './modules/auth/services/auth.service';
 import { environment } from 'src/environments/environment';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { AuthInterceptor } from './Service/auth.interceptor.spec';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MaterialModule } from './modules/material/material.module';
 function appInitializer(authService: AuthService) {
   return () => {
     return new Promise((resolve) => {
@@ -27,9 +30,11 @@ function appInitializer(authService: AuthService) {
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    MatSlideToggleModule,
     TranslateModule.forRoot(),
     HttpClientModule,
     ClipboardModule,
+    MaterialModule,
     AppRoutingModule,
     InlineSVGModule.forRoot(),
     NgbModule,
@@ -46,7 +51,8 @@ function appInitializer(authService: AuthService) {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true // important to set multi to true for interceptors
-    }
+    },
+    provideAnimationsAsync()
   ],
   bootstrap: [AppComponent],
 })
