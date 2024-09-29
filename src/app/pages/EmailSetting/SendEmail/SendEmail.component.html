@@ -1,0 +1,73 @@
+<div class="card">
+  <div class="card-header border-0 pt-6">
+    <div class="card-title">
+      <div class="d-flex align-items-center position-relative my-1">
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body pt-0">
+    <form  [formGroup]="emailForm" (ngSubmit)="sendEmail()">
+
+        <!-- User Information -->
+         <div class="d-flex gap-5">
+          <div class="w-100 mb-7">
+            <select class="form-select" aria-label="Default select example">
+              <option selected>Select The Email Template</option>
+              <option value="1">One</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+            </select>
+          </div>
+         </div>
+        <div class="d-flex gap-5   ">
+          
+          <div class="w-100 mb-7">
+            <!-- Host -->
+            <label class="required fw-semibold fs-6 mb-2">TO</label>
+            <input type="text" class="form-control form-control-solid" name="host" formControlName="fromAddress" id="fromAddress" required />
+          </div>
+          <div class="w-100 mb-7">
+            <!-- Host -->
+            <label class="required fw-semibold fs-6 mb-2">CC</label>
+            <input type="text" class="form-control form-control-solid" name="host" formControlName="fromAddress" id="fromAddress" required />
+          </div>
+        </div>
+        <div class="d-flex gap-5">
+          <div class="w-100 mb-7">
+            <!-- Host -->
+            <label class="required fw-semibold fs-6 mb-2">SUBJECT</label>
+            <input type="text" class="form-control form-control-solid" name="host" formControlName="fromAddress" id="fromAddress" required />
+          </div>  
+        </div>
+        <div class="d-flex gap-5">
+          <div class="w-100 mb-7">
+                 </div>  
+        </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- <swal
+  #deleteSwal
+  title="Are you sure to delete?"
+  text="This cannot be undone"
+  icon="warning"
+  [showCancelButton]="true"
+  [focusCancel]="true"
+  (confirm)="triggerDelete(selectedEmailTemapletSettingID)"
+  [customClass]="{
+    confirmButton: 'btn btn-danger',
+    cancelButton: 'btn btn-active-light'
+  }"
+></swal>
+
+
+<swal
+  #successSwal
+  title="Delete successfully!"
+  text=""
+  icon="success"
+  [customClass]="{ confirmButton: 'btn btn-success' }"
+></swal> -->

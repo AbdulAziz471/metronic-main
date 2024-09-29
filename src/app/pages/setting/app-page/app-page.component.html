@@ -1,0 +1,182 @@
+
+
+<div class="card">
+  <div class="card-header border-0 pt-6">
+    <div class="card-title">
+      <div class="d-flex align-items-center position-relative my-1">        
+          <app-keenicon name="magnifier" class="fs-3 position-absolute ms-5"></app-keenicon>
+          <input type="text"
+          data-action="filter" class="form-control form-control-solid w-250px ps-12" placeholder="Search Pages ">
+      </div>
+    </div>
+    <div class="card-toolbar">
+      <div class="d-flex justify-content-end">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="openFormModal(formModal, 'create')"
+          data-action="create"
+        >
+          Add App Setting
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body pt-0">
+    <table
+      datatable
+      class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+    >
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Url</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody class="fw-semibold text-gray-600">
+        <tr *ngFor="let setting of AllAppSetting">
+          <td class="d-flex align-items-center sorting_1">
+            <div class="d-flex flex-column" data-action="view" data-id="452">
+              <a
+                href="javascript:;"
+                class="text-gray-800 text-hover-primary mb-1"
+                >{{ setting.name }}</a
+              >
+            </div>
+          </td>
+          <td>{{ setting.url }}</td>
+          <td>
+            <!-- <button
+            (click)="openFormModal(formModal, 'edit', setting)"
+              class="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
+              data-action="edit"
+              data-id="452"
+            >
+              <i class="ki-duotone ki-pencil fs-3"
+                ><span class="path1"></span><span class="path2"></span
+              ></i>
+            </button> -->
+            <button
+              (click)="openDeleteSwal(setting.id)"
+              class="btn btn-icon btn-active-light-primary w-30px h-30px"
+              data-action="delete"
+              data-id="452"
+            >
+              <i class="ki-duotone ki-trash fs-3">
+                <span class="path1"></span><span class="path2"></span>
+                <span class="path3"></span><span class="path4"></span
+                ><span class="path5"></span>
+              </i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #formModal let-modal>
+    <form #myForm="ngForm" (ngSubmit)="onSubmit()">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">
+          {{ isEditMode ? "Edit App Setting" : "Add App Setting" }}
+        </h4>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="modal.dismiss('Cross click')"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
+          <div class="mb-7">
+            <label class="required fw-semibold fs-6 mb-2">Name</label>
+            <input
+              type="text"
+              class="form-control form-control-solid"
+              name="host"
+              [(ngModel)]="selectedAction.name"
+              required
+            />
+            <div
+              *ngIf="myForm.submitted && !selectedAction.name"
+              class="invalid-feedback"
+            >
+              Name is required
+            </div>
+          </div>
+
+        </div>
+        <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
+          <div class="mb-7">
+            <label class="required fw-semibold fs-6 mb-2">Url</label>
+            <input
+              type="text"
+              class="form-control form-control-solid"
+              name="host"
+              [(ngModel)]="selectedAction.url"
+              required
+            />
+            <div
+              *ngIf="myForm.submitted && !selectedAction.url"
+              class="invalid-feedback"
+            >
+              URL  is required
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+      <div class="modal-footer flex-center">
+        <button
+          type="reset"
+          class="btn btn-light me-3"
+          (click)="modal.dismiss('cancel')"
+        >
+          Discard
+        </button>
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [attr.data-kt-indicator]="isLoading ? 'on' : 'off'"
+        >
+          <span class="indicator-label">
+            {{ isEditMode ? "update" : "Create" }}
+          </span>
+          <span class="indicator-progress">
+            Please wait...
+            <span
+              class="spinner-border spinner-border-sm align-middle ms-2"
+            ></span>
+          </span>
+        </button>
+      </div>
+    </form>
+  </ng-template>
+
+  <swal
+  #deleteSwal
+  title="Are you sure to delete?"
+  text="This cannot be undone"
+  icon="warning"
+  [showCancelButton]="true"
+  [focusCancel]="true"
+  (confirm)="triggerDelete(selectedEmailTemapletSettingID)"
+  [customClass]="{
+    confirmButton: 'btn btn-danger',
+    cancelButton: 'btn btn-active-light'
+  }"
+></swal>
+<swal
+  #successSwal
+  title="Delete successfully!"
+  text=""
+  icon="success"
+  [customClass]="{ confirmButton: 'btn btn-success' }"
+></swal>
+</div>

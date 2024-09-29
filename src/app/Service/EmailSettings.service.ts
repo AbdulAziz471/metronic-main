@@ -9,6 +9,11 @@ import { environment } from 'src/environments/environment';
 export class EmailSettingService {
   constructor(private http: HttpClient) {}
 
+  // POST: Create a new SMTP Setting
+  SendEmail (config: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/api/email`, config);
+  }
+
   // GET: Fetch all SMTP Settings
   getAllSMTPSettings(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/api/EmailSMTPSetting`);

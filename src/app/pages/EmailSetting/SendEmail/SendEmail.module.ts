@@ -7,10 +7,9 @@ import { NgbCollapseModule, NgbDropdownModule, NgbNavModule, NgbTooltipModule } 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { WidgetsModule } from "../../../_metronic/partials/content/widgets/widgets.module";
-import { AppPageComponent } from './app-page.component';
-
+import { SendEmailComponent } from './SendEmail.component';
 @NgModule({
-  declarations: [AppPageComponent],
+  declarations: [SendEmailComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -18,7 +17,7 @@ import { AppPageComponent } from './app-page.component';
     RouterModule.forChild([
         {
             path: '',
-            component: AppPageComponent,
+            component: SendEmailComponent,
         } 
     ]),
     CrudModule,
@@ -31,4 +30,4 @@ import { AppPageComponent } from './app-page.component';
     WidgetsModule
 ]
 })
-export class SettingModule { }
+export class SendEmailModule { }

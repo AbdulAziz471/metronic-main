@@ -31,12 +31,16 @@ const Routing: Routes = [
     loadChildren: () => import('./EmailSetting/SMTP/EmailSetting.module').then((m) => m.EmailSettingModule),
   },
   {
+    path: 'emailSetting/sendEmail',
+    loadChildren: () => import('./EmailSetting/SendEmail/SendEmail.module').then((m) => m.SendEmailModule),
+  },
+  {
     path: 'emailSetting/emailtemplate',
     loadChildren: () => import('./EmailSetting/EmailTemplate/EmailSetting.module').then((m) => m.EmailSettingModule),
   },
   {
     path: 'setting/app-page',
-    loadChildren: () => import('./setting/app-page/setting.module').then((m) => m.SettingModule),
+    loadChildren: () => import('./setting/App-Page/setting.module').then((m) => m.SettingModule),
   },
   {
     path: 'apps/roles',

@@ -1,14 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { AppPageComponent } from './app-page.component';
-
-describe('AppPageComponent', () => {
-  let component: AppPageComponent;
-  let fixture: ComponentFixture<AppPageComponent>;
+import { SendEmailComponent } from './SendEmail.component';
+describe('SMTPComponent', () => {
+  let component: SendEmailComponent;
+  let fixture: ComponentFixture<SendEmailComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [AppPageComponent]
+      declarations: [SendEmailComponent]
     });
     fixture = TestBed.createComponent(v);
     component = fixture.componentInstance;
