@@ -61,7 +61,7 @@ openFormModal(content: any, action: 'create' | 'edit', eTemplate?: Emailtemplate
           body: ''
       };
   }
-  this.modalRef = this.modalService.open(content);  // Store the modal reference
+  this.modalRef = this.modalService.open(content);
 }
 closeModal(): void {
   if (this.modalRef) {

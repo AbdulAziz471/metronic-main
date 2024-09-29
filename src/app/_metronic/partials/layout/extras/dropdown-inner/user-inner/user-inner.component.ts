@@ -2,7 +2,7 @@ import { Component, HostBinding, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { TranslationService } from '../../../../../../modules/i18n';
 import { AuthService, UserType } from '../../../../../../modules/auth';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-user-inner',
   templateUrl: './user-inner.component.html',
@@ -17,6 +17,7 @@ export class UserInnerComponent implements OnInit, OnDestroy {
   private unsubscribe: Subscription[] = [];
 
   constructor(
+    private router: Router,
     private auth: AuthService,
     private translationService: TranslationService
   ) {}
@@ -25,7 +26,15 @@ export class UserInnerComponent implements OnInit, OnDestroy {
 
     this.setLanguage(this.translationService.getSelectedLanguage());
   }
+  signOut() {
+    // Clear user token and other local storage or session storage items
+    localStorage.removeItem('accessToken');
+    // Optionally, clear any other app-specific storage items
+    // localStorage.clear(); // Be careful with this, it clears all local storage data
 
+    // Redirect to login or home page
+    this.router.navigate(['/auth/login']); // Adjust the route as needed
+  }
   logout() {
     this.auth.logout();
     document.location.reload();

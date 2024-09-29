@@ -8,17 +8,15 @@
 
   <div class="card-body pt-0">
     <form  [formGroup]="emailForm" (ngSubmit)="sendEmail()">
-
+     
         <!-- User Information -->
          <div class="d-flex gap-5">
           <div class="w-100 mb-7">
-            <select class="form-select" aria-label="Default select example">
-              <option selected>Select The Email Template</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+            <select class="form-select" aria-label="Default select example">          
+              <option *ngFor="let setting of emailtemplates" [value]="setting.id">{{setting.name}}</option>
             </select>
           </div>
+         
          </div>
         <div class="d-flex gap-5   ">
           
@@ -39,6 +37,16 @@
             <label class="required fw-semibold fs-6 mb-2">SUBJECT</label>
             <input type="text" class="form-control form-control-solid" name="host" formControlName="fromAddress" id="fromAddress" required />
           </div>  
+        </div>
+        <div class="d-flex gap-5">
+          <div class="w-100 mb-7">
+            <!-- Host -->
+            <label class="required fw-semibold fs-6 mb-2">SUBJECT</label>
+            <input type="text" class="form-control form-control-solid" name="host" formControlName="fromAddress" id="fromAddress" required />
+          </div>  
+        </div>
+        <div class="w-100 mb-7">
+          <angular-editor formControlName="body" [config]="editorConfig"></angular-editor>
         </div>
         <div class="d-flex gap-5">
           <div class="w-100 mb-7">

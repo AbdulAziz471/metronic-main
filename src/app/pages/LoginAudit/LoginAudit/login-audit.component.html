@@ -1,21 +1,56 @@
 <div class="card">
   <div class="card-header border-0 pt-6">
-    <!--begin::Card title-->
-    <div class="card-title">
-      <!--begin::Search-->
-      <div class="d-flex align-items-center position-relative my-1">
-        <app-keenicon name="magnifier" class="fs-3 position-absolute ms-5"></app-keenicon>
-        <input type="text" data-action="filter" class="form-control form-control-solid w-250px ps-12" placeholder="Search Users">
-      </div>
-    </div>
-    <div class="card-toolbar">
-      <div class="d-flex justify-content-end">
-      
+    <div class="card-title gap-4">
+      <div class="d-flex gap-3 align-items-center position-relative my-1">
+        <app-keenicon
+          name="magnifier"
+          class="fs-3 position-absolute ms-5"
+        ></app-keenicon>
+        <input
+          type="text"
+          [(ngModel)]="selectedAction.userName"
+          (ngModelChange)="loadLogAudit()"
+          data-action="filter"
+          class="form-control form-control-solid w-250px ps-12"
+          placeholder="Search Users Name "
+        />
       </div>
     </div>
   </div>
 
   <div class="card-body pt-0">
-    <app-crud [datatableConfig]="datatableConfig" route="/apps/users"[reload]="reloadEvent" ></app-crud>
+    <table
+      datatable
+      class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+    >
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Email</th>
+          <th>IP Address</th>
+          <th>STATUS</th>
+          <th>Latitude</th>
+          <th>Longitute</th>
+        </tr>
+      </thead>
+      <tbody class="fw-semibold text-gray-600">
+        <tr *ngFor="let user of users">
+          <td>{{ user.loginTime | date : "MMMM d, y, h:mm a" }}</td>
+          <td class="d-flex align-items-center sorting_1">
+            <div class="d-flex flex-column" data-action="view" data-id="452">
+              <a
+                href="javascript:;"
+                class="text-gray-800 text-hover-primary mb-1"
+                >{{ user.userName }}
+              </a>
+            </div>
+          </td>
+          <td>{{ user.remoteIP }}</td>
+          <td>{{ user.status }}</td>
+          <td>{{ user.latitude }}</td>
+          <td>{{ user.longitude }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

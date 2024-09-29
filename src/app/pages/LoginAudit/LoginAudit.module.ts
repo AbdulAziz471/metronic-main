@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import { RouterModule } from '@angular/router';
 import { CrudModule } from 'src/app/modules/crud/crud.module';
 import { SharedModule } from 'src/app/_metronic/shared/shared.module';

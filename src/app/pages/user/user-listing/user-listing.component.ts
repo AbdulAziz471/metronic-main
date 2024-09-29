@@ -11,9 +11,9 @@ import { Config } from 'datatables.net';
 import { UserQueryParams } from './users.modal';
 import { RolesApiService } from 'src/app/Service/RolesApi.service';
 import { EditRoleService } from 'src/app/Service/EditRole.Service';
+import { UserService } from 'src/app/Service/UserAPi.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin } from 'rxjs';
-import { UserService } from 'src/app/Service/UserAPi.service';
 @Component(
   {
     

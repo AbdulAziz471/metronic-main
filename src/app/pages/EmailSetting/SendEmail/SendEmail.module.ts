@@ -7,6 +7,7 @@ import { NgbCollapseModule, NgbDropdownModule, NgbNavModule, NgbTooltipModule } 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { WidgetsModule } from "../../../_metronic/partials/content/widgets/widgets.module";
+import { AngularEditorModule } from '@kolkov/angular-editor';
 import { SendEmailComponent } from './SendEmail.component';
 @NgModule({
   declarations: [SendEmailComponent],
@@ -23,7 +24,7 @@ import { SendEmailComponent } from './SendEmail.component';
     CrudModule,
     SharedModule,
     NgbNavModule,
-    NgbDropdownModule,
+    NgbDropdownModule,   AngularEditorModule, 
     NgbCollapseModule,
     NgbTooltipModule,
     SweetAlert2Module.forChild(),

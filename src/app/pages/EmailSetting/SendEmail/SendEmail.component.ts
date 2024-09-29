@@ -1,15 +1,13 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 
 
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule ,FormBuilder, Validators } from '@angular/forms';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { SweetAlertOptions } from 'sweetalert2';
 import Swal from 'sweetalert2'; 
-
 import { Config } from 'datatables.net';
-
+import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { EmailSettingService } from 'src/app/Service/EmailSettings.service'; 
-
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-send-email',
@@ -17,8 +15,25 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./sendEmail.component.scss']
 })
 export class SendEmailComponent implements OnInit {
- 
-  data = '';
+  editorConfig: AngularEditorConfig = {
+    editable: true,
+      spellcheck: true,
+      height: 'auto',
+      minHeight: '0',
+      maxHeight: 'auto',
+      width: 'auto',
+      minWidth: '0',
+      translate: 'yes',
+      enableToolbar: true,
+      showToolbar: true,
+      placeholder: 'Enter text here...',
+      defaultParagraphSeparator: '',
+      defaultFontName: '',
+      defaultFontSize: '',
+
+};
+  public emailtemplates: any[] = []; 
+
   emailForm: FormGroup;
   isCollapsed1 = false;
   isCollapsed2 = true;
@@ -46,9 +61,21 @@ export class SendEmailComponent implements OnInit {
         });
     }
   }
-
+  loadEmailTemplate(): void {
+    this.emailservies.getAllEmailTemplate().subscribe(
+      (response) => {
+        this.emailtemplates = response;  
+        this.cdr.detectChanges();  
+        console.log('SMTP Settings loaded:', this.emailtemplates);
+      },
+      (error) => {
+        console.error('Error fetching SMTP settings:', error); 
+      }
+    );
+  }
  
   ngOnInit() {
+    this.loadEmailTemplate();
     this.emailForm = this.fb.group({
       subject: ['', Validators.required],
       toAddress: ['', [Validators.required, Validators.email]],

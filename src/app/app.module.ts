@@ -1,5 +1,5 @@
 import { NgModule, APP_INITIALIZER } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -8,6 +8,7 @@ import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { ClipboardModule } from 'ngx-clipboard';
 import { TranslateModule } from '@ngx-translate/core';
 import { InlineSVGModule } from 'ng-inline-svg-2';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -18,6 +19,7 @@ import { AuthInterceptor } from './Service/auth.interceptor.spec';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MaterialModule } from './modules/material/material.module';
+import { AngularEditorModule } from '@kolkov/angular-editor';
 function appInitializer(authService: AuthService) {
   return () => {
     return new Promise((resolve) => {
@@ -35,9 +37,12 @@ function appInitializer(authService: AuthService) {
     MatSlideToggleModule,
     TranslateModule.forRoot(),
     HttpClientModule,
+    CommonModule,
     ClipboardModule,
-    MaterialModule,
+    MaterialModule,FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
+    AngularEditorModule ,
     InlineSVGModule.forRoot(),
     NgbModule,
     SweetAlert2Module.forRoot(),
