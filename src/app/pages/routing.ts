@@ -39,6 +39,10 @@ const Routing: Routes = [
     loadChildren: () => import('./LoginAudit/LoginAudit.module').then((m) => m.LoginAuditModule),
   },
   {
+    path: 'logs/error-logs',
+    loadChildren: () => import('./ErrorLogs/Error-logs.module').then((m) => m.ErrorLogsModule),
+  },
+  {
     path: 'emailSetting/emailtemplate',
     loadChildren: () => import('./EmailSetting/EmailTemplate/EmailSetting.module').then((m) => m.EmailSettingModule),
   },

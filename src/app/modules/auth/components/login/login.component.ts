@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         this.isLoading$.next(false);
         console.log('Login Success:', response);
-        this.router.navigate(['/dashboard']); // Adjust as needed
+        this.router.navigate(['/dashboard']); 
       },
       error: (error) => {
         this.isLoading$.next(false);

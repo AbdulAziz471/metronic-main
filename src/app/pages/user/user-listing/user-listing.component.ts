@@ -157,7 +157,7 @@ closeModal(): void {
       this.userService.createUser(this.crateAction).subscribe(
         (response) => {
           this.isLoading = false;
-          Swal.fire('Success', 'SMTP setting created successfully!', 'success'); // Success message
+          Swal.fire('Success', 'User created successfully!', 'success'); // Success message
           // this.loadUser(); // Reload the settings
           this.formModal.dismiss(""); // Close the modal
         },
@@ -232,12 +232,12 @@ closeModal(): void {
     if (confirm("Are you sure you want to delete this SMTP setting?")) { 
       this.roleServices.deleteRole(id).subscribe(
         (response) => {
-          console.log('SMTP Setting deleted:', response);
+          console.log('User deleted:', response);
           // After deletion, reload the SMTP settings
           // this.loadUser();
         },
         (error) => {
-          console.error('Error deleting SMTP setting:', error);
+          console.error('Error deleting User setting:', error);
         }
       );
     }
@@ -254,16 +254,16 @@ closeModal(): void {
     if (id !== null) {  // Check if the ID is not null
       this.roleServices.deleteRole(id).subscribe(
         (response) => {
-          console.log('SMTP Setting deleted:', response);
+          console.log('User deleted:', response);
           this.successSwal.fire();  // Show the success Swal after deletion
           // this.loadUser();  // Reload SMTP settings after deletion
         },
         (error) => {
-          console.error('Error deleting SMTP setting:', error);
+          console.error('Error deleting User:', error);
         }
       );
     } else {
-      console.error('Error: Invalid SMTP setting ID');
+      console.error('Error: Invalid User ID');
     }
   }
    // Handle form submission for create or update

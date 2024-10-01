@@ -62,7 +62,84 @@
       <td>{{user.phoneNumber}}</td>
       <td>{{user.isActive}}</td>
       <td>
-         <!-- <button
+        <!-- begin::Menu toggle -->
+<div class="btn btn-icon" [ngClass]=" " data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+<ng-container >
+ 
+  <ng-container >
+    <div  class="btn btn-success">
+      More
+    </div>
+  </ng-container>
+</ng-container>
+</div>
+<!-- end::Menu toggle -->
+
+<!-- begin::Menu -->
+<div
+class='menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-title-gray-700 menu-icon-muted menu-active-bg menu-state-primary fw-semibold py-4 fs-base w-175px'
+data-kt-menu='true'>
+<ng-container>
+  <!-- begin::Menu item  -->
+  <div class='menu-item px-3 my-0'>
+    <a  (click)="openDeleteSwal(user.id)"   data-action="delete" class="menu-link px-3 py-2"  >
+      <span class='menu-icon' data-kt-element='icon'>
+        <i class="ki-duotone ki-trash fs-3">
+          <span class="path1"></span><span class="path2"></span>
+          <span class="path3"></span><span class="path4"></span
+          ><span class="path5"></span>
+        </i>
+      </span>
+      <span class='menu-title'>Delete</span>
+    </a>
+  </div>
+  <!-- end::Menu item -->
+
+  <!-- begin::Menu item  -->
+  <div class='menu-item px-3 my-0'>
+    <a   (click)="openFormModal(formModal, 'edit', user)"    data-action="edit" class="menu-link px-3 py-2" >
+      <span class='menu-icon' data-kt-element='icon'>
+        <i class="ki-duotone ki-pencil fs-3"
+        ><span class="path1"></span><span class="path2"></span
+      ></i>
+      </span>
+      <span class='menu-title'>Edit</span>
+    </a>
+  </div>
+  <!-- end::Menu item -->
+    <!-- begin::Menu item  -->
+  <div class='menu-item px-3 my-0'>
+    <a   (click)="openFormModal(formModal, 'edit', user)"    data-action="edit" class="menu-link px-3 py-2" >
+      <span class='menu-icon' data-kt-element='icon'>
+        <i class="ki-duotone ki-pencil fs-3"
+        ><span class="path1"></span><span class="path2"></span
+      ></i>
+      </span>
+      <span class='menu-title'>Permissoin</span>
+    </a>
+  </div>
+  <!-- end::Menu item -->
+    <!-- begin::Menu item  -->
+  <div class='menu-item px-3 my-0'>
+    <a   (click)="openFormModal(formModal, 'edit', user)"    data-action="edit" class="menu-link px-3 py-2" >
+      <span class='menu-icon' data-kt-element='icon'>
+        <i class="ki-duotone ki-pencil fs-3"
+        ><span class="path1"></span><span class="path2"></span
+      ></i>
+      </span>
+      <span class='menu-title'>Reset Password</span>
+    </a>
+  </div>
+  <!-- end::Menu item -->
+</ng-container>
+
+</div>
+<!-- end::Menu -->
+
+      </td>
+      <!-- <td>
+         <button
         (click)="openFormModal(formModal, 'edit', user)"
           class="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
           data-action="edit"
@@ -71,7 +148,7 @@
           <i class="ki-duotone ki-pencil fs-3"
             ><span class="path1"></span><span class="path2"></span
           ></i>
-        </button> -->
+        </button>
        <button
         (click)="openDeleteSwal(user.id)"
           class="btn btn-icon btn-active-light-primary w-30px h-30px"
@@ -84,7 +161,7 @@
             ><span class="path5"></span>
           </i>
         </button>
-      </td>
+      </td> -->
     </tr>
   </tbody>
     </table>
@@ -93,7 +170,7 @@
 <ng-template #formModal let-modal>
   <form #myForm="ngForm" (ngSubmit)="onSubmit()">
     <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">{{ isEditMode ? 'Edit SMTP Setting' : 'Add SMTP Setting' }}</h4>
+      <h4 class="modal-title" id="modal-basic-title">{{ isEditMode ? 'Edit User' : 'Add User' }}</h4>
       <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
@@ -184,6 +261,108 @@
     </div>
   </form>
 </ng-template>
+
+
+
+
+
+<ng-template #formModal let-modal>
+  <form #myForm="ngForm" (ngSubmit)="onSubmit()">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">{{ isEditMode ? 'Edit User' : 'Add User' }}</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+      <!-- User Information -->
+      <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
+      <div class="d-flex gap-3 justify-content-between">
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">First Name</label>
+          <input type="text" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.firstName" required />
+          <div *ngIf="myForm.submitted && !crateAction.firstName" class="invalid-feedback">First Name is required</div>
+          
+        </div>
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Last Name</label>
+          <input type="text" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.lastName" required />
+          <div *ngIf="myForm.submitted && !crateAction.lastName" class="invalid-feedback">Last Name is required</div>
+          
+        </div>
+      </div>
+      <div class="d-flex gap-3 justify-content-between">
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Mobile Number</label>
+          <input type="number" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.phoneNumber" required />
+          <div *ngIf="myForm.submitted && !crateAction.phoneNumber" class="invalid-feedback">Mobile Number is required</div>
+          
+        </div>
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Email</label>
+          <input type="email" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.email" required />
+          <div *ngIf="myForm.submitted && !crateAction.email" class="invalid-feedback">Email is required</div>
+          
+        </div>
+      </div>
+      <div class="d-flex gap-3 justify-content-between">
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Password</label>
+          <input type="text" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.password" required />
+          <div *ngIf="myForm.submitted && !crateAction.password" class="invalid-feedback">Host is required</div>
+          
+        </div>
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Confirm Password</label>
+          <input type="text" class="form-control form-control-solid" name="host" [(ngModel)]="crateAction.confirmpassword" required />
+          <div *ngIf="myForm.submitted && !crateAction.confirmpassword" class="invalid-feedback">Host is required</div>
+          
+        </div>
+      </div>
+
+        <!-- <table
+        datatable
+        class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+      >
+        <thead>
+          <tr>
+              <th>Name</th>
+              
+          </tr>
+        </thead>
+        <tbody class="fw-semibold text-gray-600">
+          <tr *ngFor="let page of pagesList ">
+            <td class="d-flex align-items-center sorting_1">
+              <div class="d-flex flex-column" data-action="view" data-id="452">
+                <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1"
+                  >{{ page.name }}({{page.url}})</a
+                >
+              
+              </div>
+          </tr>
+        </tbody>
+          </table> -->
+      
+      </div>
+    </div>
+
+    <div class="modal-footer flex-center">
+      <!-- Cancel Button -->
+      <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Discard</button>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary" [attr.data-kt-indicator]="isLoading ? 'on' : 'off'">
+        <span class="indicator-label">
+          {{ isEditMode ? 'update' : 'Create' }}
+        </span>
+        <span class="indicator-progress">
+          Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+        </span>
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+
+
 
 <swal
   #deleteSwal

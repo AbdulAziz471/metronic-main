@@ -149,7 +149,7 @@ closeModal(): void {
       }
     );
   }
-  // Create new SMTP setting
+
   createEmailTemplateSetting(): void {
     Swal.fire({
       title: 'Are you sure?',
@@ -178,7 +178,6 @@ closeModal(): void {
       }
     });
   } 
-  // Update existing SMTP setting
   updateEmailTemplateSetting(id: number, config: Emailtemplate): void {
     this.isLoading = true;
     this.emailservies.updateEmailTemplate(id, config).subscribe(
@@ -232,7 +231,6 @@ closeModal(): void {
       console.error('Error: Invalid SMTP setting ID');
     }
   }
-   // Handle form submission for create or update
    onSubmit(): void {
     if (this.isEditMode) {
       this.updateEmailTemplateSetting(this.selectedAction.id!, this.selectedAction);  // Update logic
