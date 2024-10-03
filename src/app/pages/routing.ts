@@ -6,6 +6,10 @@ const Routing: Routes = [
     loadChildren: () => import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
   },
   {
+    path: 'onlineUsers',
+    loadChildren: () => import('./OnlineUsers/onlineUsers.module').then((m) => m.OnlineUserModule),
+  },
+  {
     path: 'builder',
     loadChildren: () => import('./builder/builder.module').then((m) => m.BuilderModule),
   },

@@ -1,0 +1,38 @@
+
+
+<!--begin::Row-->
+<div class="row g-5 g-xl-10 mb-5 mb-xl-10">
+  <!--begin::Col-->
+  <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
+<!-- tables-widget10.component.html -->
+<div class="card-header border-0 pt-5">
+</div>
+<div class="card-body py-3">
+  <div class="table-responsive">
+    <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+      <thead>
+        <tr class="fw-bolder text-muted">
+          <th class="min-w-150px">Email</th>
+          <th class="min-w-140px">First Name</th>
+          <th class="min-w-120px">Last Name</th>
+          <th class="min-w-100px">Phone</th>         </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of recentlyRegisteredUsers">
+          <td>{{ user.email }}</td>
+          <td>{{ user.firstName }}</td>
+          <td>{{ user.lastName }}</td>
+          <td>{{ user.phoneNumber }}</td> <!-- Assuming Phone exists, add if available -->
+        </tr>
+        <tr *ngIf="recentlyRegisteredUsers.length === 0">
+          <td colspan="4">No recently registered users available. {{recentlyRegisteredUsers}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+  </div>
+</div>

@@ -63,7 +63,7 @@ export class LoginAuditComponent implements OnInit, AfterViewInit {
       
   }
   loadLogAudit(): void {
-    const { userName, skip, pageSize, searchQuery, orderBy, fields } = this.selectedAction; // Assuming these fields exist in selectedAction
+    const { userName, skip, pageSize, searchQuery, orderBy, fields } = this.selectedAction;
   
     this.LogAuditService.getAllLoginAuditDetails(userName, skip, pageSize, searchQuery, orderBy, fields).subscribe({
       next: (response) => {

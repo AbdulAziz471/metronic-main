@@ -33,9 +33,11 @@ export class ErrorLogsComponent implements OnInit, AfterViewInit {
   public pagesList: any[] = []; 
   public actionList: any[] = []; 
   selectedAction = {
-    userName: '', // default or user-inputted value
-    skip: 0,      // default starting value
-    pageSize: 10, // default number of items per page
+    Message: '',
+    Level: '',
+    Source: '',
+    skip: 0,     
+    pageSize: 10, 
     searchQuery: '',
     orderBy: '',
     fields: ''
@@ -65,8 +67,8 @@ export class ErrorLogsComponent implements OnInit, AfterViewInit {
   }
   
   loadErrorLogs(): void {
-    const { userName, skip, pageSize, searchQuery, orderBy, fields } = this.selectedAction; // Assuming these fields exist in selectedAction
-    this.errorLogs.getAllErrorLogs(userName, skip, pageSize, searchQuery, orderBy, fields).subscribe({
+    const { Message,  Level, skip, pageSize, searchQuery, orderBy, fields } = this.selectedAction;
+    this.errorLogs.getAllErrorLogs(Message, Level, skip, pageSize, searchQuery, orderBy, fields).subscribe({
         next: (response) => {
           console.log("Received users:", response);
           this.users = response;
