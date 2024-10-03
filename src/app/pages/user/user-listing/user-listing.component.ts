@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, NgForm } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import Swal from 'sweetalert2'; 
@@ -24,7 +24,7 @@ import { forkJoin } from 'rxjs';
 })
 export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
 
-
+  public form: FormGroup;
   private modalRef: any;
   selectedEmailTemapletSettingID: number | null = null;
   isEditMode: boolean = false;  
@@ -32,35 +32,31 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   isCollapsed1 = false;
   isCollapsed2 = true;
   datatableConfig: Config = {};
-
   public users: any[] = [];
   public pagesList: any[] = []; 
   public actionList: any[] = []; 
   crateAction: any = {
-  id: 2,
+  id: "4",
   userName: "asdad@gmaiasd.com",
   email: "asdad@gmailasdas.com",
   firstName: "sadasdasdas",
   lastName: "asdasdasd",
   password: "123123131",
   phoneNumber: "2131",
-  isActive: true,
+  isActive: false,
   address: "",
-  userAllowedIPs: [{
-    roleId: 
-    "185c414b-9c32-4bb1-a1f4-9a3ea0a1asd",
-    userId: ""
-
-  }
-  ],
+  userAllowedIPs: [],
   userRoles: [
-    {}
   ]
+}
+onIsActiveChange() {
+  console.log('isActive Changed:', this.crateAction.isActive);
 }
   selectedAction: any = {
     Fields: "",
     OrderBy: "",
     PageSize: 10,
+    isActive: true,
     Skip: 0,
     SearchQuery: "",
     email: "",  // This field will be used for filtering by email
@@ -74,12 +70,18 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formModal') formModal: any;  // Reference to modal
   swalOptions: SweetAlertOptions = {};
     constructor(
+      private fb: FormBuilder,
+      
     private roleServices: RolesApiService,
     private userService: UserService,
     private editroleservice: EditRoleService,
     private modalService: NgbModal,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {
+    this.form = this.fb.group({
+      userAllowedIPs: this.fb.array([])
+    });
+   }
 
   ngAfterViewInit(): void {
   }
@@ -88,14 +90,26 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadUsers(): void {
+    console.log('Calling loadUsers with isActive:', this.selectedAction.isActive);
     this.userService.getAllUsers(this.selectedAction).subscribe({
       next: (response) => {
         console.log("Received users:", response);
         this.users = response;
-        this.cdr.detectChanges();
+        this.cdr.detectChanges(); 
       },
       error: (error) => console.error('Error fetching users', error)
     });
+  }
+  get inputs() {
+    return this.form.get('inputs') as FormArray;
+  }
+
+  addInput(): void {
+    this.inputs.push(this.fb.control(''));
+  }
+
+  deleteInput(index: number): void {
+    this.inputs.removeAt(index);
   }
 openFormModal(content: any, action: 'create' | 'edit', eTemplate?: UserQueryParams): void {
   if (action === 'edit' && eTemplate) {
@@ -268,7 +282,13 @@ closeModal(): void {
   }
    // Handle form submission for create or update
    onSubmit(): void {
-      this.createUsers();  // Create logic
+     if (this.form.valid) {
+        this.createUsers(); 
+        console.log('Submitting Form:', this.form.value);
+        // Submit logic here
+      } else {
+        console.log('Form is not valid:', this.form.value);
+      }
 
   }
   extractText(obj: any): string {
@@ -311,4 +331,27 @@ closeModal(): void {
   ngOnDestroy(): void {
     this.reloadEvent.unsubscribe();
   }
+
+
+
+
+
+
+
+  get userAllowedIPs(): FormArray {
+    return this.form.get('userAllowedIPs') as FormArray;
+  }
+
+  addIPField(): void {
+    this.userAllowedIPs.push(this.fb.control(''));
+  }
+
+  deleteIPField(index: number): void {
+    this.userAllowedIPs.removeAt(index);
+  }
+
+
+
+
+
 }

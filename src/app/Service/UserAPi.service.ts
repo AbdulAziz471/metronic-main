@@ -13,13 +13,19 @@ export class UserService {
   getAllUsers(params: UserQueryParams): Observable<any> {
     let httpParams = new HttpParams();
     for (const key in params) {
-      if (params[key]) {
-        httpParams = httpParams.set(key, params[key].toString());
+      if (params[key] !== undefined) {
+        let value = params[key];
+        // Convert boolean true/false to '1'/'0'
+        if (typeof value === 'boolean') {
+          value = value ? '1' : '0';
+        }
+        httpParams = httpParams.set(key, value.toString());
       }
     }
-
+  
     return this.http.get(`${environment.apiUrl}/api/User/GetUsers`, { params: httpParams });
   }
+  
   
   // GET: Fetch a single SMTP Setting by ID
   getUserbyId(id: number): Observable<any> {

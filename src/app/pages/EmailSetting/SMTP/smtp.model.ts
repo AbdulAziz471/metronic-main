@@ -4,7 +4,7 @@ export interface SMTPSetting {
     host: string;
     userName: string;
     password: string;
-    isMainSSL: boolean;
+    isEnableSSL: boolean;
     port: number;
     isDefault: boolean;
   }

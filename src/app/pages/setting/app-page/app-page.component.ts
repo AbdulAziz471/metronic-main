@@ -18,7 +18,7 @@ import Swal, { SweetAlertOptions } from 'sweetalert2';
 export class AppPageComponent implements OnInit {
   pages = []; 
   private modalRef: any;
-  filteredPages = [];
+  filteredPages: any[] = [];
   searchTerm: string = '';
   selectedEmailTemapletSettingID: number | null = null;
   isEditMode: boolean = false;  
@@ -74,6 +74,7 @@ closeModal(): void {
     this.modalService.open(content);
   }
   ngOnInit(): void {
+    this.filteredPages = this.AllAppSetting;
     this.loadAppPage();
     this.datatableConfig = {
       serverSide: true,
@@ -93,7 +94,15 @@ closeModal(): void {
     );
   }
 
-
+  filterSettings() {
+    if (!this.searchTerm) {
+      this.filteredPages = this.AllAppSetting;
+    } else {
+      this.filteredPages = this.AllAppSetting.filter(setting =>
+        setting.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
+  }
   // Create new SMTP setting
   createAppPage(): void {
     Swal.fire({

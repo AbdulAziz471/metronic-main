@@ -1,91 +1,105 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-
-
-import { FormGroup, FormsModule, ReactiveFormsModule ,FormBuilder, Validators } from '@angular/forms';
-import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
-import { SweetAlertOptions } from 'sweetalert2';
-import Swal from 'sweetalert2'; 
-import { Config } from 'datatables.net';
+import { Component, OnInit, ViewChild, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { EmailSettingService } from 'src/app/Service/EmailSettings.service';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
-import { EmailSettingService } from 'src/app/Service/EmailSettings.service'; 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+interface Attachment {
+  src: string;
+  name: string;
+  extension: string;
+  fileType: string;
+}
+
 @Component({
   selector: 'app-send-email',
   templateUrl: './sendEmail.component.html',
   styleUrls: ['./sendEmail.component.scss']
 })
 export class SendEmailComponent implements OnInit {
+  public emailtemplates: any[] = [];
+  emailForm: FormGroup;
   editorConfig: AngularEditorConfig = {
     editable: true,
-      spellcheck: true,
-      height: 'auto',
-      minHeight: '0',
-      maxHeight: 'auto',
-      width: 'auto',
-      minWidth: '0',
-      translate: 'yes',
-      enableToolbar: true,
-      showToolbar: true,
-      placeholder: 'Enter text here...',
-      defaultParagraphSeparator: '',
-      defaultFontName: '',
-      defaultFontSize: '',
+    spellcheck: true,
+    height: 'auto',
+  };
 
-};
-  public emailtemplates: any[] = []; 
-
-  emailForm: FormGroup;
-  isCollapsed1 = false;
-  isCollapsed2 = true;
-  datatableConfig: Config = {};
-  reloadEvent: EventEmitter<boolean> = new EventEmitter();
-
-  @ViewChild('deleteSwal') deleteSwal: any;  // Reference to the confirmation Swal
-  @ViewChild('successSwal') successSwal: any;  // Reference to the success Swal
-  @ViewChild('noticeSwal') noticeSwal!: SwalComponent;
-  @ViewChild('formModal') formModal: any;  // Reference to modal
-  swalOptions: SweetAlertOptions = {};
-    constructor(
-    private fb: FormBuilder, 
-    private emailservies: EmailSettingService,
-    private modalService: NgbModal,
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient, 
+    private emailService: EmailSettingService,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {}
 
- 
-  sendEmail() {
-    if (this.emailForm.valid) {
-      this.emailservies.SendEmail(this.emailForm.value).subscribe({
-          next: response => console.log('Email sent successfully', response),
-          error: error => console.error('Failed to send email', error)
-        });
-    }
-  }
-  loadEmailTemplate(): void {
-    this.emailservies.getAllEmailTemplate().subscribe(
-      (response) => {
-        this.emailtemplates = response;  
-        this.cdr.detectChanges();  
-        console.log('SMTP Settings loaded:', this.emailtemplates);
-      },
-      (error) => {
-        console.error('Error fetching SMTP settings:', error); 
-      }
-    );
-  }
- 
   ngOnInit() {
     this.loadEmailTemplate();
     this.emailForm = this.fb.group({
-      subject: ['', Validators.required],
-      toAddress: ['', [Validators.required, Validators.email]],
+      subject: [''],  // Validation removed for testing
+      toAddress: [''],  // Validation removed for testing
       ccAddress: [''],
-      attachments: this.fb.array([]), // You can handle attachment logic as needed
-      body: ['', Validators.required],
-      fromAddress: ['', [Validators.required, Validators.email]]
+      attachments: this.fb.array([]),
+      body: [''],  // Validation removed for testing
+      fromAddress: ['']  // Validation removed for testing
     });
   }
 
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files) return;
+    const files = input.files;
+    const fileArray = this.emailForm.get('attachments') as FormArray;
+    fileArray.clear();
+  
+    Array.from(files).forEach((file: File) => {
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        fileArray.push(this.fb.group({
+          src: fileReader.result, // base64 string
+          name: file.name,
+          extension: file.name.split('.').pop(),
+          fileType: file.type
+        }));
+      };
+      fileReader.readAsDataURL(file); // Read the file as data URL
+    });
+  }
+  
+  sendEmail() {
+    this.cdr.detectChanges(); 
+    console.log('Form Valid:', this.emailForm.valid);
+    console.log('Form Errors:', this.emailForm.errors);
+    console.log('Form Value:', this.emailForm.value);
+    console.log('Form Status:', this.emailForm.status);
 
+    if (this.emailForm.valid) {
+      const formValues = this.emailForm.value;
+      const emailData = {
+        ...formValues,
+        attachments: formValues.attachments.map((att: Attachment) => ({
+          src: att.src,
+          name: att.name,
+          extension: att.extension,
+          fileType: att.fileType
+        }))
+      };
 
+      this.emailService.SendEmail(emailData).subscribe({
+        next: response => console.log('Email sent successfully', response),
+        error: error => console.error('Failed to send email', error)
+      });
+    } else {
+      console.error('Form is invalid:', this.emailForm);
+    }
+  }
+
+  loadEmailTemplate() {
+    this.emailService.getAllEmailTemplate().subscribe(
+      response => {
+        this.emailtemplates = response;
+        this.cdr.detectChanges();
+      },
+      error => console.error('Error fetching email templates:', error)
+    );
+  }
 }

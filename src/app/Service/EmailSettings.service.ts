@@ -9,27 +9,27 @@ import { environment } from 'src/environments/environment';
 export class EmailSettingService {
   constructor(private http: HttpClient) {}
 
-  // POST: Create a new SMTP Setting
+  // POST: Create a new email
   SendEmail (config: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/api/email`, config);
+    return this.http.post(`${environment.apiUrl}/api/Email`, config);
   }
 
-  // GET: Fetch all SMTP Settings
+  // GET: Fetch all email
   getAllSMTPSettings(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/api/EmailSMTPSetting`);
   }
 
-  // GET: Fetch a single SMTP Setting by ID
+  // GET: Fetch a single email by ID
   getSMTPSettingById(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/api/EmailSMTPSetting/${id}`);
   }
 
-  // POST: Create a new SMTP Setting
+  // POST: Create a new email
   createSMTPSetting(config: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/api/EmailSMTPSetting`, config);
   }
 
-  // PUT: Update an existing SMTP Setting by ID
+  // PUT: Update an existing email by ID
   updateSMTPSetting(id: number, config: any): Observable<any> {
     return this.http.put(
       `${environment.apiUrl}/api/EmailSMTPSetting/${id}`,
@@ -37,7 +37,7 @@ export class EmailSettingService {
     );
   }
 
-  // DELETE: Delete an SMTP Setting by ID
+  // DELETE: Delete an email by ID
   deleteSMTPSetting(id: number): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/api/EmailSMTPSetting/${id}`);
   }

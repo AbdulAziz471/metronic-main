@@ -2,8 +2,28 @@
   <div class="card-body pt-9 pb-0">
     <div class="d-flex flex-wrap flex-sm-nowrap mb-3 gap-3">
       <div class="d-flex flex-column gap-3 " >
+        <div class="col-md-3">
+          <div class="row justify-content-center">
+           
+                <div>Ptrofile Photo</div>
+              
+              <input hidden (change)="fileEvent($event)" #fileInput name="logo" type="file" name="Profile Photo"
+                fxFlex="30">
+              <img *ngIf="imgURL" class="full-width" [src]="imgURL" />
+              <img *ngIf="!imgURL" class="full-width" src="../../../assets/images/user-profile.jpg" />
+              <div>
+                <button *ngIf="!imgURL" class="btn btn-success btn-sm m-right-10" (click)="fileInput.click()">
+                  <i class="far fa-image"></i> Add Photo</button>
+                <button *ngIf="imgURL" class="btn btn-success btn-sm m-right-10" (click)="fileInput.click()">
+                  <i class="far fa-image"></i> Chnage Photo</button>
+                <!-- <button *ngIf="imgURL" type="button" (click)="removeImage()" class="btn btn-danger btn-sm">
+                  <i class="fas fa-trash-alt"></i> Deleet Pjsk</button> -->
+              </div>
+          </div>
+        </div>
         <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative" >
-          <img src="./assets/media/avatars/300-1.jpg" alt="Metronic" />
+          <img [src]="'https://localhost:44313/' + userProfile.profilePhoto" alt="Metronic" />
+
           <div
             class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-white h-20px w-20px" ></div>
         </div>
@@ -14,6 +34,7 @@
         >
           Change Photo
         </a>
+        
       </div>
 
       <div class="flex-grow-1">
@@ -82,8 +103,7 @@
             <button
               class="btn btn-sm btn-primary me-3 cursor-pointer"
               (click)="openFormModal(formModal, profile)"
-            >x  
-              Update Profile
+            >Update Profile
             </button>
           </div>
         </div>

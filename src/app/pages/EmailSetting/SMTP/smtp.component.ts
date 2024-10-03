@@ -5,7 +5,9 @@ import { Observable } from 'rxjs';
 import { SweetAlertOptions } from 'sweetalert2';
 import moment from 'moment';
 import Swal from 'sweetalert2'; 
-
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {FormsModule} from '@angular/forms';
 import { Config } from 'datatables.net';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SMTPSetting } from './smtp.model';
@@ -29,7 +31,7 @@ export class SMTPComponent implements OnInit, AfterViewInit, OnDestroy {
     host: '' ,  
     userName: "",
     password: "",
-    isMainSSL: false,
+    isEnableSSL: false,
     port: 0,
     isDefault: false };  
   reloadEvent: EventEmitter<boolean> = new EventEmitter();
@@ -60,7 +62,7 @@ export class SMTPComponent implements OnInit, AfterViewInit, OnDestroy {
           host: '' ,  
           userName: "",
           password: "",
-          isMainSSL: false,
+          isEnableSSL: false,
           port: 0,
           isDefault: false
         };
@@ -80,6 +82,10 @@ export class SMTPComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadSMTPSettings();
    
   }
+  handleDefaultChange() {
+    console.log('Default status changed to:', this.selectedAction.isEnableSSL);
+    // Additional logic here
+}
   loadSMTPSettings(): void {
     this.emailservies.getAllSMTPSettings().subscribe(
       

@@ -6,6 +6,7 @@
       <div class="d-flex align-items-center position-relative my-1">        
           <app-keenicon name="magnifier" class="fs-3 position-absolute ms-5"></app-keenicon>
           <input type="text"
+          [(ngModel)]="searchTerm" (keyup)="filterSettings()"
           data-action="filter" class="form-control form-control-solid w-250px ps-12" placeholder="Search Pages ">
       </div>
     </div>
@@ -17,7 +18,7 @@
           (click)="openFormModal(formModal, 'create')"
           data-action="create"
         >
-          Add App Setting
+          Add Page
         </button>
       </div>
     </div>
@@ -36,7 +37,7 @@
         </tr>
       </thead>
       <tbody class="fw-semibold text-gray-600">
-        <tr *ngFor="let setting of AllAppSetting">
+        <tr *ngFor="let setting of filteredPages">
           <td class="d-flex align-items-center sorting_1">
             <div class="d-flex flex-column" data-action="view" data-id="452">
               <a

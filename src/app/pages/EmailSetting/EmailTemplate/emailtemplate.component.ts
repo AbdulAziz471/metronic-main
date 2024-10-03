@@ -1,13 +1,10 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
-
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { SweetAlertOptions } from 'sweetalert2';
 import Swal from 'sweetalert2'; 
 import { Observable } from 'rxjs';
-
 import moment from 'moment';
 import { Config } from 'datatables.net';
-
 import { Emailtemplate } from './emailtemplate.model';
 import { EmailSettingService } from 'src/app/Service/EmailSettings.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -75,66 +72,6 @@ closeModal(): void {
   }
   ngOnInit(): void {
     this.loadEmailTemplateSettings();
-    this.datatableConfig = {
-      serverSide: true,
-    
-      
-      columns: [
-        {
-          title: 'Name', data: 'name', render: function (data, type, full) {
-            const colorClasses = ['success', 'info', 'warning', 'danger'];
-            const randomColorClass = colorClasses[Math.floor(Math.random() * colorClasses.length)];
-
-            const initials = data[0].toUpperCase();
-            const symbolLabel = `
-              <div class="symbol-label fs-3 bg-light-${randomColorClass} text-${randomColorClass}">
-                ${initials}
-              </div>
-            `;
-
-            const nameAndEmail = `
-              <div class="d-flex flex-column" data-action="view" data-id="${full.id}">
-                <a href="javascript:;" class="text-gray-800 text-hover-primary mb-1">${data}</a>
-                <span>${full.email}</span>
-              </div>
-            `;
-
-            return `
-              <div class="symbol symbol-circle symbol-50px overflow-hidden me-3" data-action="view" data-id="${full.id}">
-                <a href="javascript:;">
-                  ${symbolLabel}
-                </a>
-              </div>
-              ${nameAndEmail}
-            `;
-          }
-        },
-        {
-          title: 'Role', data: 'role', render: function (data, type, row) {
-            const roleName = row.roles[0]?.name;
-            return roleName || '';
-          },
-          orderData: [1],
-          orderSequence: ['asc', 'desc'],
-          type: 'string',
-        },
-        {
-          title: 'Last Login', data: 'last_login_at', render: (data, type, full) => {
-            const date = data || full.created_at;
-            const dateString = moment(date).fromNow();
-            return `<div class="badge badge-light fw-bold">${dateString}</div>`;
-          }
-        },
-        {
-          title: 'Joined Date', data: 'created_at', render: function (data) {
-            return moment(data).format('DD MMM YYYY, hh:mm a');;
-          }
-        }
-      ],
-      createdRow: function (row, data, dataIndex) {
-        $('td:eq(0)', row).addClass('d-flex align-items-center');
-      },
-    };
   }
   loadEmailTemplateSettings(): void {
     this.emailservies.getAllEmailTemplate().subscribe(
@@ -142,10 +79,10 @@ closeModal(): void {
       (response) => {
         this.emailtemplateSetting = response;  
         this.cdr.detectChanges();  
-        console.log('SMTP Settings loaded:', this.emailtemplateSetting);
+        console.log('Email Template loaded:', this.emailtemplateSetting);
       },
       (error) => {
-        console.error('Error fetching SMTP settings:', error); 
+        console.error('Error fetching Email Template:', error); 
       }
     );
   }
@@ -153,7 +90,7 @@ closeModal(): void {
   createEmailTemplateSetting(): void {
     Swal.fire({
       title: 'Are you sure?',
-      text: "Do you want to create this SMTP setting?",
+      text: "Do you want to create this Email Template ?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -165,14 +102,16 @@ closeModal(): void {
         this.emailservies.createEmailTemplate(this.selectedAction).subscribe(
           (response) => {
             this.isLoading = false;
-            Swal.fire('Success', 'SMTP setting created successfully!', 'success'); // Success message
-            this.loadEmailTemplateSettings(); // Reload the settings
-            this.formModal.dismiss(""); // Close the modal
+            Swal.fire('Success', 'Email Template created successfully!', 'success'); 
+            this.loadEmailTemplateSettings(); 
+         
+         this.closeModal();
+
           },
           (error) => {
             this.isLoading = false;
-            console.error('Error creating SMTP setting:', error);
-            Swal.fire('Error', 'There was a problem creating the SMTP setting.', 'error'); // Error message
+            console.error('Error creating Email Template:', error);
+            Swal.fire('Error', 'There was a problem creating the Email Template.', 'error'); // Error message
           }
         );
       }
@@ -184,25 +123,25 @@ closeModal(): void {
       (response) => {
         this.isLoading = false;
         this.formModal.close();  
-        Swal.fire('Success', 'SMTP setting updated successfully!', 'success');
+        Swal.fire('Success', 'Email Template updated successfully!', 'success');
         this.loadEmailTemplateSettings();  
       },
       (error) => {
         this.isLoading = false;
-        console.error('Error updating SMTP setting:', error);
+        console.error('Error updating Email Template:', error);
       }
     );
   }
   deleteEmailTemplateSetting(id: number): void {
-    if (confirm("Are you sure you want to delete this SMTP setting?")) { 
+    if (confirm("Are you sure you want to delete this Email Template?")) { 
       this.emailservies.deleteEmailTemplate(id).subscribe(
         (response) => {
-          console.log('SMTP Setting deleted:', response);
+          console.log('Email Template deleted:', response);
           // After deletion, reload the SMTP settings
           this.loadEmailTemplateSettings();
         },
         (error) => {
-          console.error('Error deleting SMTP setting:', error);
+          console.error('Error deleting Email Template:', error);
         }
       );
     }
@@ -212,23 +151,23 @@ closeModal(): void {
       this.selectedEmailTemapletSettingID = id; 
       this.deleteSwal.fire();  
     } else {
-      console.error('Error: Invalid SMTP setting ID');
+      console.error('Error: Invalid Email Template ID');
     }
   }
   triggerDelete(id: number | null): void {
     if (id !== null) {  // Check if the ID is not null
       this.emailservies.deleteEmailTemplate(id).subscribe(
         (response) => {
-          console.log('SMTP Setting deleted:', response);
+          console.log('Email Template deleted:', response);
           this.successSwal.fire();  // Show the success Swal after deletion
           this.loadEmailTemplateSettings();  // Reload SMTP settings after deletion
         },
         (error) => {
-          console.error('Error deleting SMTP setting:', error);
+          console.error('Error deleting Email Template:', error);
         }
       );
     } else {
-      console.error('Error: Invalid SMTP setting ID');
+      console.error('Error: Invalid Email Template ID');
     }
   }
    onSubmit(): void {

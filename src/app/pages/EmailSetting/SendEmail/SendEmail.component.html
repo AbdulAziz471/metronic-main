@@ -24,9 +24,9 @@
           <input
             type="text"
             class="form-control form-control-solid"
-            name="host"
-            formControlName="fromAddress"
-            id="fromAddress"
+            name="toAddress"
+            formControlName="toAddress"
+            id="toAddress"
             required
           />
         </div>
@@ -36,9 +36,9 @@
           <input
             type="text"
             class="form-control form-control-solid"
-            name="host"
-            formControlName="fromAddress"
-            id="fromAddress"
+            name="ccAddress"
+            formControlName="ccAddress"
+            id="ccAddress"
             required
           />
         </div>
@@ -50,20 +50,23 @@
           <input
             type="text"
             class="form-control form-control-solid"
-            name="host"
-            formControlName="fromAddress"
-            id="fromAddress"
+            name="subject"
+            formControlName="subject"
+            id="subject"
             required
           />
         </div>
       </div>
       <div class="w-100 mb-7">
         <label class="required fw-semibold fs-6 mb-2">Body</label>
-        <angular-editor
-          formControlName="body"
-          [config]="editorConfig"
-        ></angular-editor>
+        <angular-editor formControlName="body" [config]="editorConfig"></angular-editor>
       </div>
+      <div class="w-100 mb-7">
+        <label class="required fw-semibold fs-6 mb-2">Attachment</label>
+        <input type="file" class="form-control" (change)="onFileSelected($event)" multiple>
+      </div>
+      
+      
       <div class="d-flex gap-5">
         <div class="w-100 mb-7"><button class="btn btn-primary" type="submit">Send</button></div>
       </div>

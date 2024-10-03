@@ -19,10 +19,12 @@ interface Profile {
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit {
+  imgURL: any;
+  profileImageUrl: string = ''; 
   selectedProfile: Profile;
   private modalRef: NgbModalRef;
   userProfile: any = {};
-  defaultPhotoUrl: string = 'path/to/default/photo.jpg'; 
+
   isLoading: boolean = false;  
   profile = {
     userName: '',
@@ -45,33 +47,30 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.UserProfile(); 
   }
-  // onSubmit(): void {
-  //   this.profileService.updateProfile(this.profile).subscribe({
-  //     next: (response) => {
-  //       console.log('Profile updated successfully!', response);
-  //     },
-  //     error: (error) => {
-  //       console.error('Failed to update profile', error);
-  //     }
-  //   });
-  // console.log('Updating profile:', this.selectedProfile);
-  // this.closeModal();
-  // }
+
   UserProfile(): void {
     this.profileService.getProfile().subscribe({
       next: (response) => {
         this.userProfile = response;
-        this.userProfile.profilePhotoUrl = response.profilePhotoUrl || this.defaultPhotoUrl; 
+        this.userProfile.profilePhotoUrl = response.profilePhotoUrl ; 
         this.cd.detectChanges(); 
       },
       error: (error) => {
         console.error('Error fetching user profile:', error);
-        this.userProfile.profilePhotoUrl = this.defaultPhotoUrl;
+     
       }
     });
   }
 
-
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+     this.profileService.updateProfilePhoto( file).subscribe({
+      next: (response) => console.log('Profile photo updated successfully!', response),
+      error: (error) => console.error('Error updating profile photo', error)
+    });
+    }
+  }
   // Method to open the modal with the profile content to be updated
   openFormModal(content: TemplateRef<any>, profile: Profile): void {
     this.profileService.getProfile().subscribe({
@@ -119,4 +118,36 @@ export class ProfileComponent implements OnInit {
         }
       });
     }
+
+
+    fileEvent($event: Event): void {
+      const element = $event.target as HTMLInputElement;
+      if (element.files && element.files.length > 0) {
+        const file = element.files[0];
+        if (!file.type.match(/image\/*/)) {
+       
+          return;
+        }
+  
+        const formData = new FormData();
+        formData.append('file', file);
+
+  
+        this.profileService.updateProfilePhoto( file).subscribe({
+          next: (response) => {
+           
+            this.imgURL = URL.createObjectURL(file); 
+            element.value = '';
+            this.cd.detectChanges(); // Update the view
+          },
+          error: (error) => {
+            console.error('Error updating image', error);
+           
+          }
+        });
+      } else {
+        console.error('No file selected');
+      }
+    }
+    
 }

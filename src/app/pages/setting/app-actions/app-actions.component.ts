@@ -79,10 +79,10 @@ closeModal(): void {
       (response) => {
         this.AllAppActions = response;  
         this.cdr.detectChanges();  
-        console.log('SMTP Settings loaded:', this.AllAppActions);
+        console.log('Actions loaded:', this.AllAppActions);
       },
       (error) => {
-        console.error('Error fetching SMTP settings:', error); 
+        console.error('Error fetching Actions:', error); 
       }
     );
   }
@@ -90,7 +90,7 @@ closeModal(): void {
   createEmailTemplateSetting(): void {
     Swal.fire({
       title: 'Are you sure?',
-      text: "Do you want to create this SMTP setting?",
+      text: "Do you want to create this App Actions?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -102,14 +102,14 @@ closeModal(): void {
         this.AppAction.createAppAction(this.selectedAction.name).subscribe(
           (response) => {
             this.isLoading = false;
-            Swal.fire('Success', 'SMTP setting created successfully!', 'success'); 
+            Swal.fire('Success', 'App Action created successfully!', 'success'); 
             this.loadAppActions(); 
             this.formModal.dismiss(""); 
           },
           (error) => {
             this.isLoading = false;
-            console.error('Error creating SMTP setting:', error);
-            Swal.fire('Error', 'There was a problem creating the SMTP setting.', 'error');
+            console.error('Error creating App Action:', error);
+            Swal.fire('Error', 'There was a problem creating the App Action.', 'error');
           }
         );
       }
@@ -127,7 +127,7 @@ UpdateAppActionsSetting(config: AppAction): void {
       (response) => {
           this.isLoading = false;
           this.modalRef.close(); // Assuming modalRef is your modal instance
-          Swal.fire('Success', 'App setting updated successfully!', 'success');
+          Swal.fire('Success', 'App Action updated successfully!', 'success');
           this.loadAppActions();  
       },
       (error) => {
@@ -139,14 +139,14 @@ UpdateAppActionsSetting(config: AppAction): void {
 }
 
   deleteEmailTemplateSetting(id: number): void {
-    if (confirm("Are you sure you want to delete this SMTP setting?")) { 
+    if (confirm("Are you sure you want to delete this App Action?")) { 
       this.AppAction.deleteAppAction(id).subscribe(
         (response) => {
           console.log('SMTP Setting deleted:', response);
           this.loadAppActions();
         },
         (error) => {
-          console.error('Error deleting SMTP setting:', error);
+          console.error('Error deleting App Action:', error);
         }
       );
     }
@@ -156,7 +156,7 @@ UpdateAppActionsSetting(config: AppAction): void {
       this.selectedAppActionID = id; 
       this.deleteSwal.fire();  
     } else {
-      console.error('Error: Invalid SMTP setting ID');
+      console.error('Error: Invalid App Action ID');
     }
   }
   triggerDelete(id: number | null): void {
@@ -168,11 +168,11 @@ UpdateAppActionsSetting(config: AppAction): void {
           this.loadAppActions();  // Reload SMTP settings after deletion
         },
         (error) => {
-          console.error('Error deleting SMTP setting:', error);
+          console.error('Error deleting App Action:', error);
         }
       );
     } else {
-      console.error('Error: Invalid SMTP setting ID');
+      console.error('Error: Invalid App Action ');
     }
   }
    // Handle form submission for create or update
