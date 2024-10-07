@@ -115,8 +115,7 @@ closeModal(): void {
       }
     });
   } 
-  // Update existing SMTP setting
-// Correct the method signature and pass the complete action object
+
 UpdateAppActionsSetting(config: AppAction): void {
   if (!config.id) {
       console.error('Invalid or missing ID');

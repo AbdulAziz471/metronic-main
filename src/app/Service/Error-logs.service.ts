@@ -13,8 +13,8 @@ import { UserQueryParams } from '../pages/LoginAudit/LoginAudit/login-audit.moda
     constructor(private http: HttpClient) { }
   
     getAllErrorLogs(
-      Level: string,
-        Massage : string,
+      message : string,
+      level: string,
         skip: number,
         pageSize: number,
         searchQuery: string,
@@ -22,8 +22,8 @@ import { UserQueryParams } from '../pages/LoginAudit/LoginAudit/login-audit.moda
         fields: string
       ): Observable<any> {
         let params = new HttpParams()
-          .set('UserName', Massage)
-          .set('Level', Level)
+          .set('message', message)
+          .set('level', level)
           .set('Skip', skip)
           .set('PageSize', pageSize)
           .set('SearchQuery', searchQuery)

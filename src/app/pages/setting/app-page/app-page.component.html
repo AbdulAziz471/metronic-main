@@ -49,7 +49,7 @@
           </td>
           <td>{{ setting.url }}</td>
           <td>
-            <!-- <button
+            <button
             (click)="openFormModal(formModal, 'edit', setting)"
               class="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
               data-action="edit"
@@ -58,7 +58,7 @@
               <i class="ki-duotone ki-pencil fs-3"
                 ><span class="path1"></span><span class="path2"></span
               ></i>
-            </button> -->
+            </button>
             <button
               (click)="openDeleteSwal(setting.id)"
               class="btn btn-icon btn-active-light-primary w-30px h-30px"
@@ -81,7 +81,7 @@
     <form #myForm="ngForm" (ngSubmit)="onSubmit()">
       <div class="modal-header">
         <h4 class="modal-title" id="modal-basic-title">
-          {{ isEditMode ? "Edit App Setting" : "Add App Setting" }}
+          {{ isEditMode ? "Edit Page" : "Add Page" }}
         </h4>
         <button
           type="button"
@@ -98,7 +98,7 @@
             <input
               type="text"
               class="form-control form-control-solid"
-              name="host"
+              name="name"
               [(ngModel)]="selectedAction.name"
               required
             />
@@ -117,7 +117,7 @@
             <input
               type="text"
               class="form-control form-control-solid"
-              name="host"
+              name="url"
               [(ngModel)]="selectedAction.url"
               required
             />

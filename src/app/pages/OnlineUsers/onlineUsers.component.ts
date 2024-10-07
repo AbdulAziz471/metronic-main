@@ -7,8 +7,7 @@ import { ChangeDetectorRef } from '@angular/core';
   styleUrls: ['./onlineUsers.component.scss']
 })
 export class OnlineUserComponent implements OnInit {
-  onlineUsers: number = 0;
-  recentlyRegisteredUsers: any[] = [];
+  onlineUsers: any[] = [];
 
   constructor(private dashboardService: DashboardService,
     private cd: ChangeDetectorRef 
@@ -30,11 +29,11 @@ export class OnlineUserComponent implements OnInit {
   loadOnlineUser(): void {
     this.dashboardService.getOnlineUsers().subscribe({
       next: (users) => {
-        this.recentlyRegisteredUsers = users;
-        console.log("Recently Registered Users:", this.recentlyRegisteredUsers); 
+        this.onlineUsers = users;
+        console.log("Online USers", this.onlineUsers); 
          this.cd.detectChanges();
       },
-      error: (error) => console.error('Failed to fetch recently registered users:', error)
+      error: (error) => console.error('Failed to fetch Online Users', error)
     });
   }
   

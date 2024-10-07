@@ -10,7 +10,7 @@ export class DashboardComponent implements OnInit {
   totalUsers: number = 0;
   activeUsers: number = 0;
   inactiveUsers: number = 0;
-  onlineUsers: number = 0;
+  onlineUsers: any[] = [];
   recentlyRegisteredUsers: any[] = [];
 
   constructor(private dashboardService: DashboardService,
@@ -55,11 +55,22 @@ export class DashboardComponent implements OnInit {
       error: (error) => console.error('Failed to fetch recently registered users:', error)
     });
   }
+  loadOnlineUser(): void {
+    this.dashboardService.getOnlineUsers().subscribe({
+      next: (users) => {
+        this.onlineUsers = users;
+        console.log("Online USers", this.onlineUsers); 
+         this.cd.detectChanges();
+      },
+      error: (error) => console.error('Failed to fetch Online Users', error)
+    });
+  }
   
   ngOnInit(): void {
     
     this.loadUserStatistics();
     this.loadRecentlyRegisteredUsers();
+    this.cd.detectChanges();
   }
   
 }

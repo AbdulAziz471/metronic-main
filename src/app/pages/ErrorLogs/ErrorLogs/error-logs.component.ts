@@ -33,8 +33,8 @@ export class ErrorLogsComponent implements OnInit, AfterViewInit {
   public pagesList: any[] = []; 
   public actionList: any[] = []; 
   selectedAction = {
-    Message: '',
-    Level: '',
+    message: '',
+    level: '',
     Source: '',
     skip: 0,     
     pageSize: 10, 
@@ -67,8 +67,8 @@ export class ErrorLogsComponent implements OnInit, AfterViewInit {
   }
   
   loadErrorLogs(): void {
-    const { Message,  Level, skip, pageSize, searchQuery, orderBy, fields } = this.selectedAction;
-    this.errorLogs.getAllErrorLogs(Message, Level, skip, pageSize, searchQuery, orderBy, fields).subscribe({
+    const { message,  level, skip, pageSize, searchQuery, orderBy, fields } = this.selectedAction;
+    this.errorLogs.getAllErrorLogs(message, level, skip, pageSize, searchQuery, orderBy, fields).subscribe({
         next: (response) => {
           console.log("Received users:", response);
           this.users = response;

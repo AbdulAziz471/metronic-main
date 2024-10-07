@@ -21,11 +21,11 @@ export class AppPageApiService {
 
   // DELETE: Delete an app action by ID
   deleteAppPage(id: number): Observable<any> {
-    return this.http.delete(`${environment.apiUrl}/api/Pages/${id}`);
+    return this.http.delete(`${environment.apiUrl}/api/Page/${id}`);
   }
 
   // PUT: Update an existing app action
   updateAppPage(action: any): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/api/Pages/${action.id}`, action);
+    return this.http.put(`${environment.apiUrl}/api/Page/${action.id}`, action);
   }
 }

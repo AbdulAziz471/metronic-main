@@ -18,14 +18,14 @@
           <th class="min-w-100px">Phone</th>         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of recentlyRegisteredUsers">
+        <tr *ngFor="let user of onlineUsers">
           <td>{{ user.email }}</td>
           <td>{{ user.firstName }}</td>
           <td>{{ user.lastName }}</td>
           <td>{{ user.phoneNumber }}</td> <!-- Assuming Phone exists, add if available -->
         </tr>
-        <tr *ngIf="recentlyRegisteredUsers.length === 0">
-          <td colspan="4">No recently registered users available. {{recentlyRegisteredUsers}}</td>
+        <tr *ngIf="onlineUsers.length === 0">
+          <td colspan="4">No recently registered users available. {{onlineUsers}}</td>
         </tr>
       </tbody>
     </table>

@@ -9,6 +9,7 @@ export class CardsWidget20Component implements OnInit, OnChanges {
   @Input() cssClass: string = '';
   @Input() description: string = '';
   @Input() detailNumber: number =  0;
+  @Input() detailarray: any[] =  [];
   @Input() color: string = '';
   @Input() img: string = '';
 
