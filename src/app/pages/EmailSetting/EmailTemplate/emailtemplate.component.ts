@@ -8,6 +8,7 @@ import { Config } from 'datatables.net';
 import { Emailtemplate } from './emailtemplate.model';
 import { EmailSettingService } from 'src/app/Service/EmailSettings.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AngularEditorConfig } from '@kolkov/angular-editor';
 @Component({
   selector: 'app-emailtemplate',
   templateUrl: './emailtemplate.component.html',
@@ -20,7 +21,43 @@ export class EmailtemplateComponent implements OnInit, AfterViewInit, OnDestroy 
   isLoading: boolean = false;  
   isCollapsed1 = false;
   isCollapsed2 = true;
+  editorConfig: AngularEditorConfig = {
+    editable: true,
+    spellcheck: true,
+    height: '300px',
+    minHeight: '150px',
+    placeholder: 'Enter email body here...',
+    translate: 'no',
+    defaultParagraphSeparator: 'p',
+    toolbarHiddenButtons: [
+      ['bold']
+    ]
+  };
+  dynamicFields: { label: string; value: string }[] = [];
+  checkForPlaceholders() {
+    const bodyContent = this.selectedAction.body;
+    const regex = /##(.*?)##/g;
+    const matches = bodyContent.match(regex);
 
+    this.dynamicFields = [];
+
+    if (matches) {
+      matches.forEach((match) => {
+        const fieldName = match.replace(/##/g, ''); // remove the ##
+        this.dynamicFields.push({ label: fieldName, value: '' });
+      });
+    }
+  }
+  updateBody() {
+    let updatedBody = this.selectedAction.body;
+
+    this.dynamicFields.forEach((field) => {
+      const placeholder = `##${field.label}##`;
+      updatedBody = updatedBody.replace(new RegExp(placeholder, 'g'), field.value);
+    });
+
+    this.selectedAction.body = updatedBody;
+  }
   datatableConfig: Config = {};
   public emailtemplateSetting: any[] = []; 
   selectedAction: Emailtemplate = { 
@@ -31,10 +68,10 @@ export class EmailtemplateComponent implements OnInit, AfterViewInit, OnDestroy 
      };  
   reloadEvent: EventEmitter<boolean> = new EventEmitter();
 
-  @ViewChild('deleteSwal') deleteSwal: any;  // Reference to the confirmation Swal
-  @ViewChild('successSwal') successSwal: any;  // Reference to the success Swal
+  @ViewChild('deleteSwal') deleteSwal: any;  
+  @ViewChild('successSwal') successSwal: any; 
   @ViewChild('noticeSwal') noticeSwal!: SwalComponent;
-  @ViewChild('formModal') formModal: any;  // Reference to modal
+  @ViewChild('formModal') formModal: any;  
   swalOptions: SweetAlertOptions = {};
     constructor(
     private emailservies: EmailSettingService,
@@ -58,7 +95,7 @@ openFormModal(content: any, action: 'create' | 'edit', eTemplate?: Emailtemplate
           body: ''
       };
   }
-  this.modalRef = this.modalService.open(content);
+  this.modalRef = this.modalService.open(content, { size: 'lg' });
 }
 closeModal(): void {
   if (this.modalRef) {
@@ -111,7 +148,7 @@ closeModal(): void {
           (error) => {
             this.isLoading = false;
             console.error('Error creating Email Template:', error);
-            Swal.fire('Error', 'There was a problem creating the Email Template.', 'error'); // Error message
+            Swal.fire('Error', 'There was a problem creating the Email Template.', 'error'); 
           }
         );
       }

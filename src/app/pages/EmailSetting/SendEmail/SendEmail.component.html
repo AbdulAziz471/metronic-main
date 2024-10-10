@@ -7,19 +7,19 @@
 
   <div class="card-body pt-0">
     <form [formGroup]="emailForm" (ngSubmit)="sendEmail()">
-      <!-- User Information -->
       <div class="d-flex gap-5">
         <div class="w-100 mb-7">
-          <select class="form-select" aria-label="Default select example">
+          <label class="required fw-semibold fs-6 mb-2">Select Template</label>
+          <select class="form-select" (change)="onTemplateSelect($event)" aria-label="Default select example">
             <option *ngFor="let setting of emailtemplates" [value]="setting.id">
               {{ setting.name }}
             </option>
           </select>
         </div>
       </div>
+    
       <div class="d-flex gap-5">
         <div class="w-100 mb-7">
-          <!-- Host -->
           <label class="required fw-semibold fs-6 mb-2">TO</label>
           <input
             type="text"
@@ -28,28 +28,29 @@
             formControlName="toAddress"
             id="toAddress"
             required
+            placeholder="TO"
           />
         </div>
         <div class="w-100 mb-7">
-          <!-- Host -->
           <label class="required fw-semibold fs-6 mb-2">CC</label>
           <input
             type="text"
             class="form-control form-control-solid"
             name="ccAddress"
             formControlName="ccAddress"
+            placeholder="CC"
             id="ccAddress"
-            required
           />
         </div>
       </div>
+    
       <div class="d-flex gap-5">
         <div class="w-100 mb-7">
-          <!-- Host -->
           <label class="required fw-semibold fs-6 mb-2">SUBJECT</label>
           <input
             type="text"
             class="form-control form-control-solid"
+            placeholder="SUBJECT"
             name="subject"
             formControlName="subject"
             id="subject"
@@ -57,20 +58,24 @@
           />
         </div>
       </div>
+    
       <div class="w-100 mb-7">
         <label class="required fw-semibold fs-6 mb-2">Body</label>
-        <angular-editor formControlName="body" [config]="editorConfig"></angular-editor>
+        <angular-editor formControlName="body" [config]="editorConfig" placeholder="BODY"></angular-editor>
       </div>
+    
       <div class="w-100 mb-7">
         <label class="required fw-semibold fs-6 mb-2">Attachment</label>
         <input type="file" class="form-control" (change)="onFileSelected($event)" multiple>
       </div>
-      
-      
+    
       <div class="d-flex gap-5">
-        <div class="w-100 mb-7"><button class="btn btn-primary" type="submit">Send</button></div>
+        <div class="w-100 mb-7">
+          <button class="btn btn-primary" type="submit">Send</button>
+        </div>
       </div>
     </form>
+    
   </div>
 </div>
 

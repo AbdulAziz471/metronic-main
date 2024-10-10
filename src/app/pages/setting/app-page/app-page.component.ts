@@ -1,100 +1,53 @@
-// app-setting.component.ts
-import { ChangeDetectorRef, Component, EventEmitter, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AppSettingService } from 'src/app/Service/AppSettingApi.service';
-import { AppSetting } from './app-page.model'; 
-import { Config } from 'datatables.net';
-import { Observable } from 'rxjs';
 import { AppPageApiService } from 'src/app/Service/AppPageApi.service';
+import { AppSetting } from './app-page.model'; 
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
-
 @Component({
   selector: 'app-app-setting',
   templateUrl: './app-page.component.html',
   styleUrls: ['./app-page.component.scss']
 })
 export class AppPageComponent implements OnInit {
-  pages = []; 
   private modalRef: any;
-  filteredPages: any[] = [];
-  searchTerm: string = '';
-  selectedEmailTemapletSettingID: number | null = null;
+  public AllAppSetting: AppSetting[] = [];
+  filteredPages: AppSetting[] = [];
   isEditMode: boolean = false;  
+  searchTerm: string = '';
   isLoading: boolean = false;  
-  isCollapsed1 = false;
-  isCollapsed2 = true;
-  datatableConfig: Config = {};
-  public AllAppSetting: any[] = []; 
   selectedAction: AppSetting = { 
     id: null, 
     name: '' ,  
     url: ''
      };  
-  reloadEvent: EventEmitter<boolean> = new EventEmitter();
-
-
-  @ViewChild('deleteSwal') deleteSwal: any;  // Reference to the confirmation Swal
-  @ViewChild('successSwal') successSwal: any;  // Reference to the success Swal
-  @ViewChild('noticeSwal') noticeSwal!: SwalComponent;
   @ViewChild('formModal') formModal: any;  // Reference to modal
-  swalOptions: SweetAlertOptions = {};
-    constructor(
+
+  constructor(
     private AppPages: AppPageApiService,
     private modalService: NgbModal,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {}
 
-  ngAfterViewInit(): void {
-  }
-
-openFormModal(content: any, action: 'create' | 'edit', eTemplate?: AppSetting): void {
-  if (action === 'edit' && eTemplate) {
-      this.isEditMode = true;
-      this.selectedAction = { ...eTemplate };
-  } else {
-      this.isEditMode = false;
-      this.selectedAction = {
-          id: null,
-          name: '',
-          url: '',
-      };
-  }
-  this.modalRef = this.modalService.open(content);  // Store the modal reference
-}
-closeModal(): void {
-  if (this.modalRef) {
-      this.modalRef.close()
-    }
-}
-
-
-  openModal(content: any): void {
-    this.modalService.open(content);
-  }
   ngOnInit(): void {
-    this.filteredPages = this.AllAppSetting;
-    this.loadAppPage();
-    this.datatableConfig = {
-      serverSide: true,
-    };
+    this.loadAppPage(); // Load the list when component initializes
   }
+
+  // Fetch app settings from API and display them
   loadAppPage(): void {
     this.AppPages.getAllAppPage().subscribe(
-      
       (response) => {
         this.AllAppSetting = response;  
-        this.cdr.detectChanges();  
-        console.log('SMTP Settings loaded:', this.AllAppSetting);
+        this.filteredPages = this.AllAppSetting;  // Set filteredPages to display all initially
+        this.cdr.detectChanges();
+        console.log('App settings loaded:', this.AllAppSetting);
       },
       (error) => {
-        console.error('Error fetching SMTP settings:', error); 
+        console.error('Error fetching app settings:', error); 
       }
     );
   }
-
-  filterSettings() {
+  filterSettings(): void {
     if (!this.searchTerm) {
       this.filteredPages = this.AllAppSetting;
     } else {
@@ -103,8 +56,8 @@ closeModal(): void {
       );
     }
   }
-  // Create new SMTP setting
-  createAppPage(): void {
+   // Create new SMTP setting
+   createAppPage(): void {
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to create this SMTP setting?",
@@ -136,107 +89,95 @@ closeModal(): void {
       }
     });
   }
+  updateAppPage(): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to update this App Page?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, update it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isLoading = true;
+        this.AppPages.updateAppPage(this.selectedAction).subscribe(
+          (response) => {
+            this.isLoading = false;
+            Swal.fire('Success', 'App Page updated successfully!', 'success');
+            this.loadAppPage();  // Reload the settings list after the update
+            this.formModal.dismiss("");  // Close the modal
+          },
+          (error) => {
+            this.isLoading = false;
+            console.error('Error updating App Page:', error);
+            Swal.fire('Error', 'There was a problem updating the App Page.', 'error');
+          }
+        );
+      }
+    });
+  }
   
-  // Update existing SMTP setting
-  updateEmailTemplateSetting(id: number, config: AppSetting): void {
-    this.isLoading = true;
-    this.AppPages.updateAppPage(id,).subscribe(
-      (response) => {
-        this.isLoading = false;
-        this.formModal.close();  
-        Swal.fire('Success', 'SMTP setting updated successfully!', 'success');
-        this.loadAppPage();  
-      },
-      (error) => {
-        this.isLoading = false;
-        console.error('Error updating SMTP setting:', error);
+  openFormModal(content: any, action: 'create' | 'edit', eTemplate?: AppSetting): void {
+    if (action === 'edit' && eTemplate) {
+        this.isEditMode = true;
+        this.selectedAction = { ...eTemplate };  // Pre-fill the form with the selected setting data
+    } else {
+        this.isEditMode = false;
+        this.selectedAction = {
+            id: null,
+            name: '',
+            url: '',
+        };
+    }
+    this.modalRef = this.modalService.open(content);
+  }
+  closeModal(): void {
+    if (this.modalRef) {
+        this.modalRef.close()
       }
-    );
   }
-  deleteEmailTemplateSetting(id: number): void {
-    if (confirm("Are you sure you want to delete this SMTP setting?")) { 
-      this.AppPages.deleteAppPage(id).subscribe(
-        (response) => {
-          console.log('SMTP Setting deleted:', response);
-          // After deletion, reload the SMTP settings
-          this.loadAppPage();
-        },
-        (error) => {
-          console.error('Error deleting SMTP setting:', error);
-        }
-      );
-    }
-  } 
-  openDeleteSwal(id: number): void {
-    if (id !== null) {
-      this.selectedEmailTemapletSettingID = id; 
-      this.deleteSwal.fire();  
-    } else {
-      console.error('Error: Invalid SMTP setting ID');
-    }
+  openModal(content: any): void {
+      this.modalService.open(content);
   }
-  triggerDelete(id: number | null): void {
-    if (id !== null) {  // Check if the ID is not null
-      this.AppPages.deleteAppPage(id).subscribe(
-        (response) => {
-          console.log('SMTP Setting deleted:', response);
-          this.successSwal.fire();  // Show the success Swal after deletion
-          this.loadAppPage();  // Reload SMTP settings after deletion
-        },
-        (error) => {
-          console.error('Error deleting SMTP setting:', error);
-        }
-      );
-    } else {
-      console.error('Error: Invalid SMTP setting ID');
-    }
-  }
-   // Handle form submission for create or update
-   onSubmit(): void {
+
+ 
+  onSubmit(): void {
     if (this.isEditMode) {
-      this.updateEmailTemplateSetting(this.selectedAction.id!, this.selectedAction);  // Update logic
-  } else {
-      this.createAppPage();  // Create logic
-  }
-  }
-  extractText(obj: any): string {
-    var textArray: string[] = [];
-
-    for (var key in obj) {
-      if (typeof obj[key] === 'string') {
-        // If the value is a string, add it to the 'textArray'
-        textArray.push(obj[key]);
-      } else if (typeof obj[key] === 'object') {
-        // If the value is an object, recursively call the function and concatenate the results
-        textArray = textArray.concat(this.extractText(obj[key]));
-      }
+      this.updateAppPage();  // Call update if in edit mode
+    } else {
+      this.createAppPage();  // Call create if in create mode
     }
-
-    // Use a Set to remove duplicates and convert back to an array
-    var uniqueTextArray = Array.from(new Set(textArray));
-
-    // Convert the uniqueTextArray to a single string with line breaks
-    var text = uniqueTextArray.join('\n');
-
-    return text;
   }
-  showAlert(swalOptions: SweetAlertOptions) {
-    let style = swalOptions.icon?.toString() || 'success';
-    if (swalOptions.icon === 'error') {
-      style = 'danger';
+  deleteAppSetting(id: any): void {
+    if (!id) {
+      console.error('Invalid ID:', id);
+      return;
     }
-    this.swalOptions = Object.assign({
-      buttonsStyling: false,
-      confirmButtonText: "Ok, got it!",
-      customClass: {
-        confirmButton: "btn btn-" + style
+  
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.AppPages.deleteAppPage(id).subscribe(
+          (response) => {
+            Swal.fire('Deleted!', 'The app setting has been deleted.', 'success');
+            this.loadAppPage();  // Reload the settings list after deletion
+          },
+          (error) => {
+            console.error('Error deleting app setting:', error);
+            Swal.fire('Error', 'There was a problem deleting the app setting.', 'error');
+          }
+        );
       }
-    }, swalOptions);
-    this.cdr.detectChanges();
-    this.noticeSwal.fire();
+    });
   }
-
-  ngOnDestroy(): void {
-    this.reloadEvent.unsubscribe();
-  }
+  
+  
 }

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +21,7 @@ export class AppPageApiService {
   }
 
   // DELETE: Delete an app action by ID
-  deleteAppPage(id: number): Observable<any> {
+  deleteAppPage(id: string): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/api/Page/${id}`);
   }
 

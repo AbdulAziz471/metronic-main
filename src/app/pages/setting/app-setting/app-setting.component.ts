@@ -84,10 +84,10 @@ closeModal(): void {
       (response) => {
         this.AllAppSetting = response;  
         this.cdr.detectChanges();  
-        console.log('SMTP Settings loaded:', this.AllAppSetting);
+        console.log('App Settings loaded:', this.AllAppSetting);
       },
       (error) => {
-        console.error('Error fetching SMTP settings:', error); 
+        console.error('Error fetching App settings:', error); 
       }
     );
   }
@@ -95,7 +95,7 @@ closeModal(): void {
   createEmailTemplateSetting(): void {
     Swal.fire({
       title: 'Are you sure?',
-      text: "Do you want to create this SMTP setting?",
+      text: "Do you want to create this App setting?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -107,14 +107,14 @@ closeModal(): void {
         this.AppSetting.createAppSetting(this.selectedAction).subscribe(
           (response) => {
             this.isLoading = false;
-            Swal.fire('Success', 'SMTP setting created successfully!', 'success'); 
+            Swal.fire('Success', 'App setting created successfully!', 'success'); 
             this.loadEmailTemplateSettings(); 
             this.formModal.dismiss(""); 
           },
           (error) => {
             this.isLoading = false;
-            console.error('Error creating SMTP setting:', error);
-            Swal.fire('Error', 'There was a problem creating the SMTP setting.', 'error');
+            console.error('Error creating App setting:', error);
+            Swal.fire('Error', 'There was a problem creating the App setting.', 'error');
           }
         );
       }
@@ -127,25 +127,25 @@ closeModal(): void {
       (response) => {
         this.isLoading = false;
         this.formModal.close();  
-        Swal.fire('Success', 'SMTP setting updated successfully!', 'success');
+        Swal.fire('Success', 'App setting updated successfully!', 'success');
         this.loadEmailTemplateSettings();  
       },
       (error) => {
         this.isLoading = false;
-        console.error('Error updating SMTP setting:', error);
+        console.error('Error updating App setting:', error);
       }
     );
   }
   deleteEmailTemplateSetting(id: number): void {
-    if (confirm("Are you sure you want to delete this SMTP setting?")) { 
+    if (confirm("Are you sure you want to delete this App setting?")) { 
       this.AppSetting.deleteAppSetting(id).subscribe(
         (response) => {
-          console.log('SMTP Setting deleted:', response);
+          console.log('App Setting deleted:', response);
           // After deletion, reload the SMTP settings
           this.loadEmailTemplateSettings();
         },
         (error) => {
-          console.error('Error deleting SMTP setting:', error);
+          console.error('Error deleting App setting:', error);
         }
       );
     }
@@ -155,23 +155,23 @@ closeModal(): void {
       this.selectedEmailTemapletSettingID = id; 
       this.deleteSwal.fire();  
     } else {
-      console.error('Error: Invalid SMTP setting ID');
+      console.error('Error: Invalid App setting ID');
     }
   }
   triggerDelete(id: number | null): void {
     if (id !== null) {  // Check if the ID is not null
       this.AppSetting.deleteAppSetting(id).subscribe(
         (response) => {
-          console.log('SMTP Setting deleted:', response);
+          console.log('App Setting deleted:', response);
           this.successSwal.fire();  // Show the success Swal after deletion
           this.loadEmailTemplateSettings();  // Reload SMTP settings after deletion
         },
         (error) => {
-          console.error('Error deleting SMTP setting:', error);
+          console.error('Error deleting App setting:', error);
         }
       );
     } else {
-      console.error('Error: Invalid SMTP setting ID');
+      console.error('Error: Invalid App setting ID');
     }
   }
    // Handle form submission for create or update

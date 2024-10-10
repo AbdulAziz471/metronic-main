@@ -25,6 +25,9 @@ export class UserService {
   
     return this.http.get(`${environment.apiUrl}/api/User/GetUsers`, { params: httpParams });
   }
+  getAllPageAction(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/api/pageactions`);
+  }
   
   
   // GET: Fetch a single SMTP Setting by ID
@@ -36,6 +39,10 @@ export class UserService {
   createUser(config: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/api/User`, config);
   }
+// POST: Create a new User 
+chnagePassword(config: any): Observable<any> {
+  return this.http.post(`${environment.apiUrl}/api/User/resetpassword`, config);
+}
 
   // PUT: Update an existing User by ID
   updateUser(id: number, config: any): Observable<any> {

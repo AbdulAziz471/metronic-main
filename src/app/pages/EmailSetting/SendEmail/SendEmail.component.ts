@@ -1,15 +1,8 @@
-import { Component, OnInit, ViewChild, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { EmailSettingService } from 'src/app/Service/EmailSettings.service';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
-
-interface Attachment {
-  src: string;
-  name: string;
-  extension: string;
-  fileType: string;
-}
 
 @Component({
   selector: 'app-send-email',
@@ -22,7 +15,15 @@ export class SendEmailComponent implements OnInit {
   editorConfig: AngularEditorConfig = {
     editable: true,
     spellcheck: true,
-    height: 'auto',
+    height: '200px',
+    minHeight: '150px',
+    placeholder: 'Enter email body here...',
+    translate: 'no',
+    defaultParagraphSeparator: 'p',
+    defaultFontName: 'Arial',
+    toolbarHiddenButtons: [
+      ['bold']
+    ]
   };
 
   constructor(
@@ -35,15 +36,16 @@ export class SendEmailComponent implements OnInit {
   ngOnInit() {
     this.loadEmailTemplate();
     this.emailForm = this.fb.group({
-      subject: [''],  // Validation removed for testing
-      toAddress: [''],  // Validation removed for testing
+      subject: [''],  
+      toAddress: [''],  
       ccAddress: [''],
       attachments: this.fb.array([]),
-      body: [''],  // Validation removed for testing
-      fromAddress: ['']  // Validation removed for testing
+      body: [''], 
+      fromAddress: ['']  
     });
   }
 
+  // Called when a file is selected for attachment
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files) return;
@@ -64,19 +66,32 @@ export class SendEmailComponent implements OnInit {
       fileReader.readAsDataURL(file); // Read the file as data URL
     });
   }
-  
+
+  // Called when a template is selected
+  onTemplateSelect(event: Event) {
+    const selectedTemplateId = (event.target as HTMLSelectElement).value;
+    const selectedTemplate = this.emailtemplates.find(template => template.id === selectedTemplateId);
+    
+    if (selectedTemplate) {
+      this.emailForm.patchValue({
+        subject: selectedTemplate.subject,
+        body: selectedTemplate.body,
+        toAddress: '', // Pre-fill as per your requirement
+        ccAddress: ''  // Pre-fill as per your requirement
+      });
+    }
+  }
+
   sendEmail() {
     this.cdr.detectChanges(); 
     console.log('Form Valid:', this.emailForm.valid);
-    console.log('Form Errors:', this.emailForm.errors);
     console.log('Form Value:', this.emailForm.value);
-    console.log('Form Status:', this.emailForm.status);
 
     if (this.emailForm.valid) {
       const formValues = this.emailForm.value;
       const emailData = {
         ...formValues,
-        attachments: formValues.attachments.map((att: Attachment) => ({
+        attachments: formValues.attachments.map((att: any) => ({
           src: att.src,
           name: att.name,
           extension: att.extension,
@@ -93,6 +108,7 @@ export class SendEmailComponent implements OnInit {
     }
   }
 
+  // Fetch email templates from API
   loadEmailTemplate() {
     this.emailService.getAllEmailTemplate().subscribe(
       response => {

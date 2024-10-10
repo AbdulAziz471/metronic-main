@@ -8,6 +8,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { WidgetsModule } from "../../../_metronic/partials/content/widgets/widgets.module";
 import { EmailtemplateComponent } from './emailtemplate.component';
+import { AngularEditorModule } from '@kolkov/angular-editor';
 @NgModule({
   declarations: [EmailtemplateComponent],
   imports: [
@@ -25,6 +26,7 @@ import { EmailtemplateComponent } from './emailtemplate.component';
     NgbNavModule,
     NgbDropdownModule,
     NgbCollapseModule,
+    AngularEditorModule, 
     NgbTooltipModule,
     SweetAlert2Module.forChild(),
     WidgetsModule

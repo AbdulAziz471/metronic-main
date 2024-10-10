@@ -7,13 +7,18 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class ProfileService {
-  profilePhotoUrl: string;
+  profilePhotoUrl: string | undefined;
+
   constructor(private http: HttpClient) { }
 
+  // Get the current user profile
   getProfile(): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/api/User/profile`);
+    return this.http.get(`${environment.apiUrl}/api/User/profile`).pipe(
+      catchError(this.handleError)
+    );
   }
 
+  // Update the user profile (general information like name, email, etc.)
   updateProfile(profileData: {
     userName: string;
     email: string;
@@ -22,20 +27,24 @@ export class ProfileService {
     phoneNumber: string;
     address: string;
   }): Observable<any> {
-    return this.http.put(`${environment.apiUrl}/api/User/profile`, profileData);
+    return this.http.put(`${environment.apiUrl}/api/User/profile`, profileData).pipe(
+      catchError(this.handleError)
+    );
   }
 
-  updateProfilePhoto( file: File): Observable<any> {
+  // Upload and update the profile photo
+  updateProfilePhoto(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    const url = `${environment.apiUrl}/api/User/UpdateUserProfilePhoto`; // Adjusted to include userId in the URL if necessary
 
-    return this.http.post(url, formData).pipe(
-      catchError(error => {
-        console.error('An error occurred:', error);
-        // Optionally convert the error to a more general observable or handle it as needed
-        throw error; // Rethrow the error if you want to handle it in the subscribing component
-      })
+    return this.http.post(`${environment.apiUrl}/api/User/UpdateUserProfilePhoto`, formData).pipe(
+      catchError(this.handleError)
     );
+  }
+
+  // Generic error handling
+  private handleError(error: any): Observable<never> {
+    console.error('An error occurred:', error);
+    return throwError(() => new Error('Something went wrong; please try again later.'));
   }
 }

@@ -60,7 +60,7 @@
               ></i>
             </button>
             <button
-              (click)="openDeleteSwal(setting.id)"
+              (click)="deleteAppSetting(setting.id)"
               class="btn btn-icon btn-active-light-primary w-30px h-30px"
               data-action="delete"
               data-id="452"
@@ -71,7 +71,7 @@
                 ><span class="path5"></span>
               </i>
             </button>
-          </td>
+          </td> 
         </tr>
       </tbody>
     </table>
@@ -160,7 +160,7 @@
     </form>
   </ng-template>
 
-  <swal
+  <!-- <swal
   #deleteSwal
   title="Are you sure to delete?"
   text="This cannot be undone"
@@ -179,5 +179,5 @@
   text=""
   icon="success"
   [customClass]="{ confirmButton: 'btn btn-success' }"
-></swal>
+></swal> -->
 </div>
