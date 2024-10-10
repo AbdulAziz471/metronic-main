@@ -14,7 +14,6 @@
           class="form-control form-control-solid w-250px ps-12"
           placeholder="Search Email "
         />
-        
       </div>
       <div class="d-flex flex-column align-items-center gap-3">
         Active Status
@@ -83,20 +82,19 @@
           <td>{{ user.phoneNumber }}</td>
           <td>{{ user.isActive }}</td>
           <td>
-           
-            <div
-              class="btn btn-icon"
-              (click)="toggleMenu($event)"
-             
-            >
+            <div class="btn btn-icon" (click)="toggleMenu($event, user.id)">
               <ng-container>
                 <div class="btn btn-success">More</div>
               </ng-container>
             </div>
             <div
-            *ngIf="isMenuOpen"
-              class=" menu-column menu-rounded menu-title-gray-700 menu-icon-muted menu-active-bg menu-state-primary fw-semibold py-4 fs-base w-175px"
-              data-kt-menu="true"
+              *ngIf="selectedUserId === user.id"
+              class="menu-column menu-rounded menu-title-gray-700 menu-icon-muted menu-active-bg menu-state-primary fw-semibold py-4 fs-base w-175px"
+              style="
+                border-radius: 5px;
+                background-color: white;
+                position: absolute;
+              "
             >
               <ng-container>
                 <!-- begin::Menu item  -->
@@ -134,7 +132,7 @@
                 <!-- begin::Menu item  -->
                 <div class="menu-item px-3 my-0">
                   <a
-                  (click)="openPasswordModal(permissionModal, user)" 
+                    (click)="openPermissionModal(permissionModal, user)"
                     data-action="edit"
                     class="menu-link px-3 py-2"
                   >
@@ -150,7 +148,7 @@
                 <!-- begin::Menu item  -->
                 <div class="menu-item px-3 my-0">
                   <a
-                  (click)="openPasswordModal(passwordModal, user)" 
+                    (click)="openPasswordModal(passwordModal, user)"
                     data-action="edit"
                     class="menu-link px-3 py-2"
                   >
@@ -171,7 +169,7 @@
     </table>
   </div>
 </div>
-<ng-template   #passwordModal let-modal>
+<ng-template #passwordModal let-modal>
   <form #myForm="ngForm" (ngSubmit)="onpasswordSubmit()">
     <div class="modal-header">
       <h4 class="modal-title" id="modal-basic-title">
@@ -187,57 +185,63 @@
     <div class="modal-body">
       <!-- User Information -->
       <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
-          <div class="w-100 mb-7">
-            <label class="required fw-semibold fs-6 mb-2">Email</label>
-            <input
-              type="email"
-              class="form-control form-control-solid"
-              name="email"
-              placeholder="Email"
-              [(ngModel)]="selectedUser.email"
-              readonly
-            />
-            <div
-              *ngIf="myForm.submitted && !crateAction.email"
-              class="invalid-feedback"
-            >
-              Email is required
-            </div>
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Email</label>
+          <input
+            type="email"
+            class="form-control form-control-solid"
+            name="email"
+            placeholder="Email"
+            [(ngModel)]="selectedUser.email"
+            readonly
+          />
+          <div
+            *ngIf="myForm.submitted && !crateAction.email"
+            class="invalid-feedback"
+          >
+            Email is required
           </div>
-          <div class="w-100 mb-7">
-            <label class="required fw-semibold fs-6 mb-2">Password</label>
-            <input
-              type="text"
-              class="form-control form-control-solid"
-              name="password"
-              placeholder="Password"
-              [(ngModel)]="password"
-              required
-            />
-            <div
-              *ngIf="myForm.submitted && !crateAction.password"
-              class="invalid-feedback"
-            >
-              Host is required
-            </div>
+        </div>
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Password</label>
+          <input
+            type="text"
+            class="form-control form-control-solid"
+            name="password"
+            placeholder="Password"
+            [(ngModel)]="password"
+            required
+          />
+          <div
+            *ngIf="myForm.submitted && !crateAction.password"
+            class="invalid-feedback"
+          >
+            Host is required
           </div>
-          <div class="w-100 mb-7">
-            <label class="required fw-semibold fs-6 mb-2">Confirm Password</label>
-            <input
-              type="text"
-              class="form-control form-control-solid"
-              name="confirmpassword"
-              [(ngModel)]="confirmPassword"
+        </div>
+        <div class="w-100 mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Confirm Password</label>
+          <input
+            type="text"
+            class="form-control form-control-solid"
+            name="confirmpassword"
+            [(ngModel)]="confirmPassword"
             placeholder="Confirm Password"
-              required
-            />
-            <div *ngIf="myForm.submitted && !confirmPassword" class="invalid-feedback">
-              Confirm Password is required
-            </div>
-            <div *ngIf="myForm.submitted && password !== confirmPassword" class="invalid-feedback">
-              Passwords do not match
-            </div>
+            required
+          />
+          <div
+            *ngIf="myForm.submitted && !confirmPassword"
+            class="invalid-feedback"
+          >
+            Confirm Password is required
           </div>
+          <div
+            *ngIf="myForm.submitted && password !== confirmPassword"
+            class="invalid-feedback"
+          >
+            Passwords do not match
+          </div>
+        </div>
       </div>
     </div>
 
@@ -257,9 +261,7 @@
         class="btn btn-primary"
         [attr.data-kt-indicator]="isLoading ? 'on' : 'off'"
       >
-        <span class="indicator-label">
-         Change Password
-        </span>
+        <span class="indicator-label"> Change Password </span>
         <span class="indicator-progress">
           Please wait...
           <span
@@ -394,8 +396,13 @@
         <div class="d-flex gap-3 justify-content-between">
           <div class="w-100 mb-7">
             <label class="required fw-semibold fs-6 mb-2">Active</label>
-            <mat-slide-toggle name="isActive" [(ngModel)]="crateAction.isActive"  color="primary">
+            <mat-slide-toggle
+              name="isActive"
+              [(ngModel)]="crateAction.isActive"
+              color="primary"
+            >
             </mat-slide-toggle>
+            
           </div>
         </div>
         <div class="d-flex gap-3 justify-content-between">
@@ -418,18 +425,35 @@
         </div>
         <div [formGroup]="form">
           <div formArrayName="userAllowedIPs">
-            <div *ngFor="let ip of userAllowedIPs.controls; let i = index" class="input-group mb-3">
-              <input type="text" class="form-control" [formControlName]="i" placeholder="Enter IP Address">
+            <div
+              *ngFor="let ip of userAllowedIPs.controls; let i = index"
+              class="input-group mb-3"
+            >
+              <input
+                type="text"
+                class="form-control"
+                [formControlName]="i"
+                placeholder="Enter IP Address"
+              />
               <div class="input-group-append">
-                <button class="btn btn-outline-danger" type="button" (click)="deleteIPField(i)">Remove</button>
+                <button
+                  class="btn btn-outline-danger"
+                  type="button"
+                  (click)="deleteIPField(i)"
+                >
+                  Remove
+                </button>
               </div>
             </div>
           </div>
-          <button class="btn btn-outline-success" type="button" (click)="addIPField()">Add New IP Address</button>
+          <button
+            class="btn btn-outline-success"
+            type="button"
+            (click)="addIPField()"
+          >
+            Add New IP Address
+          </button>
         </div>
-        
-        
-        
       </div>
     </div>
 
@@ -463,8 +487,8 @@
   </form>
 </ng-template>
 
-<ng-template   #permissionModal let-modal>
-  <form #myForm="ngForm" >
+<ng-template #permissionModal let-modal>
+  <form #myForm="ngForm">
     <div class="modal-header">
       <h4 class="modal-title" id="modal-basic-title">
         User Page Permission To :{{ selectedUser.firstName }}
@@ -479,6 +503,26 @@
     <div class="modal-body">
       <!-- User Information -->
       <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Page (URL)</th>
+              <th *ngFor="let action of actionList">{{ action.name }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let page of pagesList">
+              <td>{{ page.name }} ({{ page.url }})</td>
+              <td *ngFor='let action of actionList'>
+                <div *ngIf="checkPageAction(page.id,action.id)">
+                  <mat-slide-toggle [checked]="checkPermission(page.id,action.id)" color="primary"
+                    (change)="onPermissionChange($event,page,action)">
+                  </mat-slide-toggle>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         
       </div>
     </div>
@@ -499,9 +543,7 @@
         class="btn btn-primary"
         [attr.data-kt-indicator]="isLoading ? 'on' : 'off'"
       >
-        <span class="indicator-label">
-        Save
-        </span>
+        <span class="indicator-label"> Save </span>
         <span class="indicator-progress">
           Please wait...
           <span
@@ -534,4 +576,3 @@
   icon="success"
   [customClass]="{ confirmButton: 'btn btn-success' }"
 ></swal>
-

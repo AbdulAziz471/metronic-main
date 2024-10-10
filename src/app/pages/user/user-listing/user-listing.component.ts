@@ -9,14 +9,14 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, NgForm } from '@angular/forms';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import Swal from 'sweetalert2';
 import { SweetAlertOptions } from 'sweetalert2';
 import { Observable } from 'rxjs';
 import moment from 'moment';
 import { Config } from 'datatables.net';
-import { UserQueryParams } from './users.modal';
+import { UserQueryParams, UserClaim, Action , Page,PageAction,  } from './users.modal';
 import { RolesApiService } from 'src/app/Service/RolesApi.service';
 import { EditRoleService } from 'src/app/Service/EditRole.Service';
 import { UserService } from 'src/app/Service/UserAPi.service';
@@ -24,13 +24,20 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppPageApiService } from 'src/app/Service/AppPageApi.service';
 import { AppActionService } from 'src/app/Service/AppActionsApi.service';
 import { forkJoin } from 'rxjs';
+
+
 @Component({
   selector: 'app-user-listing',
   templateUrl: './user-listing.component.html',
   styleUrls: ['./user-listing.component.scss'],
 })
 export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
-  isMenuOpen: boolean = false;
+  pagesList: any[] = []; // List of pages
+  actionList: any[] = []; // List of actions
+  pageActions: any[] = []; // List of page-action mappings
+  user: { id: string, userClaims: UserClaim[] } = { id: '', userClaims: [] };
+  isMenuOpen: boolean = false;  
+  selectedUserId: number | null = null; 
   public form: FormGroup;
   password: string = ''; // New password
   confirmPassword: string = '';
@@ -42,8 +49,6 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   isCollapsed2 = true;
   datatableConfig: Config = {};
   public users: any[] = [];
-  public pagesList: any[] = [];
-  public actionList: any[] = [];
   selectedUser: any = {};
   crateAction: any = {
     id: '4',
@@ -92,12 +97,21 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       userAllowedIPs: this.fb.array([]),
     });
   }
-  toggleMenu(event: Event): void {
-    this.isMenuOpen = !this.isMenuOpen;
+  toggleMenu(event: Event, userId: number): void {
+    event.stopPropagation(); // Prevent event from bubbling up and closing the menu
+    if (this.selectedUserId === userId) {
+      // If the menu is already open for the selected user, close it
+      this.selectedUserId = null;
+    } else {
+     
+      this.selectedUserId = userId;
+    }
   }
+
   ngAfterViewInit(): void {}
   ngOnInit(): void {
     this.loadUsers();
+    console.log('PageActions:', this.pageActions);
   }
 
   loadUsers(): void {
@@ -181,22 +195,11 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.modalRef = this.modalService.open(content);
   }
-  callApis() {
-    forkJoin({
+  callApis(): Observable<any> {
+    return forkJoin({
       requestOne: this.editroleservice.getAllPages(),
       requestTwo: this.editroleservice.getAllActions(),
-      requestThree: this.editroleservice.getAllPagesActions(),
-    }).subscribe({
-      next: (results) => {
-        console.log('All requests successful', results);
-        this.pagesList = results.requestOne;
-        this.actionList = results.requestTwo;
-        this.actionList = results.requestTwo;
-      },
-      error: (error) => {
-        console.error('Error in one of the requests', error);
-        // Handle error here
-      },
+      requestThree: this.editroleservice.getAllPagesActions()
     });
   }
   closeModal(): void {
@@ -379,9 +382,63 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   public pages: any[] = [];
   openPermissionModal(content: any, user: any): void {
-    this.callApis();
-    this.selectedUser = { ...user };
-
-    this.modalService.open(content, { size: 'lg' });
+    this.selectedUser = { ...user }; // Bind the selected user
+  
+    // Fetch necessary data before opening the modal
+    this.callApis().subscribe({
+      next: (results) => {
+        console.log('All requests successful', results);
+  
+        this.pagesList = results.requestOne; // Assign pages list
+        this.actionList = results.requestTwo; // Assign actions list
+        this.pageActions = results.requestThree; // Assign page-actions mappings
+  
+        // Now open the modal after data is loaded
+        this.modalService.open(content, { size: 'lg' });
+      },
+      error: (error) => {
+        console.error('Error fetching API data', error);
+      }
+    });
+  }
+  
+  checkPageAction(pageId: string, actionId: string): boolean {
+    const pageAction = this.pageActions.find(c => c.pageId === pageId && c.actionId === actionId);
+    console.log('Checking PageAction:', pageAction);
+    return !!pageAction; // Return true if found, false otherwise
+  }
+  
+  // Check if permission exists for a specific pageId and actionId
+  checkPermission(pageId: string, actionId: string): boolean {
+    const userClaim = this.user.userClaims.find(c => c.pageId === pageId && c.actionId === actionId);
+    console.log('Checking Permission for PageId:', pageId, 'ActionId:', actionId, 'Permission:', userClaim);
+    return !!userClaim; // Return true if found, false otherwise
+  }
+  
+  // Handle permission change when the toggle is switched
+  onPermissionChange(event: any, page: Page, action: Action): void {
+    const isChecked = event.target.checked; // Get the toggle state (true/false)
+  
+    if (isChecked) {
+      // Add the claim if permission is granted
+      this.user.userClaims.push({
+        userId: this.user.id,
+        claimType: `${page.name}_${action.name}`,
+        claimValue: 'true', // Adjust claim value as needed
+        pageId: page.id || '',  // Provide a default value if page.id is undefined
+        actionId: action.id || '',  // Provide a default value if action.id is undefined
+      });
+    } else {
+      // Remove the claim if permission is revoked
+      const roleClaimToRemove = this.user.userClaims.find(
+        (c) => c.actionId === action.id && c.pageId === page.id
+      );
+      if (roleClaimToRemove) {
+        const index = this.user.userClaims.indexOf(roleClaimToRemove);
+        if (index > -1) {
+          this.user.userClaims.splice(index, 1);
+        }
+      }
+}
   }
 }

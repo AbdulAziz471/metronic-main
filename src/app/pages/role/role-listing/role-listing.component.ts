@@ -7,8 +7,8 @@ import { SweetAlertOptions } from 'sweetalert2';
 import Swal from 'sweetalert2'; 
 import { Config } from 'datatables.net';
 import { Observable } from 'rxjs';
-
-import { Roles } from './role-listing.model';
+import {UserClaim, Page ,Action } from "./role.model"
+import { Roles ,} from './role-listing.model';
 import { EditRoleService } from 'src/app/Service/EditRole.Service';
 import { RolesApiService } from 'src/app/Service/RolesApi.service';
 import { forkJoin } from 'rxjs';
@@ -18,6 +18,10 @@ import { forkJoin } from 'rxjs';
   styleUrls: ['./role-listing.component.scss']
 })
 export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
+  pagesList: any[] = []; // List of pages
+  actionList: any[] = []; // List of actions
+  pageActions: any[] = []; // List of page-action mappings
+  user: { id: string, userClaims: UserClaim[] } = { id: '', userClaims: [] };
   private modalRef: any;
   selectedEmailTemapletSettingID: number | null = null;
   isEditMode: boolean = false;  
@@ -26,8 +30,7 @@ export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
   isCollapsed2 = true;
   datatableConfig: Config = {};
   public emailtemplateSetting: any[] = []; 
-  public pagesList: any[] = []; 
-  public actionList: any[] = []; 
+
   
   selectedAction: Roles = { 
     id: null, 
@@ -53,6 +56,20 @@ export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 openFormModal(content: any, action: 'create' | 'edit', eTemplate?: Roles): void {
+
+   this.callApis().subscribe({
+    next: (results) => {
+      console.log('All requests successful', results);
+
+      this.pagesList = results.requestOne;
+      this.actionList = results.requestTwo; // Assign actions list
+      this.pageActions = results.requestThree; // Assign page-actions mappings
+
+    },
+    error: (error) => {
+      console.error('Error fetching API data', error);
+    }
+  });
   if (action === 'edit' && eTemplate) {
       this.isEditMode = true;
       this.selectedAction = { ...eTemplate };
@@ -66,24 +83,13 @@ openFormModal(content: any, action: 'create' | 'edit', eTemplate?: Roles): void 
           body: ''
       };
   }
-  this.modalRef = this.modalService.open(content);  // Store the modal reference
+  this.modalRef = this.modalService.open(content,  { size: 'lg' });  // Store the modal reference
 }
-callApis() {
-  forkJoin({
+callApis(): Observable<any> {
+  return forkJoin({
     requestOne: this.editroleservice.getAllPages(),
     requestTwo: this.editroleservice.getAllActions(),
     requestThree: this.editroleservice.getAllPagesActions()
-  }).subscribe({
-    next: (results) => {
-      console.log('All requests successful', results);
-      this.pagesList = results.requestOne; 
-      this.actionList = results.requestTwo;
-       this.actionList = results.requestTwo;
-    },
-    error: (error) => {
-      console.error('Error in one of the requests', error);
-      // Handle error here
-    }
   });
 }
 closeModal(): void {
@@ -91,13 +97,6 @@ closeModal(): void {
       this.modalRef.close()
     }
 }
-// checkPageAction(pageId: string, actionId: string): boolean {
-//   return this.pageActions.some(c => c.pageId === pageId && c.actionId === actionId);
-// }
-
-// checkPermission(pageId: string, actionId: string): boolean {
-//   return this.role.roleClaims.some(c => c.pageId === pageId && c.actionId === actionId);
-// }
 
   openModal(content: any): void {
     this.modalService.open(content);
@@ -251,4 +250,43 @@ closeModal(): void {
   ngOnDestroy(): void {
     this.reloadEvent.unsubscribe();
   }
+  checkPageAction(pageId: string, actionId: string): boolean {
+    const pageAction = this.pageActions.find(c => c.pageId === pageId && c.actionId === actionId);
+    console.log('Checking PageAction:', pageAction);
+    return !!pageAction; // Return true if found, false otherwise
+  }
+  
+  // Check if permission exists for a specific pageId and actionId
+  checkPermission(pageId: string, actionId: string): boolean {
+    const userClaim = this.user.userClaims.find(c => c.pageId === pageId && c.actionId === actionId);
+    console.log('Checking Permission for PageId:', pageId, 'ActionId:', actionId, 'Permission:', userClaim);
+    return !!userClaim; // Return true if found, false otherwise
+  }
+  
+  // Handle permission change when the toggle is switched
+  onPermissionChange(event: any, page: Page, action: Action): void {
+    const isChecked = event.target.checked; // Get the toggle state (true/false)
+  
+    if (isChecked) {
+      // Add the claim if permission is granted
+      this.user.userClaims.push({
+        userId: this.user.id,
+        claimType: `${page.name}_${action.name}`,
+        claimValue: 'true', // Adjust claim value as needed
+        pageId: page.id || '',  // Provide a default value if page.id is undefined
+        actionId: action.id || '',  // Provide a default value if action.id is undefined
+      });
+    } else {
+      // Remove the claim if permission is revoked
+      const roleClaimToRemove = this.user.userClaims.find(
+        (c) => c.actionId === action.id && c.pageId === page.id
+      );
+      if (roleClaimToRemove) {
+        const index = this.user.userClaims.indexOf(roleClaimToRemove);
+        if (index > -1) {
+          this.user.userClaims.splice(index, 1);
+        }
+      }
+}
+}
 }
