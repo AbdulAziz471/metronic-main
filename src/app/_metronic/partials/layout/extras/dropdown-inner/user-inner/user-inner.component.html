@@ -3,15 +3,15 @@
   <div class="menu-item px-3">
       <div class="menu-content d-flex align-items-center px-3">
           <div class="symbol symbol-50px me-5">
-              <!-- Static image placeholder -->
-              <img alt="User Image" src="../../../../../../../assets/media/avatars/300-3.jpg">
+
+               <img alt="User Image"  *ngIf="imgURL" [src]="imgURL">
           </div>
           <div class="d-flex flex-column">
               <div class="fw-bolder d-flex align-items-center fs-5">
-                  John Doe <!-- Static user name -->
+                <span>{{ userProfile?.firstName }} {{ userProfile?.lastName }}</span>
                   <span class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Pro</span>
               </div>
-              <a class="fw-bold text-muted text-hover-primary fs-7">johndoe&#64;example.com</a> <!-- Static email -->
+              <a class="fw-bold text-muted text-hover-primary fs-7"> {{ userProfile?.email }}</a> <!-- Static email -->
           </div>
       </div>
   </div>

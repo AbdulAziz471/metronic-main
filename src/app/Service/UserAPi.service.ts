@@ -22,41 +22,40 @@ export class UserService {
         httpParams = httpParams.set(key, value.toString());
       }
     }
-  
-    return this.http.get(`${environment.apiUrl}/api/User/GetUsers`, { params: httpParams });
+
+    return this.http.get(`${environment.apiUrl}/api/User/GetUsers`, {
+      params: httpParams,
+    });
   }
   getAllPageAction(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/api/pageactions`);
   }
-  
-  
+
   // GET: Fetch a single SMTP Setting by ID
   getUserbyId(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/api/User/${id}`);
   }
 
-  // POST: Create a new User 
+  // POST: Create a new User
   createUser(config: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/api/User`, config);
   }
-// POST: Create a new User 
-chnagePassword(config: any): Observable<any> {
-  return this.http.post(`${environment.apiUrl}/api/User/resetpassword`, config);
-}
-
-  // PUT: Update an existing User by ID
-  updateUser(id: number, config: any): Observable<any> {
-    return this.http.put(
-      `${environment.apiUrl}/api/User/${id}`,
+  // POST: Create a new User
+  chnagePassword(config: any): Observable<any> {
+    return this.http.post(
+      `${environment.apiUrl}/api/User/resetpassword`,
       config
     );
   }
-
-  // DELETE: Delete an Users by ID
+  updateUser(id: number, user: any): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/api/User/${id}`, user);
+  }
+ // In your user.service.ts or a similar service file
+ updateUserClaims(userId: string, userClaims: any[]): Observable<any> {
+  return this.http.put(`${environment.apiUrl}/api/UserClaim/${userId}`, { userClaims })
+   
+}
   deleteUser(id: number): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/api/User/${id}`);
   }
-
-  
-
 }

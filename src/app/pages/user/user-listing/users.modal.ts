@@ -35,3 +35,23 @@ export interface UserClaim {
   pageId: string;
   actionId: string;
 }
+export interface Role {
+  id?: string;
+  name?: string;
+  userRoles?: UserRoles[];
+  roleClaims?: RoleClaim[];
+}
+export class UserRoles {
+  userId: string;
+  roleId: string
+  userName?: string;
+  firstName?: string;
+  lastName?: string;
+}
+export class RoleClaim {
+  roleId?: string;
+  claimType: string;
+  claimValue: string;
+  actionId: string;
+  pageId: string;
+}

@@ -71,6 +71,66 @@ export class ProfileComponent implements OnInit {
     });
     }
   }
+  fileEvent($event: Event): void {
+    const inputElement = $event.target as HTMLInputElement;
+    const file = inputElement.files ? inputElement.files[0] : null;
+    if (file) {
+     // const formData = new FormData();
+     // formData.append('file', file, file.name);
+      this.profileService.updateProfilePhoto( file).subscribe({
+        next: (response) => {
+         
+          this.imgURL = URL.createObjectURL(file); 
+         // element.value = '';
+          this.cd.detectChanges(); // Update the view
+        },
+        error: (error) => {
+          console.error('Error updating image', error);
+         
+        }
+      });
+    } else {
+      console.error('No file selected');
+    }
+  }
+    
+    
+    // tslint:disable-next-line: variable-name
+   
+    // const element = $event.target as HTMLInputElement;
+    // if (element.files && element.files.length > 0) {
+    //   const file = element.files[0];
+    //   const mimeType = file.type;
+    //   if (mimeType.match(/image\/*/) == null) {
+    //     return;
+    //   }
+    //   // if (file.type.match(/image\/*/) == null) {
+     
+    //   //   return;
+    //   // }
+    //   debugger;
+    //   const formData = new FormData();
+    //   formData.append(file.name, file);
+    //   //formData.append('file', file.name);
+
+
+    //   this.profileService.updateProfilePhoto( file).subscribe({
+    //     next: (response) => {
+         
+    //       this.imgURL = URL.createObjectURL(file); 
+    //       element.value = '';
+    //       this.cd.detectChanges(); // Update the view
+    //     },
+    //     error: (error) => {
+    //       console.error('Error updating image', error);
+         
+    //     }
+    //   });
+    // } else {
+    //   console.error('No file selected');
+    // }
+  //}
+  
   // Method to open the modal with the profile content to be updated
   openFormModal(content: TemplateRef<any>, profile: Profile): void {
     this.profileService.getProfile().subscribe({
@@ -120,34 +180,5 @@ export class ProfileComponent implements OnInit {
     }
 
 
-    fileEvent($event: Event): void {
-      const element = $event.target as HTMLInputElement;
-      if (element.files && element.files.length > 0) {
-        const file = element.files[0];
-        if (!file.type.match(/image\/*/)) {
-       
-          return;
-        }
   
-        const formData = new FormData();
-        formData.append('file', file);
-
-  
-        this.profileService.updateProfilePhoto( file).subscribe({
-          next: (response) => {
-           
-            this.imgURL = URL.createObjectURL(file); 
-            element.value = '';
-            this.cd.detectChanges(); // Update the view
-          },
-          error: (error) => {
-            console.error('Error updating image', error);
-           
-          }
-        });
-      } else {
-        console.error('No file selected');
-      }
-    }
-    
 }

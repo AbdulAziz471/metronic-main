@@ -1,11 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
-
+import { environment } from 'src/environments/environment';
+import { ProfileService } from 'src/app/Service/Profile.service';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit {
+  userProfile: any = {};
+  imgURL: string | ArrayBuffer | null = '';
   @Input() appHeaderDefaulMenuDisplay: boolean;
   @Input() isRtl: boolean;
 
@@ -14,7 +17,17 @@ export class NavbarComponent implements OnInit {
   userAvatarClass: string = 'symbol-35px symbol-md-40px';
   btnIconClass: string = 'fs-2 fs-md-1';
 
-  constructor() {}
+  constructor(private profileService: ProfileService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.profileService.getProfile().subscribe({
+      next: (profile) => {
+        this.userProfile = profile;
+        if (this.userProfile.profilePhoto) {
+          this.imgURL = `${environment.apiUrl}/${this.userProfile.profilePhoto}`;
+        }
+      },
+      error: (error) => console.error('Error fetching profile', error)
+    });
+  }
 }

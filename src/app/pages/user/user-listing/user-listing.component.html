@@ -287,8 +287,28 @@
       ></button>
     </div>
     <div class="modal-body">
-      <!-- User Information -->
-      <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
+      
+      <div class="d-flex flex-column scroll-y me-n7 pe-7 ">
+        <div class="d-flex gap-3 justify-content-between">
+          <div class="w-100 mb-7">
+            <div class="form-group">
+            <label class="required fw-semibold fs-6 mb-2">Roles</label>
+           
+              <!-- <mat-select class="form-control" [(value)]="selectedRoles" multiple>
+                <mat-select-trigger>
+                  <span *ngIf="selectedRoles.length > 0">
+                    {{selectedRoles[0].name}}
+                  </span>
+                  <span *ngIf="selectedRoles.length > 1" class="example-additional-selection">
+                    (+{{selectedRoles.length - 1}} {{selectedRoles.length === 2 ? 'other' : 'others'}})
+                  </span>
+                </mat-select-trigger>
+                <mat-option *ngFor="let role of roleList" [value]="role">{{role.name}}</mat-option>
+              </mat-select> -->
+            </div>
+          </div>
+         
+        </div>
         <div class="d-flex gap-3 justify-content-between">
           <div class="w-100 mb-7">
             <label class="required fw-semibold fs-6 mb-2">First Name</label>
@@ -345,8 +365,9 @@
             <input
               type="email"
               class="form-control form-control-solid"
-              name="host"
+              name="email"
               [(ngModel)]="crateAction.email"
+      (ngModelChange)="crateAction.userName = crateAction.email"
               required
             />
             <div
@@ -356,6 +377,7 @@
               Email is required
             </div>
           </div>
+         
         </div>
         <div class="d-flex gap-3 justify-content-between">
           <div class="w-100 mb-7">
@@ -374,24 +396,6 @@
               Host is required
             </div>
           </div>
-          <!-- <div class="w-100 mb-7">
-            <label class="required fw-semibold fs-6 mb-2"
-              >Confirm Password</label
-            >
-            <input
-              type="text"
-              class="form-control form-control-solid"
-              name="host"
-              [(ngModel)]="crateAction.confirmpassword"
-              required
-            />
-            <div
-              *ngIf="myForm.submitted && !crateAction.confirmpassword"
-              class="invalid-feedback"
-            >
-              Host is required
-            </div>
-          </div> -->
         </div>
         <div class="d-flex gap-3 justify-content-between">
           <div class="w-100 mb-7">
@@ -425,34 +429,17 @@
         </div>
         <div [formGroup]="form">
           <div formArrayName="userAllowedIPs">
-            <div
-              *ngFor="let ip of userAllowedIPs.controls; let i = index"
-              class="input-group mb-3"
-            >
-              <input
-                type="text"
-                class="form-control"
-                [formControlName]="i"
-                placeholder="Enter IP Address"
-              />
+            <div *ngFor="let ip of userAllowedIPs.controls; let i = index" [formGroupName]="i" class="input-group mb-3">
+              <!-- Input for ipAddress -->
+              <input type="text" class="form-control" formControlName="ipAddress" placeholder="Enter IP Address" />
+              <!-- Optionally display userId if needed, or it can be managed behind the scenes -->
+              <input type="hidden" formControlName="userId" />
               <div class="input-group-append">
-                <button
-                  class="btn btn-outline-danger"
-                  type="button"
-                  (click)="deleteIPField(i)"
-                >
-                  Remove
-                </button>
+                <button class="btn btn-outline-danger" type="button" (click)="removeIP(i)">Remove</button>
               </div>
             </div>
           </div>
-          <button
-            class="btn btn-outline-success"
-            type="button"
-            (click)="addIPField()"
-          >
-            Add New IP Address
-          </button>
+          <button class="btn btn-outline-success" type="button" (click)="addIP()">Add New IP Address</button>
         </div>
       </div>
     </div>
@@ -488,10 +475,10 @@
 </ng-template>
 
 <ng-template #permissionModal let-modal>
-  <form #myForm="ngForm">
+  <form #myForm="ngForm" (ngSubmit)="saveUserClaims()" >
     <div class="modal-header">
       <h4 class="modal-title" id="modal-basic-title">
-        User Page Permission To :{{ selectedUser.firstName }}
+        User Page Permission To: {{ selectedUser?.firstName }}
       </h4>
       <button
         type="button"
@@ -502,7 +489,7 @@
     </div>
     <div class="modal-body">
       <!-- User Information -->
-      <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
+      <div class="d-flex flex-column scroll-y me-n7 pe-7 ">
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -515,8 +502,11 @@
               <td>{{ page.name }} ({{ page.url }})</td>
               <td *ngFor='let action of actionList'>
                 <div *ngIf="checkPageAction(page.id,action.id)">
-                  <mat-slide-toggle [checked]="checkPermission(page.id,action.id)" color="primary"
-                    (change)="onPermissionChange($event,page,action)">
+                  <!-- <mat-slide-toggle [checked]="checkPermission(page.id,action.id)" color="primary"
+                    (change)="onPermissionChange($event,page,action)"> -->
+                    <mat-slide-toggle [checked]="checkPermission(page.id,action.id)"
+                  color="primary"
+                  (change)="onPermissionChange($event, page, action)">
                   </mat-slide-toggle>
                 </div>
               </td>
@@ -567,8 +557,6 @@
     cancelButton: 'btn btn-active-light'
   }"
 ></swal>
-
-<!-- Success Swal -->
 <swal
   #successSwal
   title="Delete successfully!"

@@ -123,7 +123,7 @@ closeModal(): void {
   createEmailTemplateSetting(): void {
     Swal.fire({
       title: 'Are you sure?',
-      text: "Do you want to create this SMTP setting?",
+      text: "Do you want to create this Role?",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -135,14 +135,14 @@ closeModal(): void {
         this.roleServices.createRole(this.selectedAction).subscribe(
           (response) => {
             this.isLoading = false;
-            Swal.fire('Success', 'SMTP setting created successfully!', 'success'); // Success message
+            Swal.fire('Success', 'Role successfully!', 'success'); // Success message
             this.loadEmailTemplateSettings(); // Reload the settings
             this.formModal.dismiss(""); // Close the modal
           },
           (error) => {
             this.isLoading = false;
-            console.error('Error creating SMTP setting:', error);
-            Swal.fire('Error', 'There was a problem creating the SMTP setting.', 'error'); // Error message
+            console.error('Error creating Role:', error);
+            Swal.fire('Error', 'There was a problem creating the Role.', 'error'); // Error message
           }
         );
       }
@@ -155,25 +155,25 @@ closeModal(): void {
       (response) => {
         this.isLoading = false;
         this.formModal.close();  
-        Swal.fire('Success', 'SMTP setting updated successfully!', 'success');
+        Swal.fire('Success', 'Role updated successfully!', 'success');
         this.loadEmailTemplateSettings();  
       },
       (error) => {
         this.isLoading = false;
-        console.error('Error updating SMTP setting:', error);
+        console.error('Error updating Role:', error);
       }
     );
   }
   deleteEmailTemplateSetting(id: number): void {
-    if (confirm("Are you sure you want to delete this SMTP setting?")) { 
+    if (confirm("Are you sure you want to delete this Role?")) { 
       this.roleServices.deleteRole(id).subscribe(
         (response) => {
-          console.log('SMTP Setting deleted:', response);
+          console.log('Role deleted:', response);
           // After deletion, reload the SMTP settings
           this.loadEmailTemplateSettings();
         },
         (error) => {
-          console.error('Error deleting SMTP setting:', error);
+          console.error('Error deleting Role:', error);
         }
       );
     }
@@ -183,23 +183,23 @@ closeModal(): void {
       this.selectedEmailTemapletSettingID = id; 
       this.deleteSwal.fire();  
     } else {
-      console.error('Error: Invalid SMTP setting ID');
+      console.error('Error: Invalid role setting ID');
     }
   }
   triggerDelete(id: number | null): void {
     if (id !== null) {  // Check if the ID is not null
       this.roleServices.deleteRole(id).subscribe(
         (response) => {
-          console.log('SMTP Setting deleted:', response);
+          console.log('Role Setting deleted:', response);
           this.successSwal.fire();  // Show the success Swal after deletion
           this.loadEmailTemplateSettings();  // Reload SMTP settings after deletion
         },
         (error) => {
-          console.error('Error deleting SMTP setting:', error);
+          console.error('Error deleting Role:', error);
         }
       );
     } else {
-      console.error('Error: Invalid SMTP setting ID');
+      console.error('Error: Invalid role ID');
     }
   }
    // Handle form submission for create or update

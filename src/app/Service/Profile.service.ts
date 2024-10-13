@@ -17,8 +17,6 @@ export class ProfileService {
       catchError(this.handleError)
     );
   }
-
-  // Update the user profile (general information like name, email, etc.)
   updateProfile(profileData: {
     userName: string;
     email: string;
@@ -35,7 +33,8 @@ export class ProfileService {
   // Upload and update the profile photo
   updateProfilePhoto(file: File): Observable<any> {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append(file.name,file);
+    //formData.append('file', file);
 
     return this.http.post(`${environment.apiUrl}/api/User/UpdateUserProfilePhoto`, formData).pipe(
       catchError(this.handleError)

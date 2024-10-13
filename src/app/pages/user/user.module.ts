@@ -9,7 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { WidgetsModule } from "../../_metronic/partials/content/widgets/widgets.module";
 import { MaterialModule } from 'src/app/modules/material/material.module';
-
+import { MatSelectModule } from '@angular/material/select';
 @NgModule({
   declarations: [UserListingComponent, ],
   imports: [
@@ -26,6 +26,7 @@ import { MaterialModule } from 'src/app/modules/material/material.module';
     ]),
     CrudModule,
     SharedModule,
+    MatSelectModule,
     NgbNavModule,
     NgbDropdownModule,
     NgbCollapseModule,
