@@ -63,3 +63,6 @@
   .slider.round:before {
     border-radius: 50%;
   }
+  ::ng-deep .cdk-overlay-pane {
+    z-index: 9999999999999999 !important; 
+  }

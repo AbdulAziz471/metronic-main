@@ -7,6 +7,7 @@ import {
   OnInit,
   TemplateRef,
   ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   FormArray,
@@ -46,13 +47,14 @@ import { Role, User, } from './users.modal';
   selector: 'app-user-listing',
   templateUrl: './user-listing.component.html',
   styleUrls: ['./user-listing.component.scss'],
+  encapsulation: ViewEncapsulation.None 
 })
 export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
-  roleList: Role[];
+ roles: Role[] = [];
   selectedRoles: number[] = [];
   form: FormGroup;
   pagesList: any[] = [];
-  roles: any[] = [];
+
   actionList: any[] = [];
   pageActions: any[] = [];
   user: { id: string; userClaims: UserClaim[] } = { id: '', userClaims: [] };
@@ -116,6 +118,10 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       userName: [user?.userName || ''],
       password: [''],  // Generally not filled for security
       isActive: [user?.isActive ?? false],
+      userRoles: this.fb.array(user?.userRoles?.map(role => this.fb.group({
+      id: [role.id],
+      name: [role.name]
+    })) || []), // Store role IDs
       address: [user?.address || '', Validators.required],
       userAllowedIPs: this.fb.array(user?.userAllowedIPs ? user.userAllowedIPs.map(ip => this.createIPFormGroup(ip)) : [])
     });

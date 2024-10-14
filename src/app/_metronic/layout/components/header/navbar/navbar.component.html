@@ -11,12 +11,21 @@
 <!--begin::User menu-->
 <div class="app-navbar-item" [ngClass]="itemClass">
   <!--begin::Menu wrapper-->
-  <div class="cursor-pointer symbol" [ngClass]="userAvatarClass" data-kt-menu-trigger="{default: 'click'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-    <img alt="User Image"  *ngIf="imgURL" [src]="imgURL">
+  <div class="cursor-pointer symbol" [ngClass]="userAvatarClass" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+    <!-- Image if available, else show initial -->
+    <ng-container *ngIf="imgURL; else showInitial">
+      <img [src]="imgURL" alt="User Image">
+    </ng-container>
+    <ng-template #showInitial>
+      <div class="name-initial">
+        {{ userProfile.firstName?.charAt(0) | uppercase }}
+      </div>
+    </ng-template>
   </div>
-  <app-user-inner   ></app-user-inner>
+  <app-user-inner [userProfile]="userProfile"></app-user-inner>
   <!--end::Menu wrapper-->
 </div>
+
 <!--end::User menu-->
 
 <!--begin::Header menu toggle-->

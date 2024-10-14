@@ -10,12 +10,14 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { WidgetsModule } from "../../_metronic/partials/content/widgets/widgets.module";
 import { MaterialModule } from 'src/app/modules/material/material.module';
 import { MatSelectModule } from '@angular/material/select';
+import { MultiSelectModule } from 'primeng/multiselect';
 @NgModule({
   declarations: [UserListingComponent, ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    MultiSelectModule,
     MaterialModule,
     RouterModule.forChild([
         {

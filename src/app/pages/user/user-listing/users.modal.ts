@@ -67,6 +67,7 @@ export interface User {
   isActive: boolean;
   address: string;
   userAllowedIPs: UserAllowedIP[];
+  userRoles?: Role[];
 }
 
 export interface UserAllowedIP {

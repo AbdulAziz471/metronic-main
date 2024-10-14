@@ -286,18 +286,14 @@
           <div class="w-100 mb-7">
             <div class="form-group">
               <label class="required fw-semibold fs-6 mb-2">Roles</label>
+              <mat-form-field >
+                <mat-label>Roles</mat-label>
+                <mat-select formControlName="userRoles" multiple>
+                  <mat-option *ngFor="let role of roles" [value]="role">{{ role.name }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <!-- <p-multiSelect [options]="roles" formControlName="userRoles" optionLabel="name" defaultLabel="Select roles"></p-multiSelect> -->
 
-              <!-- <mat-select class="form-control" [(value)]="selectedRoles" multiple>
-                <mat-select-trigger>
-                  <span *ngIf="selectedRoles.length > 0">
-                    {{selectedRoles[0].name}}
-                  </span>
-                  <span *ngIf="selectedRoles.length > 1" class="example-additional-selection">
-                    (+{{selectedRoles.length - 1}} {{selectedRoles.length === 2 ? 'other' : 'others'}})
-                  </span>
-                </mat-select-trigger>
-                <mat-option *ngFor="let role of roleList" [value]="role">{{role.name}}</mat-option>
-              </mat-select> -->
             </div>
           </div>
         </div>

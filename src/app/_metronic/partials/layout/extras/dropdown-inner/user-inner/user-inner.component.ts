@@ -1,16 +1,18 @@
-import { Component, HostBinding, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { TranslationService } from '../../../../../../modules/i18n';
 import { AuthService, UserType } from '../../../../../../modules/auth';
 import { Router } from '@angular/router';
-import { ProfileService } from 'src/app/Service/Profile.service';
+
 import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-user-inner',
   templateUrl: './user-inner.component.html',
 })
+
 export class UserInnerComponent implements OnInit, OnDestroy {
-  userProfile: any = {};
+  @Input() userProfile: any;
+
   imgURL: string | ArrayBuffer | null = '';
   @HostBinding('class')
 
@@ -23,22 +25,18 @@ export class UserInnerComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private profileService: ProfileService,
+
     private auth: AuthService,
     private translationService: TranslationService
   ) {}
 
   ngOnInit(): void {
-    this.profileService.getProfile().subscribe({
-      next: (profile) => {
-        this.userProfile = profile;
-        if (this.userProfile.profilePhoto) {
-          this.imgURL = `${environment.apiUrl}/${this.userProfile.profilePhoto}`;
-        }
-      },
-      error: (error) => console.error('Error fetching profile', error)
-    });
+   
     this.setLanguage(this.translationService.getSelectedLanguage());
+  }
+  get fullName(): string {
+    // Concatenate first and last name if both are available
+    return `${this.userProfile.firstName} ${this.userProfile.lastName}`;
   }
   signOut() {
   
