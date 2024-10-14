@@ -9,7 +9,13 @@
     width: 0;
     height: 0;
   }
-  
+  .actions-header ,.action-List{
+    position: sticky; right: 0; background-color: white;
+}
+.more{
+  position: relative;
+}
+
   /* The slider */
   .slider {
     position: absolute;

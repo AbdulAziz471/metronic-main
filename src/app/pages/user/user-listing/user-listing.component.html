@@ -53,10 +53,10 @@
     </div>
   </div>
 
-  <div class="card-body pt-0">
+  <div class="card-body table-responsive pt-0">
     <table
       datatable
-      class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
+      class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer table-hover"
     >
       <thead>
         <tr>
@@ -64,7 +64,7 @@
           <th>Email</th>
           <th>Phone Number</th>
           <th>Status</th>
-          <th>Actions</th>
+          <th class="actions-header">Actions</th>
         </tr>
       </thead>
       <tbody class="fw-semibold text-gray-600">
@@ -81,8 +81,11 @@
           <td>{{ user.email }}</td>
           <td>{{ user.phoneNumber }}</td>
           <td>{{ user.isActive }}</td>
-          <td>
-            <div class="btn btn-icon" (click)="toggleMenu($event, user.id)">
+          <td class="more">
+            <div
+              class="btn btn-icon more"
+              (click)="toggleMenu($event, user.id)"
+            >
               <ng-container>
                 <div class="btn btn-success">More</div>
               </ng-container>
@@ -94,6 +97,9 @@
                 border-radius: 5px;
                 background-color: white;
                 position: absolute;
+                top: 59px;
+                right: 45px;
+                z-index: 99;
               "
             >
               <ng-container>
@@ -195,12 +201,6 @@
             [(ngModel)]="selectedUser.email"
             readonly
           />
-          <div
-            *ngIf="myForm.submitted && !crateAction.email"
-            class="invalid-feedback"
-          >
-            Email is required
-          </div>
         </div>
         <div class="w-100 mb-7">
           <label class="required fw-semibold fs-6 mb-2">Password</label>
@@ -212,12 +212,6 @@
             [(ngModel)]="password"
             required
           />
-          <div
-            *ngIf="myForm.submitted && !crateAction.password"
-            class="invalid-feedback"
-          >
-            Host is required
-          </div>
         </div>
         <div class="w-100 mb-7">
           <label class="required fw-semibold fs-6 mb-2">Confirm Password</label>
@@ -274,7 +268,7 @@
 </ng-template>
 
 <ng-template #formModal let-modal>
-  <form #myForm="ngForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="modal-header">
       <h4 class="modal-title" id="modal-basic-title">
         {{ isEditMode ? "Edit User" : "Add User" }}
@@ -287,13 +281,12 @@
       ></button>
     </div>
     <div class="modal-body">
-      
-      <div class="d-flex flex-column scroll-y me-n7 pe-7 ">
+      <div class="d-flex flex-column scroll-y me-n7 pe-7">
         <div class="d-flex gap-3 justify-content-between">
           <div class="w-100 mb-7">
             <div class="form-group">
-            <label class="required fw-semibold fs-6 mb-2">Roles</label>
-           
+              <label class="required fw-semibold fs-6 mb-2">Roles</label>
+
               <!-- <mat-select class="form-control" [(value)]="selectedRoles" multiple>
                 <mat-select-trigger>
                   <span *ngIf="selectedRoles.length > 0">
@@ -307,7 +300,6 @@
               </mat-select> -->
             </div>
           </div>
-         
         </div>
         <div class="d-flex gap-3 justify-content-between">
           <div class="w-100 mb-7">
@@ -315,32 +307,20 @@
             <input
               type="text"
               class="form-control form-control-solid"
-              name="host"
-              [(ngModel)]="crateAction.firstName"
+              name="firstName"
+              formControlName="firstName"
               required
             />
-            <div
-              *ngIf="myForm.submitted && !crateAction.firstName"
-              class="invalid-feedback"
-            >
-              First Name is required
-            </div>
           </div>
           <div class="w-100 mb-7">
             <label class="required fw-semibold fs-6 mb-2">Last Name</label>
             <input
               type="text"
               class="form-control form-control-solid"
-              name="host"
-              [(ngModel)]="crateAction.lastName"
+              name="lastName"
+              formControlName="lastName"
               required
             />
-            <div
-              *ngIf="myForm.submitted && !crateAction.lastName"
-              class="invalid-feedback"
-            >
-              Last Name is required
-            </div>
           </div>
         </div>
         <div class="d-flex gap-3 justify-content-between">
@@ -349,16 +329,10 @@
             <input
               type="number"
               class="form-control form-control-solid"
-              name="host"
-              [(ngModel)]="crateAction.phoneNumber"
+              name="phoneNumber"
+              formControlName="phoneNumber"
               required
             />
-            <div
-              *ngIf="myForm.submitted && !crateAction.phoneNumber"
-              class="invalid-feedback"
-            >
-              Mobile Number is required
-            </div>
           </div>
           <div class="w-100 mb-7">
             <label class="required fw-semibold fs-6 mb-2">Email</label>
@@ -366,18 +340,10 @@
               type="email"
               class="form-control form-control-solid"
               name="email"
-              [(ngModel)]="crateAction.email"
-      (ngModelChange)="crateAction.userName = crateAction.email"
+              formControlName="email"
               required
             />
-            <div
-              *ngIf="myForm.submitted && !crateAction.email"
-              class="invalid-feedback"
-            >
-              Email is required
-            </div>
           </div>
-         
         </div>
         <div class="d-flex gap-3 justify-content-between">
           <div class="w-100 mb-7">
@@ -385,16 +351,10 @@
             <input
               type="text"
               class="form-control form-control-solid"
-              name="host"
-              [(ngModel)]="crateAction.password"
+              name="password"
+              formControlName="password"
               required
             />
-            <div
-              *ngIf="myForm.submitted && !crateAction.password"
-              class="invalid-feedback"
-            >
-              Host is required
-            </div>
           </div>
         </div>
         <div class="d-flex gap-3 justify-content-between">
@@ -402,11 +362,10 @@
             <label class="required fw-semibold fs-6 mb-2">Active</label>
             <mat-slide-toggle
               name="isActive"
-              [(ngModel)]="crateAction.isActive"
+              formControlName="isActive"
               color="primary"
             >
             </mat-slide-toggle>
-            
           </div>
         </div>
         <div class="d-flex gap-3 justify-content-between">
@@ -416,30 +375,45 @@
               type="text"
               class="form-control form-control-solid"
               name="address"
-              [(ngModel)]="crateAction.address"
+              formControlName="address"
               required
             />
-            <div
-              *ngIf="myForm.submitted && !crateAction.address"
-              class="invalid-feedback"
-            >
-              Address is required
-            </div>
           </div>
         </div>
         <div [formGroup]="form">
           <div formArrayName="userAllowedIPs">
-            <div *ngFor="let ip of userAllowedIPs.controls; let i = index" [formGroupName]="i" class="input-group mb-3">
+            <div
+              *ngFor="let ip of userAllowedIPs.controls; let i = index"
+              [formGroupName]="i"
+              class="input-group mb-3"
+            >
               <!-- Input for ipAddress -->
-              <input type="text" class="form-control" formControlName="ipAddress" placeholder="Enter IP Address" />
+              <input
+                type="text"
+                class="form-control"
+                formControlName="ipAddress"
+                placeholder="Enter IP Address"
+              />
               <!-- Optionally display userId if needed, or it can be managed behind the scenes -->
               <input type="hidden" formControlName="userId" />
               <div class="input-group-append">
-                <button class="btn btn-outline-danger" type="button" (click)="removeIP(i)">Remove</button>
+                <button
+                  class="btn btn-outline-danger"
+                  type="button"
+                  (click)="removeIP(i)"
+                >
+                  Remove
+                </button>
               </div>
             </div>
           </div>
-          <button class="btn btn-outline-success" type="button" (click)="addIP()">Add New IP Address</button>
+          <button
+            class="btn btn-outline-success"
+            type="button"
+            (click)="addIP()"
+          >
+            Add New IP Address
+          </button>
         </div>
       </div>
     </div>
@@ -475,7 +449,7 @@
 </ng-template>
 
 <ng-template #permissionModal let-modal>
-  <form #myForm="ngForm" (ngSubmit)="saveUserClaims()" >
+  <form #myForm="ngForm" (ngSubmit)="saveUserClaims()">
     <div class="modal-header">
       <h4 class="modal-title" id="modal-basic-title">
         User Page Permission To: {{ selectedUser?.firstName }}
@@ -489,7 +463,7 @@
     </div>
     <div class="modal-body">
       <!-- User Information -->
-      <div class="d-flex flex-column scroll-y me-n7 pe-7 ">
+      <div class="d-flex flex-column scroll-y me-n7 pe-7">
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -500,20 +474,21 @@
           <tbody>
             <tr *ngFor="let page of pagesList">
               <td>{{ page.name }} ({{ page.url }})</td>
-              <td *ngFor='let action of actionList'>
-                <div *ngIf="checkPageAction(page.id,action.id)">
+              <td *ngFor="let action of actionList">
+                <div *ngIf="checkPageAction(page.id, action.id)">
                   <!-- <mat-slide-toggle [checked]="checkPermission(page.id,action.id)" color="primary"
                     (change)="onPermissionChange($event,page,action)"> -->
-                    <mat-slide-toggle [checked]="checkPermission(page.id,action.id)"
-                  color="primary"
-                  (change)="onPermissionChange($event, page, action)">
+                  <mat-slide-toggle
+                    [checked]="checkPermission(page.id, action.id)"
+                    color="primary"
+                    (change)="onPermissionChange($event, page, action)"
+                  >
                   </mat-slide-toggle>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
-        
       </div>
     </div>
 

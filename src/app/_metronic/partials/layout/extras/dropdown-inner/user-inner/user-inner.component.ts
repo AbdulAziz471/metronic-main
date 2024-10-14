@@ -41,13 +41,9 @@ export class UserInnerComponent implements OnInit, OnDestroy {
     this.setLanguage(this.translationService.getSelectedLanguage());
   }
   signOut() {
-    // Clear user token and other local storage or session storage items
+  
     localStorage.removeItem('accessToken');
-    // Optionally, clear any other app-specific storage items
-    // localStorage.clear(); // Be careful with this, it clears all local storage data
-
-    // Redirect to login or home page
-    this.router.navigate(['/auth/login']); // Adjust the route as needed
+    this.router.navigate(['/auth/login']); 
   }
   logout() {
     this.auth.logout();

@@ -15,6 +15,7 @@ import {
   NgForm,
   UntypedFormArray,
   UntypedFormGroup,
+  Validators,
 } from '@angular/forms';
 import {
   MatSlideToggleChange,
@@ -40,7 +41,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppPageApiService } from 'src/app/Service/AppPageApi.service';
 import { AppActionService } from 'src/app/Service/AppActionsApi.service';
 import { forkJoin } from 'rxjs';
-import { Role } from './users.modal';
+import { Role, User, } from './users.modal';
 @Component({
   selector: 'app-user-listing',
   templateUrl: './user-listing.component.html',
@@ -49,7 +50,7 @@ import { Role } from './users.modal';
 export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   roleList: Role[];
   selectedRoles: number[] = [];
-
+  form: FormGroup;
   pagesList: any[] = [];
   roles: any[] = [];
   actionList: any[] = [];
@@ -57,7 +58,6 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   user: { id: string; userClaims: UserClaim[] } = { id: '', userClaims: [] };
   isMenuOpen: boolean = false;
   selectedUserId: number | null = null;
-  public form: FormGroup;
   password: string = ''; // New password
   confirmPassword: string = '';
   private modalRef: any;
@@ -69,22 +69,11 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   datatableConfig: Config = {};
   public users: any[] = [];
   selectedUser: any = {};
-  crateAction: any = {
-    id: '4',
-    userName: '',
-    email: '',
-    firstName: '',
-    lastName: '',
-    password: '',
-    phoneNumber: '',
-    isActive: false,
-    address: '',
-    userAllowedIPs: [],
-    userRoles: [],
-  };
+  
+ 
 
   onIsActiveChange() {
-    console.log('isActive Changed:', this.crateAction.isActive);
+    console.log('isActive Changed:', this.form.value.isActive);
   }
   selectedAction: any = {
     Fields: '',
@@ -115,25 +104,146 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       userAllowedIPs: this.fb.array([]),
     });
 
-    // Initialize or reset crateAction
-    this.initializeCrateAction();
+ 
   }
-  initializeCrateAction() {
-    this.crateAction = {
-      id: '',
-      userName: '',
-      email: '',
-      firstName: '',
-      lastName: '',
-      password: '',
-      phoneNumber: '',
-      isActive: false,
-      address: '',
-      userAllowedIPs: [], // Initialize this as an empty array, not as a form array
-      userRoles: [],
-    };
+  initializeForm(user?: User): void {
+    this.form = this.fb.group({
+      id: [user?.id || ''],
+      firstName: [user?.firstName || '', Validators.required],
+      lastName: [user?.lastName || '', Validators.required],
+      phoneNumber: [user?.phoneNumber || '', Validators.required],
+      email: [user?.email || '', [Validators.required, Validators.email]],
+      userName: [user?.userName || ''],
+      password: [''],  // Generally not filled for security
+      isActive: [user?.isActive ?? false],
+      address: [user?.address || '', Validators.required],
+      userAllowedIPs: this.fb.array(user?.userAllowedIPs ? user.userAllowedIPs.map(ip => this.createIPFormGroup(ip)) : [])
+    });
+
+    console.log("User for form:", user);
+
+    const ipsArray = this.form.get('userAllowedIPs') as UntypedFormArray;
+    if (user?.userAllowedIPs) {
+        user.userAllowedIPs.forEach(ip => {
+            ipsArray.push(this.fb.group({
+                userId: [ip.userId],
+                ipAddress: [ip.ipAddress]
+            }));
+        });
+        console.log("IPs added to form:", ipsArray.value);
+    } else {
+        console.log("No IPs to add.");
+    }
+
+    const emailControl = this.form.get('email');
+    if (emailControl) {
+        emailControl.valueChanges.subscribe(value => {
+            this.form.get('userName')?.setValue(value, { emitEvent: false });
+        });
+    } else {
+        console.error('Email control is missing in the form group');
+    }
+}
+createIPFormGroup(ip: any): FormGroup {
+  return this.fb.group({
+      userId: [ip.userId],
+      ipAddress: [ip.ipAddress, Validators.required]  // ensure validation if needed
+  });
+}
+  openFormModal(
+    content: any,
+    action: 'create' | 'edit',
+    user?: User
+): void {
+    this.isEditMode = action === 'edit' && !!user;
+
+    console.log("Open Form Modal - Mode:", action, "User:", user);
+
+    if (this.isEditMode) {
+        // Initialize form with the user data for editing
+        this.initializeForm(user);
+        console.log("Initializing form for edit:", user);
+    } else {
+        // For creating a new user, reset the form to default values
+        this.initializeForm(); // Initialize with no user to set default/empty values
+        console.log("Initializing form for new user creation.");
+    }
+
+    this.fetchRoles(); // Fetch roles whenever the modal is opened
+    this.modalRef = this.modalService.open(content); // Open the modal with the prepared content
+}
+
+
+  
+  createUsers(): void {
+    this.userService.createUser(this.form.value).subscribe(
+      (response) => {
+        this.isLoading = false;
+        Swal.fire('Success', 'User created successfully!', 'success'); // Success message
+        this.loadUsers();
+        this.formModal.dismiss();
+      },
+      (error) => {
+        this.isLoading = false;
+        console.error('Error creating User:', error);
+        Swal.fire('Error', 'There was a problem creating the User.', 'error');
+      }
+    );
+  }
+  get userAllowedIPs(): UntypedFormArray {
+    return this.form.get('userAllowedIPs') as UntypedFormArray;
   }
 
+  newIP(): UntypedFormGroup {
+    return this.fb.group({
+      userId: [''], // This could be a hidden input if needed, or removed if not used
+      ipAddress: [''],
+    });
+  }
+
+  addIP(): void {
+    this.userAllowedIPs.push(this.newIP());
+  }
+  removeIP(i: number): void {
+    this.userAllowedIPs.removeAt(i);
+  }
+  onSubmit(): void {
+    if (this.form.valid) {
+        const formValue = this.form.value;
+        if (this.isEditMode && this.selectedUser) {
+            this.userService.updateUser(formValue.id, formValue).subscribe({
+                next: response => {
+                    Swal.fire('Success', 'User updated successfully!', 'success');
+                    this.loadUsers();
+                    this.modalRef.close();
+                },
+                error: error => {
+                    console.error('Error updating User:', error);
+                    Swal.fire('Error', 'There was a problem updating the User.', 'error');
+                }
+            });
+        } else {
+            this.userService.createUser(formValue).subscribe({
+                next: response => {
+                    Swal.fire('Success', 'User created successfully!', 'success');
+                    this.loadUsers();
+                    this.modalRef.close();
+                },
+                error: error => {
+                    console.error('Error creating User:', error);
+                    Swal.fire('Error', 'There was a problem creating the User.', 'error');
+                }
+            });
+        }
+    } else {
+        console.log('Form is not valid:', this.form.value);
+    }
+}
+
+openModal(content: any): void {
+  this.fetchRoles();
+  this.modalService.open(content);
+}
   toggleMenu(event: Event, userId: number): void {
     event.stopPropagation();
     if (this.selectedUserId === userId) {
@@ -146,7 +256,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {}
   ngOnInit(): void {
     this.loadUsers();
-    console.log('PageActions:', this.pageActions);
+    this.initializeForm();
   }
 
   loadUsers(): void {
@@ -178,7 +288,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   onRolesChange(): void {
     // Update the selectedRoles based on the selected IDs in the form
-    this.selectedRoles = this.crateAction
+    this.selectedRoles = this.form.value
       .get('roles')
       .value.map((roleId: string) =>
         this.roles.find((role) => role.id === roleId)
@@ -222,34 +332,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   deleteInput(index: number): void {
     this.inputs.removeAt(index);
   }
-  openFormModal(
-    content: any,
-    action: 'create' | 'edit',
-    eTemplate?: UserQueryParams
-  ): void {
-    if (action === 'edit' && eTemplate) {
-      this.isEditMode = true;
-      this.selectedAction = { ...eTemplate };
-      this.fetchRoles();
-    } else {
-      this.isEditMode = false;
-      this.callApis();
-      this.fetchRoles();
-      this.selectedAction = {
-        Fields: '',
-        OrderBy: '',
-        PageSize: 10,
-        Skip: 0,
-        SearchQuery: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber: '',
-        isActive: null,
-      };
-    }
-    this.modalRef = this.modalService.open(content);
-  }
+ 
   callApis(): Observable<any> {
     return forkJoin({
       requestOne: this.editroleservice.getAllPages(),
@@ -263,42 +346,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  openModal(content: any): void {
-    this.fetchRoles();
-    this.modalService.open(content);
-  }
-  createUsers(): void {
-    this.userService.createUser(this.crateAction).subscribe(
-      (response) => {
-        this.isLoading = false;
-        Swal.fire('Success', 'User created successfully!', 'success'); // Success message
-        this.loadUsers();
-        this.formModal.dismiss();
-      },
-      (error) => {
-        this.isLoading = false;
-        console.error('Error creating User:', error);
-        Swal.fire('Error', 'There was a problem creating the User.', 'error');
-      }
-    );
-  }
-  get userAllowedIPs(): UntypedFormArray {
-    return this.form.get('userAllowedIPs') as UntypedFormArray;
-  }
 
-  newIP(): UntypedFormGroup {
-    return this.fb.group({
-      userId: [''], // This could be a hidden input if needed, or removed if not used
-      ipAddress: [''],
-    });
-  }
-
-  addIP(): void {
-    this.userAllowedIPs.push(this.newIP());
-  }
-  removeIP(i: number): void {
-    this.userAllowedIPs.removeAt(i);
-  }
   updateEmailTemplateSetting(id: number, config: UserQueryParams): void {
     this.isLoading = true;
     this.roleServices.updateRole(id, config).subscribe(
@@ -354,15 +402,8 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       console.error('Error: Invalid User ID');
     }
   }
-  onSubmit(): void {
-    if (this.form.valid) {
-      this.createUsers();
-      console.log('Submitting Form:', this.form.value);
-      // Submit logic here
-    } else {
-      console.log('Form is not valid:', this.form.value);
-    }
-  }
+
+  
   extractText(obj: any): string {
     var textArray: string[] = [];
 
