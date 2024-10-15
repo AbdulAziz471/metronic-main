@@ -31,7 +31,7 @@ export class UserService {
     return this.http.get(`${environment.apiUrl}/api/pageactions`);
   }
 
-  // GET: Fetch a single SMTP Setting by ID
+  // GET: Fetch a single User by ID
   getUserbyId(id: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/api/User/${id}`);
   }

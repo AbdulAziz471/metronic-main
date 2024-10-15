@@ -15,7 +15,7 @@ export class RolesApiService {
   }
 
   // GET: Fetch a single SMTP Setting by ID
-  getRollbyId(id: number): Observable<any> {
+  getRollbyId(id: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/api/Role/${id}`);
   }
 
@@ -25,7 +25,7 @@ export class RolesApiService {
   }
 
   // PUT: Update an existing SMTP Setting by ID
-  updateRole(id: number, config: any): Observable<any> {
+  updateRole(id: string, config: any): Observable<any> {
     return this.http.put(
       `${environment.apiUrl}/api/Role/${id}`,
       config

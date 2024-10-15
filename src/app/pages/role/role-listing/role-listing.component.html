@@ -71,35 +71,15 @@
 <ng-template #formModal let-modal>
   <form #myForm="ngForm" (ngSubmit)="onSubmit()">
     <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">
-        {{ isEditMode ? "Edit Role" : "Add Role" }}
-      </h4>
-      <button
-        type="button"
-        class="btn-close"
-        aria-label="Close"
-        (click)="modal.dismiss('Cross click')"
-      ></button>
+      <h4 class="modal-title" id="modal-basic-title">{{ isEditMode ? "Edit Role" : "Add Role" }}</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
     </div>
     <div class="modal-body">
-      <!-- User Information -->
       <div class="d-flex flex-column scroll-y me-n7 pe-7 ">
         <div class="mb-7">
-          <!-- Host -->
           <label class="required fw-semibold fs-6 mb-2">Name</label>
-          <input
-            type="text"
-            class="form-control form-control-solid"
-            name="host"
-            [(ngModel)]="selectedAction.name"
-            required
-          />
-          <div
-            *ngIf="myForm.submitted && !selectedAction.name"
-            class="invalid-feedback"
-          >
-            Host is required
-          </div>
+          <input type="text" class="form-control form-control-solid" name="host" [(ngModel)]="selectedAction.name" required />
+          <div *ngIf="myForm.submitted && !selectedAction.name" class="invalid-feedback">Host is required</div>
         </div>
         <table class="table table-bordered">
           <thead>
@@ -116,46 +96,26 @@
                   <mat-slide-toggle
                     [checked]="checkPermission(page.id, action.id)"
                     color="primary"
-                    (change)="onPermissionChange($event, page, action)"
-                  >
+                    (change)="onPermissionChange($event, page, action)">
                   </mat-slide-toggle>
                 </div>
               </td>
             </tr>
           </tbody>
+          
         </table>
       </div>
     </div>
-
     <div class="modal-footer flex-center">
-      <!-- Cancel Button -->
-      <button
-        type="reset"
-        class="btn btn-light me-3"
-        (click)="modal.dismiss('cancel')"
-      >
-        Discard
-      </button>
-
-      <!-- Submit Button -->
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [attr.data-kt-indicator]="isLoading ? 'on' : 'off'"
-      >
-        <span class="indicator-label">
-          {{ isEditMode ? "update" : "Create" }}
-        </span>
-        <span class="indicator-progress">
-          Please wait...
-          <span
-            class="spinner-border spinner-border-sm align-middle ms-2"
-          ></span>
-        </span>
+      <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss('cancel')">Discard</button>
+      <button type="submit" class="btn btn-primary" [attr.data-kt-indicator]="isLoading ? 'on' : 'off'">
+        <span class="indicator-label">{{ isEditMode ? "Update" : "Create" }}</span>
+        <span class="indicator-progress">Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
       </button>
     </div>
   </form>
 </ng-template>
+
 
 <swal
   #deleteSwal

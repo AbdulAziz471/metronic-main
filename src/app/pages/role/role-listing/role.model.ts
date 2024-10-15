@@ -35,10 +35,24 @@ export interface UserQueryParams {
     pageId: string;
     actionId: string;
   }
-  export interface  RoleClaim {
+  export interface Roles {
+    id: string;
+    name: string;
+    roleClaims: RoleClaim[]; // Array of RoleClaim
+  }
+  
+  export interface RoleClaim {
     roleId?: string;
     claimType: string;
     claimValue: string;
     actionId: string;
     pageId: string;
+  }
+  
+export class UserRoles {
+  userId: string;
+  roleId: string
+  userName?: string;
+  firstName?: string;
+  lastName?: string;
 }

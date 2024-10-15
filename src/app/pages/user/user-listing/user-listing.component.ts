@@ -353,7 +353,7 @@ openModal(content: any): void {
   }
 
 
-  updateEmailTemplateSetting(id: number, config: UserQueryParams): void {
+  updateEmailTemplateSetting(id: string, config: UserQueryParams): void {
     this.isLoading = true;
     this.roleServices.updateRole(id, config).subscribe(
       (response) => {
@@ -458,101 +458,102 @@ openModal(content: any): void {
     this.modalService.open(content);
   }
   public pages: any[] = [];
-  openPermissionModal(content: any, user: any): void {
-    this.selectedUser = { ...user }; // Bind the selected user
-
+    openPermissionModal(content: any, user: any): void {
+      this.selectedUser = { ...user };
     
-    this.callApis().subscribe({
-      next: (results) => {
-        console.log('All requests successful', results);
+      // Fetch complete user details including claims
+      this.userService.getUserbyId(user.id).subscribe({
+        next: (completeUserDetails) => {
+          this.selectedUser = completeUserDetails; // Update with fresh user data including claims
+    
+          this.callApis().subscribe({
+            next: (results) => {
+              this.pagesList = results.requestOne;
+              this.actionList = results.requestTwo;
+              this.pageActions = results.requestThree;
+    
+              // Open the modal after ensuring all necessary data is loaded
+              this.modalService.open(content, { size: 'lg' });
+            },
+            error: (error) => console.error('Error fetching pages/actions data', error)
+          });
+        },
+        error: (error) => console.error('Error fetching user details:', error)
+      });
+    }
+    
 
-        this.pagesList = results.requestOne; // Assign pages list
-        this.actionList = results.requestTwo; // Assign actions list
-        this.pageActions = results.requestThree; // Assign page-actions mappings
+    checkPageAction(pageId: string, actionId: string): boolean {
+      const pageAction = this.pageActions.find(
+        (c) => c.pageId === pageId && c.actionId === actionId
+      );
 
-        // Now open the modal after data is loaded
-        this.modalService.open(content, { size: 'lg' });
-      },
-      error: (error) => {
-        console.error('Error fetching API data', error);
-      },
-    });
-  }
+      return !!pageAction; // Return true if found, false otherwise
+    }
 
-  checkPageAction(pageId: string, actionId: string): boolean {
-    const pageAction = this.pageActions.find(
-      (c) => c.pageId === pageId && c.actionId === actionId
-    );
+    checkPermission(pageId: string, actionId: string): boolean {
+      return !!this.selectedUser.userClaims.find((claim: UserClaim) =>
+        claim.pageId === pageId && claim.actionId === actionId && claim.claimValue === 'true'
+      );
+    }
+    
+    
 
-    return !!pageAction; // Return true if found, false otherwise
-  }
-
-  checkPermission(pageId: string, actionId: string): boolean {
-    const userClaim = this.user.userClaims.find(
-      (c) => c.pageId === pageId && c.actionId === actionId
-    );
-
-    return !!userClaim; // Return true if found, false otherwise
-  }
-
- // Handle permission change when the toggle is switched
-onPermissionChange(event: MatSlideToggleChange, page: Page, action: Action): void {
-  const isChecked = event.checked;
-  if (isChecked) {
-    const newClaim = {
-      userId: this.selectedUser.id, // Make sure selectedUser is always the target user
-      claimType: `${page.name}_${action.name}`,
-      claimValue: 'true',
-      pageId: page.id || 'default-page-id',
-      actionId: action.id || 'default-action-id'
-    };
-    this.user.userClaims.push(newClaim);
-    console.log('Added new claim:', newClaim);
-  } else {
-    const index = this.user.userClaims.findIndex(c => c.actionId === action.id && c.pageId === page.id);
-    if (index > -1) {
-      const removedClaim = this.user.userClaims.splice(index, 1)[0];
-      console.log('Removed claim:', removedClaim);
+  onPermissionChange(event: MatSlideToggleChange, page: Page, action: Action): void {
+    const isChecked = event.checked;
+    if (isChecked) {
+      const newClaim = {
+        userId: this.selectedUser.id, // Make sure selectedUser is always the target user
+        claimType: `${page.name}_${action.name}`,
+        claimValue: 'true',
+        pageId: page.id || 'default-page-id',
+        actionId: action.id || 'default-action-id'
+      };
+      this.user.userClaims.push(newClaim);
+      console.log('Added new claim:', newClaim);
     } else {
-      console.warn('No claim found to remove for:', page.name, action.name);
+      const index = this.user.userClaims.findIndex(c => c.actionId === action.id && c.pageId === page.id);
+      if (index > -1) {
+        const removedClaim = this.user.userClaims.splice(index, 1)[0];
+        console.log('Removed claim:', removedClaim);
+      } else {
+        console.warn('No claim found to remove for:', page.name, action.name);
+      }
     }
   }
-}
-
-// Function to save user claims
-saveUserClaims(): void {
-  if (!this.selectedUser || !this.selectedUser.id) {
-    console.error('No user selected or user ID missing.');
-    return;
-  }
-
-  const updatedClaims = this.user.userClaims.map(claim => {
-    const page = this.pagesList.find(p => p.id === claim.pageId);
-    const action = this.actionList.find(a => a.id === claim.actionId);
-
-    if (!page || !action) {
-      console.error('Page or Action not found', { pageId: claim.pageId, actionId: claim.actionId });
-      return null;
+  saveUserClaims(): void {
+    if (!this.selectedUser || !this.selectedUser.id) {
+      console.error('No user selected or user ID missing.');
+      return;
     }
 
-    return {
-      userId: this.selectedUser.id,
-      claimType: `${page.name}_${action.name}`,
-      claimValue: claim.claimValue,
-      pageId: claim.pageId,
-      actionId: claim.actionId
-    };
-  }).filter(claim => claim !== null);
+    const updatedClaims = this.user.userClaims.map(claim => {
+      const page = this.pagesList.find(p => p.id === claim.pageId);
+      const action = this.actionList.find(a => a.id === claim.actionId);
 
-  if (updatedClaims.length > 0) {
-    this.userService.updateUserClaims(this.selectedUser.id, updatedClaims).subscribe({
-      next: response => console.log('Claims updated successfully', response),
-      error: err => console.error('Error updating claims', err)
-    });
-  } else {
-    console.error('No valid claims to update');
+      if (!page || !action) {
+        console.error('Page or Action not found', { pageId: claim.pageId, actionId: claim.actionId });
+        return null;
+      }
+
+      return {
+        userId: this.selectedUser.id,
+        claimType: `${page.name}_${action.name}`,
+        claimValue: claim.claimValue,
+        pageId: claim.pageId,
+        actionId: claim.actionId
+      };
+    }).filter(claim => claim !== null);
+
+    if (updatedClaims.length > 0) {
+      this.userService.updateUserClaims(this.selectedUser.id, updatedClaims).subscribe({
+        next: response => console.log('Claims updated successfully', response),
+        error: err => console.error('Error updating claims', err)
+      });
+    } else {
+      console.error('No valid claims to update');
+    }
   }
-}
 
   
 }
