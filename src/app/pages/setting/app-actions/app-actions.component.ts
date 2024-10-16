@@ -104,7 +104,7 @@ closeModal(): void {
             this.isLoading = false;
             Swal.fire('Success', 'App Action created successfully!', 'success'); 
             this.loadAppActions(); 
-            this.formModal.dismiss(""); 
+            this.modalRef.close(); 
           },
           (error) => {
             this.isLoading = false;
@@ -125,7 +125,7 @@ UpdateAppActionsSetting(config: AppAction): void {
   this.AppAction.updateAppAction(config).subscribe(
       (response) => {
           this.isLoading = false;
-          this.modalRef.close(); // Assuming modalRef is your modal instance
+          this.modalRef.close(); 
           Swal.fire('Success', 'App Action updated successfully!', 'success');
           this.loadAppActions();  
       },

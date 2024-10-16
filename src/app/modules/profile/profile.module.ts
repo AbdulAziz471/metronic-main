@@ -14,6 +14,7 @@ import {
   WidgetsModule,
 } from '../../_metronic/partials';
 import { SharedModule } from "../../_metronic/shared/shared.module";
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -25,9 +26,11 @@ import { SharedModule } from "../../_metronic/shared/shared.module";
     ConnectionsComponent,
   ],
   imports: [
+    ReactiveFormsModule,
     CommonModule,
     ProfileRoutingModule,
     InlineSVGModule,
+    FormsModule,
     DropdownMenusModule,
     WidgetsModule,
     CardsModule,

@@ -94,10 +94,12 @@
               <td *ngFor="let action of actionList">
                 <div *ngIf="checkPageAction(page.id, action.id)">
                   <mat-slide-toggle
-                    [checked]="checkPermission(page.id, action.id)"
-                    color="primary"
-                    (change)="onPermissionChange($event, page, action)">
-                  </mat-slide-toggle>
+                  [checked]="checkPermission(page.id, action.id)"
+                  (change)="onPermissionChange($event, page, action)"
+                  color="primary">
+                </mat-slide-toggle>
+                
+                  
                 </div>
               </td>
             </tr>

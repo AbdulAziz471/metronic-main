@@ -28,7 +28,7 @@ export class AppSettingService {
   // PUT: Update an existing Email Temaplete  Setting by ID
   updateAppSetting(id: number, config: any): Observable<any> {
     return this.http.put(
-      `${environment.apiUrl}/api/emailTemplate/${id}`,
+      `${environment.apiUrl}/api/AppSetting/${id}`,
       config
     );
   }

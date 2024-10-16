@@ -54,8 +54,8 @@ export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   reloadEvent: EventEmitter<boolean> = new EventEmitter();
 
-  @ViewChild('deleteSwal') deleteSwal: any; // Reference to the confirmation Swal
-  @ViewChild('successSwal') successSwal: any; // Reference to the success Swal
+  @ViewChild('deleteSwal') deleteSwal: any; 
+  @ViewChild('successSwal') successSwal: any; 
   @ViewChild('noticeSwal') noticeSwal!: SwalComponent;
   @ViewChild('formModal') formModal: any; // Reference to modal
   swalOptions: SweetAlertOptions = {};
@@ -102,57 +102,65 @@ export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     );
   }
-  CreateRole(): void {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'Do you want to create this Role?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, create it!',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            this.isLoading = true;
-            this.roleServices.createRole(this.selectedAction).subscribe(
-                (response) => {
-                    Swal.fire('Success', 'Role created successfully!', 'success'); // Success message
-                    this.cdr.detectChanges(); 
-                    // Load roles after the role is successfully created
-                    this.formModal.dismiss(''); // Close the modal
-                    this.isLoading = false;
-                },
-                (error) => {
-                    console.error('Error creating Role:', error);
-                    Swal.fire(
-                        'Error',
-                        'There was a problem creating the Role.',
-                        'error'
-                    ); // Error message
-                    this.isLoading = false;
-                }
-            );
-        }
-        debugger;
-        this.loadRoles(); 
-    });
-} 
-
-  updateRole(id: string, config: Roles): void {
+  createRole(roleData: Roles): void {
     this.isLoading = true;
-    this.roleServices.updateRole(id, config).subscribe(
-      (response) => {
+    this.roleServices.createRole({
+      name: roleData.name,
+      roleClaims: roleData.roleClaims.map(claim => ({
+        claimType: claim.claimType,
+        claimValue: claim.claimValue ,  
+        pageId: claim.pageId,
+        actionId: claim.actionId
+      }))
+    }).subscribe({
+      next: (response) => {
         this.isLoading = false;
-        this.formModal.close();
-        Swal.fire('Success', 'Role updated successfully!', 'success');
-        this.loadRoles();
+        Swal.fire('Success', 'Role created successfully!', 'success');
+        this.loadRoles();  // Refresh the list of roles
       },
-      (error) => {
+      error: (error) => {
         this.isLoading = false;
-        console.error('Error updating Role:', error);
+        console.error('Error creating Role:', error);
+        Swal.fire('Error', 'Failed to create Role.', 'error');
       }
-    );
+    });
   }
+  
+
+updateRole(role: Roles): void {
+  this.isLoading = true;
+
+  // Map through roleClaims to ensure all necessary properties are included
+  const updatedRoleClaims = role.roleClaims.map(claim => ({
+    id: claim.id,  // Ensure to maintain the claim ID if it exists
+    roleId: role.id,
+    claimType: claim.claimType,
+    claimValue: claim.claimValue,
+    pageId: claim.pageId,
+    actionId: claim.actionId
+  }));
+
+  const updatedRole = {
+    ...role,
+    roleClaims: updatedRoleClaims
+  };
+
+  this.roleServices.updateRole(role.id, updatedRole).subscribe(
+    (response) => {
+      this.isLoading = false;
+      this.formModal.close();
+      Swal.fire('Success', 'Role updated successfully!', 'success');
+      this.loadRoles();
+    },
+    (error) => {
+      this.isLoading = false;
+      console.error('Error updating Role:', error);
+      Swal.fire('Error', 'Failed to update role.', 'error');
+    }
+  );
+}
+
+
   deleteRole(id: number): void {
     if (confirm('Are you sure you want to delete this Role?')) {
       this.roleServices.deleteRole(id).subscribe(
@@ -233,86 +241,9 @@ export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.reloadEvent.unsubscribe();
   }
-// openFormModal(content: any, action: 'create' | 'edit', eTemplate?: Roles): void {
-//     this.callApis().subscribe({
-//       next: (results) => {
-//         this.pagesList = results.requestOne;
-//         this.actionList = results.requestTwo;
-//         this.pageActions = results.requestThree;
-
-//         if (action === 'edit' && eTemplate && eTemplate.id) {
-//           this.isEditMode = true;
-//           this.roleServices.getRollbyId(eTemplate.id).subscribe({
-//             next: (roleDetails) => {
-//               console.log('Fetched Role Details:', roleDetails); // Debug fetched role details
-//               this.selectedAction = { ...roleDetails };
-//               console.log('Initialized Selected Action:', this.selectedAction); // Debug initialized role
-//               this.modalRef = this.modalService.open(content, { size: 'lg' });
-//             },
-//             error: (error) => {
-//               console.error('Error fetching role by ID:', error);
-//             },
-//           });
-//         }
-//          else {
-//           this.isEditMode = false;
-//           this.selectedAction = {
-//             id: '',
-//             name: '',
-//             roleClaims: [],
-//           };
-//           this.modalRef = this.modalService.open(content, { size: 'lg' });
-//         }
-//       },
-//       error: (error) => console.error('Error fetching API data:', error)
-//     });
-// }
 
 
-onSubmit(): void {
-  if (this.selectedAction.roleClaims.length === 0) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Please select at least one permission before submitting!',
-    });
-    return;
-  }
 
-  // Determine create or update action based on mode
-  if (this.isEditMode) {
-    // Assuming the ID is part of the selectedAction object
-    if (this.selectedAction.id) {
-      this.roleServices.updateRole(this.selectedAction.id, this.selectedAction).subscribe({
-        next: () => {
-          Swal.fire('Success', 'Role updated successfully!', 'success');
-          this.modalRef.close();
-        },
-        error: (err) => {
-          console.error('Error updating role:', err);
-          Swal.fire('Error', 'There was a problem updating the role.', 'error');
-        }
-      });
-    } else {
-      console.error('Error: Role ID is missing');
-      Swal.fire('Error', 'Cannot update role without an ID.', 'error');
-    }
-  } else {
-    this.roleServices.createRole(this.selectedAction).subscribe({
-      next: () => {
-        Swal.fire('Success', 'Role created successfully!', 'success');
-        this.modalRef.close();
-        debugger;
-        this.loadRoles(); 
-      },
-      error: (err) => {
-        console.error('Error creating role:', err);
-        Swal.fire('Error', 'There was a problem creating the role.', 'error');
-      }
-    });
-  }
-  
-  }
   openFormModal(content: any, action: 'create' | 'edit', eTemplate?: Roles): void {
     this.callApis().subscribe({
       next: (results) => {
@@ -351,18 +282,79 @@ onSubmit(): void {
   }
 
   checkPermission(pageId: string, actionId: string): boolean {
-    const foundClaim = this.selectedAction.roleClaims.find(claim => claim.pageId === pageId && claim.actionId === actionId);
-    console.log(`Checking permission for Page ID: ${pageId}, Action ID: ${actionId}`, foundClaim);
-    return !!foundClaim && foundClaim.claimValue === 'true';
+    const foundClaim = this.selectedAction.roleClaims.find(claim => 
+      claim.pageId === pageId && 
+      claim.actionId === actionId && 
+      claim.claimValue === 'true'
+    );
+    return !!foundClaim;
   }
   
+  onSubmit(): void {
+    if (this.selectedAction.roleClaims.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please select at least one permission before submitting!',
+      });
+      return;
+    }
+  
+    // Determine create or update action based on mode
+    if (this.isEditMode) {
+      // Assuming the ID is part of the selectedAction object
+      if (this.selectedAction.id) {
+        this.roleServices.updateRole(this.selectedAction.id, this.selectedAction).subscribe({
+          next: () => {
+            Swal.fire('Success', 'Role updated successfully!', 'success');
+            this.modalRef.close();
+            
+          },
+          error: (err) => {
+            console.error('Error updating role:', err);
+            Swal.fire('Error', 'There was a problem updating the role.', 'error');
+          }
+        });
+      } else {
+        console.error('Error: Role ID is missing');
+        Swal.fire('Error', 'Cannot update role without an ID.', 'error');
+        this.cdr.detectChanges(); 
+      }
+    } else {
+        // Prepare the roleClaims for creation
+    const creationPayload = {
+      name: this.selectedAction.name,
+      roleClaims: this.selectedAction.roleClaims.map(claim => ({
+        claimType: claim.claimType,
+        claimValue: claim.claimValue || 'true', // Set a default value if necessary
+        pageId: claim.pageId,
+        actionId: claim.actionId
+      }))
+    };
+
+    this.roleServices.createRole(creationPayload).subscribe({
+      next: () => {
+        Swal.fire('Success', 'Role created successfully!', 'success');
+        this.modalRef.close();
+        this.loadRoles();  // Refresh roles list after creation
+      },
+      error: (err) => {
+        console.error('Error creating role:', err);
+        Swal.fire('Error', 'There was a problem creating the role.', 'error');
+      }
+    });
+  }
+}
+    
 
   onPermissionChange(event: MatSlideToggleChange, page: Page, action: Action): void {
     const foundClaim = this.selectedAction.roleClaims.find(claim => claim.pageId === page.id && claim.actionId === action.id);
-
+  
     if (event.checked) {
       if (!foundClaim) {
+        // Adding a new claim if it does not exist
         this.selectedAction.roleClaims.push({
+          roleId: this.selectedAction.id,
           claimType: `${page.name}_${action.name}`,
           claimValue: 'true',
           pageId: page.id!,
@@ -370,13 +362,18 @@ onSubmit(): void {
         });
         console.log(`Claim added: ${page.name} - ${action.name}`);
       } else {
-        foundClaim.claimValue = 'true'; // Update existing claim to 'true'
+        // Just updating the existing claim's value to true
+        foundClaim.claimValue = 'true';
       }
     } else {
       if (foundClaim) {
-        foundClaim.claimValue = 'false'; // Update existing claim to 'false'
-        console.log(`Claim removed: ${page.name} - ${action.name}`);
+        // Setting the existing claim's value to false instead of removing it
+        foundClaim.claimValue = 'false';
+        console.log(`Claim deactivated: ${page.name} - ${action.name}`);
       }
     }
   }
+  
+  
+  
 }

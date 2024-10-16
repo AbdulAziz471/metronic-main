@@ -51,7 +51,6 @@ export class SMTPComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
   }
-  // Open the form for creating or updating a setting
   openFormModal(content: any, action: 'create' | 'edit', eTemplate?: SMTPSetting): void {
     if (action === 'edit' && eTemplate) {
         this.isEditMode = true;
@@ -117,7 +116,7 @@ export class SMTPComponent implements OnInit, AfterViewInit, OnDestroy {
             this.isLoading = false;
             Swal.fire('Success', 'SMTP setting created successfully!', 'success'); // Success message
             this.loadSMTPSettings(); // Reload the settings
-            this.formModal.close(); // Close the modal
+            this.modalRef.close(); // Close the modal
           },
           (error) => {
             this.isLoading = false;
@@ -134,10 +133,10 @@ export class SMTPComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = true;
     this.emailservies.updateSMTPSetting(id, config).subscribe(
       (response) => {
-        this.isLoading = false;
-        this.formModal.close();  // Close the modal after success
         Swal.fire('Success', 'SMTP setting updated successfully!', 'success');
-        this.loadSMTPSettings();  // Reload the settings
+        this.isLoading = false;
+        this.modalRef.close(); 
+        this.loadSMTPSettings();  
       },
       (error) => {
         this.isLoading = false;
@@ -152,6 +151,7 @@ export class SMTPComponent implements OnInit, AfterViewInit, OnDestroy {
           console.log('SMTP Setting deleted:', response);
           // After deletion, reload the SMTP settings
           this.loadSMTPSettings();
+          
         },
         (error) => {
           console.error('Error deleting SMTP setting:', error);
@@ -174,7 +174,7 @@ export class SMTPComponent implements OnInit, AfterViewInit, OnDestroy {
       this.emailservies.deleteSMTPSetting(id).subscribe(
         (response) => {
           console.log('SMTP Setting deleted:', response);
-          this.successSwal.fire();  // Show the success Swal after deletion
+          this.successSwal.fire(); 
           this.loadSMTPSettings();  // Reload SMTP settings after deletion
         },
         (error) => {

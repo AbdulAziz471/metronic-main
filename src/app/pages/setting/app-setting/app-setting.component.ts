@@ -64,7 +64,7 @@ openFormModal(content: any, action: 'create' | 'edit', eTemplate?: AppSetting): 
 }
 closeModal(): void {
   if (this.modalRef) {
-      this.modalRef.close()
+    this.modalRef.close();
     }
 }
 
@@ -73,12 +73,12 @@ closeModal(): void {
     this.modalService.open(content);
   }
   ngOnInit(): void {
-    this.loadEmailTemplateSettings();
+    this.loadAppSetting();
     this.datatableConfig = {
       serverSide: true,
     };
   }
-  loadEmailTemplateSettings(): void {
+  loadAppSetting(): void {
     this.AppSetting.getAllAppSettings().subscribe(
       
       (response) => {
@@ -92,7 +92,7 @@ closeModal(): void {
     );
   }
   // Create new SMTP setting
-  createEmailTemplateSetting(): void {
+  createAppSettings(): void {
     Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to create this App setting?",
@@ -108,8 +108,8 @@ closeModal(): void {
           (response) => {
             this.isLoading = false;
             Swal.fire('Success', 'App setting created successfully!', 'success'); 
-            this.loadEmailTemplateSettings(); 
-            this.formModal.dismiss(""); 
+            this.loadAppSetting(); 
+            this.modalRef.close();
           },
           (error) => {
             this.isLoading = false;
@@ -121,14 +121,14 @@ closeModal(): void {
     });
   } 
   // Update existing SMTP setting
-  updateEmailTemplateSetting(id: number, config: AppSetting): void {
+  updateAppSettings(id: number, config: AppSetting): void {
     this.isLoading = true;
     this.AppSetting.updateAppSetting(id, config).subscribe(
       (response) => {
-        this.isLoading = false;
-        this.formModal.close();  
         Swal.fire('Success', 'App setting updated successfully!', 'success');
-        this.loadEmailTemplateSettings();  
+        this.isLoading = false;
+        this.modalRef.close();
+        this.loadAppSetting();  
       },
       (error) => {
         this.isLoading = false;
@@ -136,13 +136,13 @@ closeModal(): void {
       }
     );
   }
-  deleteEmailTemplateSetting(id: number): void {
+  deleteAppSettings(id: number): void {
     if (confirm("Are you sure you want to delete this App setting?")) { 
       this.AppSetting.deleteAppSetting(id).subscribe(
         (response) => {
           console.log('App Setting deleted:', response);
           // After deletion, reload the SMTP settings
-          this.loadEmailTemplateSettings();
+          this.loadAppSetting();
         },
         (error) => {
           console.error('Error deleting App setting:', error);
@@ -164,7 +164,7 @@ closeModal(): void {
         (response) => {
           console.log('App Setting deleted:', response);
           this.successSwal.fire();  // Show the success Swal after deletion
-          this.loadEmailTemplateSettings();  // Reload SMTP settings after deletion
+          this.loadAppSetting();  // Reload SMTP settings after deletion
         },
         (error) => {
           console.error('Error deleting App setting:', error);
@@ -177,9 +177,9 @@ closeModal(): void {
    // Handle form submission for create or update
    onSubmit(): void {
     if (this.isEditMode) {
-      this.updateEmailTemplateSetting(this.selectedAction.id!, this.selectedAction);  // Update logic
+      this.updateAppSettings(this.selectedAction.id!, this.selectedAction);  // Update logic
   } else {
-      this.createEmailTemplateSetting();  // Create logic
+      this.createAppSettings();  // Create logic
   }
   }
   extractText(obj: any): string {

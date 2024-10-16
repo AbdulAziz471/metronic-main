@@ -42,15 +42,15 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppPageApiService } from 'src/app/Service/AppPageApi.service';
 import { AppActionService } from 'src/app/Service/AppActionsApi.service';
 import { forkJoin } from 'rxjs';
-import { Role, User, } from './users.modal';
+import { Role, User } from './users.modal';
 @Component({
   selector: 'app-user-listing',
   templateUrl: './user-listing.component.html',
   styleUrls: ['./user-listing.component.scss'],
-  encapsulation: ViewEncapsulation.None 
+  encapsulation: ViewEncapsulation.None,
 })
 export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
- roles: Role[] = [];
+  roles: Role[] = [];
   selectedRoles: number[] = [];
   form: FormGroup;
   pagesList: any[] = [];
@@ -71,8 +71,6 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   datatableConfig: Config = {};
   public users: any[] = [];
   selectedUser: any = {};
-  
- 
 
   onIsActiveChange() {
     console.log('isActive Changed:', this.form.value.isActive);
@@ -105,8 +103,6 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
     this.form = this.fb.group({
       userAllowedIPs: this.fb.array([]),
     });
-
- 
   }
   initializeForm(user?: User): void {
     this.form = this.fb.group({
@@ -116,71 +112,75 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       phoneNumber: [user?.phoneNumber || '', Validators.required],
       email: [user?.email || '', [Validators.required, Validators.email]],
       userName: [user?.userName || ''],
-      password: [''],  // Generally not filled for security
+      password: [''], // Generally not filled for security
       isActive: [user?.isActive ?? false],
-      userRoles: this.fb.array(user?.userRoles?.map(role => this.fb.group({
-      id: [role.id],
-      name: [role.name]
-    })) || []), // Store role IDs
+      userRoles: this.fb.array(
+        user?.userRoles?.map((role) =>
+          this.fb.group({
+            id: [role.id],
+            name: [role.name],
+          })
+        ) || []
+      ), // Store role IDs
       address: [user?.address || '', Validators.required],
-      userAllowedIPs: this.fb.array(user?.userAllowedIPs ? user.userAllowedIPs.map(ip => this.createIPFormGroup(ip)) : [])
+      userAllowedIPs: this.fb.array(
+        user?.userAllowedIPs
+          ? user.userAllowedIPs.map((ip) => this.createIPFormGroup(ip))
+          : []
+      ),
     });
 
-    console.log("User for form:", user);
+    console.log('User for form:', user);
 
     const ipsArray = this.form.get('userAllowedIPs') as UntypedFormArray;
     if (user?.userAllowedIPs) {
-        user.userAllowedIPs.forEach(ip => {
-            ipsArray.push(this.fb.group({
-                userId: [ip.userId],
-                ipAddress: [ip.ipAddress]
-            }));
-        });
-        console.log("IPs added to form:", ipsArray.value);
+      user.userAllowedIPs.forEach((ip) => {
+        ipsArray.push(
+          this.fb.group({
+            userId: [ip.userId],
+            ipAddress: [ip.ipAddress],
+          })
+        );
+      });
+      console.log('IPs added to form:', ipsArray.value);
     } else {
-        console.log("No IPs to add.");
+      console.log('No IPs to add.');
     }
 
     const emailControl = this.form.get('email');
     if (emailControl) {
-        emailControl.valueChanges.subscribe(value => {
-            this.form.get('userName')?.setValue(value, { emitEvent: false });
-        });
+      emailControl.valueChanges.subscribe((value) => {
+        this.form.get('userName')?.setValue(value, { emitEvent: false });
+      });
     } else {
-        console.error('Email control is missing in the form group');
+      console.error('Email control is missing in the form group');
     }
-}
-createIPFormGroup(ip: any): FormGroup {
-  return this.fb.group({
+  }
+  createIPFormGroup(ip: any): FormGroup {
+    return this.fb.group({
       userId: [ip.userId],
-      ipAddress: [ip.ipAddress, Validators.required]  // ensure validation if needed
-  });
-}
-  openFormModal(
-    content: any,
-    action: 'create' | 'edit',
-    user?: User
-): void {
+      ipAddress: [ip.ipAddress, Validators.required], // ensure validation if needed
+    });
+  }
+  openFormModal(content: any, action: 'create' | 'edit', user?: User): void {
     this.isEditMode = action === 'edit' && !!user;
 
-    console.log("Open Form Modal - Mode:", action, "User:", user);
+    console.log('Open Form Modal - Mode:', action, 'User:', user);
 
     if (this.isEditMode) {
-        // Initialize form with the user data for editing
-        this.initializeForm(user);
-        console.log("Initializing form for edit:", user);
+      // Initialize form with the user data for editing
+      this.initializeForm(user);
+      console.log('Initializing form for edit:', user);
     } else {
-        // For creating a new user, reset the form to default values
-        this.initializeForm(); // Initialize with no user to set default/empty values
-        console.log("Initializing form for new user creation.");
+      // For creating a new user, reset the form to default values
+      this.initializeForm(); // Initialize with no user to set default/empty values
+      console.log('Initializing form for new user creation.');
     }
 
     this.fetchRoles(); // Fetch roles whenever the modal is opened
     this.modalRef = this.modalService.open(content); // Open the modal with the prepared content
-}
+  }
 
-
-  
   createUsers(): void {
     this.userService.createUser(this.form.value).subscribe(
       (response) => {
@@ -215,41 +215,49 @@ createIPFormGroup(ip: any): FormGroup {
   }
   onSubmit(): void {
     if (this.form.valid) {
-        const formValue = this.form.value;
-        if (this.isEditMode && this.selectedUser) {
-            this.userService.updateUser(formValue.id, formValue).subscribe({
-                next: response => {
-                    Swal.fire('Success', 'User updated successfully!', 'success');
-                    this.loadUsers();
-                    this.modalRef.close();
-                },
-                error: error => {
-                    console.error('Error updating User:', error);
-                    Swal.fire('Error', 'There was a problem updating the User.', 'error');
-                }
-            });
-        } else {
-            this.userService.createUser(formValue).subscribe({
-                next: response => {
-                    Swal.fire('Success', 'User created successfully!', 'success');
-                    this.loadUsers();
-                    this.modalRef.close();
-                },
-                error: error => {
-                    console.error('Error creating User:', error);
-                    Swal.fire('Error', 'There was a problem creating the User.', 'error');
-                }
-            });
-        }
+      const formValue = this.form.value;
+      if (this.isEditMode && this.selectedUser) {
+        this.userService.updateUser(formValue.id, formValue).subscribe({
+          next: (response) => {
+            Swal.fire('Success', 'User updated successfully!', 'success');
+            this.loadUsers();
+            this.modalRef.close();
+          },
+          error: (error) => {
+            console.error('Error updating User:', error);
+            Swal.fire(
+              'Error',
+              'There was a problem updating the User.',
+              'error'
+            );
+          },
+        });
+      } else {
+        this.userService.createUser(formValue).subscribe({
+          next: (response) => {
+            Swal.fire('Success', 'User created successfully!', 'success');
+            this.loadUsers();
+            this.modalRef.close();
+          },
+          error: (error) => {
+            console.error('Error creating User:', error);
+            Swal.fire(
+              'Error',
+              'There was a problem creating the User.',
+              'error'
+            );
+          },
+        });
+      }
     } else {
-        console.log('Form is not valid:', this.form.value);
+      console.log('Form is not valid:', this.form.value);
     }
-}
+  }
 
-openModal(content: any): void {
-  this.fetchRoles();
-  this.modalService.open(content);
-}
+  openModal(content: any): void {
+    this.fetchRoles();
+    this.modalService.open(content);
+  }
   toggleMenu(event: Event, userId: number): void {
     event.stopPropagation();
     if (this.selectedUserId === userId) {
@@ -293,8 +301,7 @@ openModal(content: any): void {
     });
   }
   onRolesChange(): void {
-    // Update the selectedRoles based on the selected IDs in the form
-    this.selectedRoles = this.form.value
+   this.selectedRoles = this.form.value
       .get('roles')
       .value.map((roleId: string) =>
         this.roles.find((role) => role.id === roleId)
@@ -304,15 +311,14 @@ openModal(content: any): void {
   addInput(): void {
     this.inputs.push(this.fb.control(''));
   }
-  onpassowrdSubmit(): void {
-    if (this.password !== this.confirmPassword) {
-      alert('Passwords do not match!');
-      return;
-    }
-  }
+
   onpasswordSubmit(): void {
     if (this.password !== this.confirmPassword) {
-      alert('Passwords do not match!');
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Passwords do not match!',
+      });
       return;
     }
 
@@ -325,20 +331,29 @@ openModal(content: any): void {
     this.userService.chnagePassword(payload).subscribe(
       (response) => {
         this.isLoading = false;
-        alert('Password changed successfully!');
-        // Close the modal, refresh the user list, etc.
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Password changed successfully!',
+        });
       },
+
       (error) => {
         this.isLoading = false;
         console.error('Error changing password:', error);
-        alert('Failed to change password.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: 'Failed to change password.',
+        });
       }
     );
   }
+
   deleteInput(index: number): void {
     this.inputs.removeAt(index);
   }
- 
+
   callApis(): Observable<any> {
     return forkJoin({
       requestOne: this.editroleservice.getAllPages(),
@@ -349,37 +364,6 @@ openModal(content: any): void {
   closeModal(): void {
     if (this.modalRef) {
       this.modalRef.close();
-    }
-  }
-
-
-  updateEmailTemplateSetting(id: string, config: UserQueryParams): void {
-    this.isLoading = true;
-    this.roleServices.updateRole(id, config).subscribe(
-      (response) => {
-        this.isLoading = false;
-        this.formModal.close();
-        Swal.fire('Success', 'SMTP setting updated successfully!', 'success');
-        // this.loadUser();
-      },
-      (error) => {
-        this.isLoading = false;
-        console.error('Error updating SMTP setting:', error);
-      }
-    );
-  }
-  deleteEmailTemplateSetting(id: number): void {
-    if (confirm('Are you sure you want to delete this SMTP setting?')) {
-      this.roleServices.deleteRole(id).subscribe(
-        (response) => {
-          console.log('User deleted:', response);
-          // After deletion, reload the SMTP settings
-          // this.loadUser();
-        },
-        (error) => {
-          console.error('Error deleting User setting:', error);
-        }
-      );
     }
   }
 
@@ -409,7 +393,6 @@ openModal(content: any): void {
     }
   }
 
-  
   extractText(obj: any): string {
     var textArray: string[] = [];
 
@@ -458,48 +441,53 @@ openModal(content: any): void {
     this.modalService.open(content);
   }
   public pages: any[] = [];
-    openPermissionModal(content: any, user: any): void {
-      this.selectedUser = { ...user };
-    
-      // Fetch complete user details including claims
-      this.userService.getUserbyId(user.id).subscribe({
-        next: (completeUserDetails) => {
-          this.selectedUser = completeUserDetails; // Update with fresh user data including claims
-    
-          this.callApis().subscribe({
-            next: (results) => {
-              this.pagesList = results.requestOne;
-              this.actionList = results.requestTwo;
-              this.pageActions = results.requestThree;
-    
-              // Open the modal after ensuring all necessary data is loaded
-              this.modalService.open(content, { size: 'lg' });
-            },
-            error: (error) => console.error('Error fetching pages/actions data', error)
-          });
-        },
-        error: (error) => console.error('Error fetching user details:', error)
-      });
-    }
-    
+  openPermissionModal(content: any, user: any): void {
+    this.selectedUser = { ...user };
 
-    checkPageAction(pageId: string, actionId: string): boolean {
-      const pageAction = this.pageActions.find(
-        (c) => c.pageId === pageId && c.actionId === actionId
-      );
+    // Fetch complete user details including claims
+    this.userService.getUserbyId(user.id).subscribe({
+      next: (completeUserDetails) => {
+        this.selectedUser = completeUserDetails; // Update with fresh user data including claims
 
-      return !!pageAction; // Return true if found, false otherwise
-    }
+        this.callApis().subscribe({
+          next: (results) => {
+            this.pagesList = results.requestOne;
+            this.actionList = results.requestTwo;
+            this.pageActions = results.requestThree;
 
-    checkPermission(pageId: string, actionId: string): boolean {
-      return !!this.selectedUser.userClaims.find((claim: UserClaim) =>
-        claim.pageId === pageId && claim.actionId === actionId && claim.claimValue === 'true'
-      );
-    }
-    
-    
+            // Open the modal after ensuring all necessary data is loaded
+            this.modalService.open(content, { size: 'lg' });
+          },
+          error: (error) =>
+            console.error('Error fetching pages/actions data', error),
+        });
+      },
+      error: (error) => console.error('Error fetching user details:', error),
+    });
+  }
 
-  onPermissionChange(event: MatSlideToggleChange, page: Page, action: Action): void {
+  checkPageAction(pageId: string, actionId: string): boolean {
+    const pageAction = this.pageActions.find(
+      (c) => c.pageId === pageId && c.actionId === actionId
+    );
+
+    return !!pageAction; // Return true if found, false otherwise
+  }
+
+  checkPermission(pageId: string, actionId: string): boolean {
+    return !!this.selectedUser.userClaims.find(
+      (claim: UserClaim) =>
+        claim.pageId === pageId &&
+        claim.actionId === actionId &&
+        claim.claimValue === 'true'
+    );
+  }
+
+  onPermissionChange(
+    event: MatSlideToggleChange,
+    page: Page,
+    action: Action
+  ): void {
     const isChecked = event.checked;
     if (isChecked) {
       const newClaim = {
@@ -507,12 +495,14 @@ openModal(content: any): void {
         claimType: `${page.name}_${action.name}`,
         claimValue: 'true',
         pageId: page.id || 'default-page-id',
-        actionId: action.id || 'default-action-id'
+        actionId: action.id || 'default-action-id',
       };
       this.user.userClaims.push(newClaim);
       console.log('Added new claim:', newClaim);
     } else {
-      const index = this.user.userClaims.findIndex(c => c.actionId === action.id && c.pageId === page.id);
+      const index = this.user.userClaims.findIndex(
+        (c) => c.actionId === action.id && c.pageId === page.id
+      );
       if (index > -1) {
         const removedClaim = this.user.userClaims.splice(index, 1)[0];
         console.log('Removed claim:', removedClaim);
@@ -523,37 +513,60 @@ openModal(content: any): void {
   }
   saveUserClaims(): void {
     if (!this.selectedUser || !this.selectedUser.id) {
-      console.error('No user selected or user ID missing.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'No user selected or user ID missing.',
+      });
       return;
     }
 
-    const updatedClaims = this.user.userClaims.map(claim => {
-      const page = this.pagesList.find(p => p.id === claim.pageId);
-      const action = this.actionList.find(a => a.id === claim.actionId);
+    const updatedClaims = this.user.userClaims.map((claim) => {
+        const page = this.pagesList.find(p => p.id === claim.pageId);
+        const action = this.actionList.find(a => a.id === claim.actionId);
 
-      if (!page || !action) {
-        console.error('Page or Action not found', { pageId: claim.pageId, actionId: claim.actionId });
-        return null;
-      }
+        if (!page || !action) {
+          console.error('Page or Action not found', { pageId: claim.pageId, actionId: claim.actionId });
+          return null;
+        }
 
-      return {
-        userId: this.selectedUser.id,
-        claimType: `${page.name}_${action.name}`,
-        claimValue: claim.claimValue,
-        pageId: claim.pageId,
-        actionId: claim.actionId
-      };
+        return {
+          userId: this.selectedUser.id,
+          claimType: `${page.name}_${action.name}`,
+          claimValue: claim.claimValue,
+          pageId: claim.pageId,
+          actionId: claim.actionId,
+        };
     }).filter(claim => claim !== null);
 
     if (updatedClaims.length > 0) {
       this.userService.updateUserClaims(this.selectedUser.id, updatedClaims).subscribe({
-        next: response => console.log('Claims updated successfully', response),
-        error: err => console.error('Error updating claims', err)
+        next: (response) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Claims updated successfully!',
+          });
+          console.log('Claims updated successfully', response);
+          this.modalRef.close();
+        },
+        error: (err) => {
+          console.error('Error updating claims', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Failed',
+            text: 'Failed to update claims.',
+          });
+        }
       });
     } else {
       console.error('No valid claims to update');
+      Swal.fire({
+        icon: 'info',
+        title: 'No Changes',
+        text: 'No valid claims to update.',
+      });
     }
-  }
+}
 
-  
 }

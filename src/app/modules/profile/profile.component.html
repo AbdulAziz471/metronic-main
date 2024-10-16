@@ -116,124 +116,120 @@
       <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
-        <div class="mb-7">
-          <label class="required fw-semibold fs-6 mb-2">User Name</label>
-          <input
-            type="text"
-            class="form-control form-control-solid"
-            name="host"
-            required
-          />
-          <div class="invalid-feedback">Host is required</div>
-        </div>
-        <div class="mb-7">
-          <label class="required fw-semibold fs-6 mb-2">Email</label>
-          <input
-            type="text"
-            class="form-control form-control-solid"
-            name="username"
-            required
-          />
-          <div class="invalid-feedback">Username is required</div>
-        </div>
-        <div class="mb-7">
-          <label class="required fw-semibold fs-6 mb-2">First Name</label>
-          <input
-            type="text"
-            class="form-control form-control-solid"
-            name="port"
-            required
-          />
-          <div class="invalid-feedback">Port is required</div>
-        </div>
-        <div class="mb-7">
-          <label class="required fw-semibold fs-6 mb-2">Last Name</label>
-          <input
-            type="text"
-            class="form-control form-control-solid"
-            name="port"
-            required
-          />
-          <div class="invalid-feedback">Port is required</div>
-        </div>
-        <div class="mb-7">    
-          <label class="required fw-semibold fs-6 mb-2">Phone Number</label>
-          <input
-            type="text"
-            class="form-control form-control-solid"
-            name="port"
-            required
-          />
-          <div class="invalid-feedback">Port is required</div>
-        </div>
-        <div class="mb-7">
-          <label class="required fw-semibold fs-6 mb-2">Address</label>
-          <input
-            type="text"
-            class="form-control form-control-solid"
-            name="port"
-            required
-          />
-          <div class="invalid-feedback">Port is required</div>
-        </div>
+      <div class="mb-7">
+        <label class="required fw-semibold fs-6 mb-2">Email</label>
+        <input
+          type="text"
+          class="form-control form-control-solid"
+          [(ngModel)]="userProfile.email"
+          name="email"
+          readonly
+          required
+        />
+      </div>
+      <div class="mb-7">
+        <label class="required fw-semibold fs-6 mb-2">User Name</label>
+        <input
+          type="text"
+          class="form-control form-control-solid"
+          [(ngModel)]="userProfile.userName"
+          name="userName"
+          required
+        />
+      </div>
+      <div class="mb-7">
+        <label class="required fw-semibold fs-6 mb-2">First Name</label>
+        <input
+          type="text"
+          class="form-control form-control-solid"
+          [(ngModel)]="userProfile.firstName"
+          name="firstName"
+          required
+        />
+      </div>
+      <div class="mb-7">
+        <label class="required fw-semibold fs-6 mb-2">Last Name</label>
+        <input
+          type="text"
+          class="form-control form-control-solid"
+          [(ngModel)]="userProfile.lastName"
+          name="lastName"
+          required
+        />
+      </div>
+      <div class="mb-7">
+        <label class="required fw-semibold fs-6 mb-2">Phone Number</label>
+        <input
+          type="text"
+          class="form-control form-control-solid"
+          [(ngModel)]="userProfile.phoneNumber"
+          name="phoneNumber"
+          required
+        />
+      </div>
+      <div class="mb-7">
+        <label class="required fw-semibold fs-6 mb-2">Address</label>
+        <input
+          type="text"
+          class="form-control form-control-solid"
+          [(ngModel)]="userProfile.address"
+          name="address"
+          required
+        />
       </div>
     </div>
     <div class="modal-footer flex-center">
       <button type="reset" class="btn btn-light me-3">Discard</button>
       <button type="submit" class="btn btn-primary">
-        <span class="indicator-label"> Update </span>
-        <span class="indicator-progress">
-          Please wait...
-          <span
-            class="spinner-border spinner-border-sm align-middle ms-2"
-          ></span>
+        <span class="indicator-label">Update</span>
+        <span class="indicator-progress">Please wait...
+          <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
         </span>
       </button>
     </div>
   </form>
 </ng-template>
 
+
+
+
+
+
 <ng-template #ChangeformModal let-modal>
-  <form (ngSubmit)="onChangeSubmit()">
+  <form [formGroup]="changePasswordForm" (ngSubmit)="onpasswordSubmit()">
     <div class="modal-header">
       <h4 class="modal-title" id="modal-basic-title">Change Password</h4>
       <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <div class="d-flex flex-column scroll-y me-n7 pe-7 mw-650px">
-        <div class="mb-7">
-          <label class="required fw-semibold fs-6 mb-2">Old Password</label>
-          <input
-            type="text"
-            class="form-control form-control-solid"
-            name="host"
-            required
-          />
-          <div class="invalid-feedback">Old Password is required</div>
-        </div>
-        <div class="mb-7">
-          <label class="required fw-semibold fs-6 mb-2">New Password</label>
-          <input
-            type="text"
-            class="form-control form-control-solid"
-            name="username"
-            required
-          />
-          <div class="invalid-feedback">New Password is required</div>
+      <!-- Display the email field from the form model -->
+      <div class="mb-7">
+        <label class="required fw-semibold fs-6 mb-2">Email</label>
+        <input type="text" class="form-control form-control-solid"    [value]="userProfile.userName" readonly />
+      </div>
+      <!-- Form fields for old password, new password, and confirm new password -->
+      <div class="mb-7">
+        <label class="required fw-semibold fs-6 mb-2">Old Password</label>
+        <input type="password" class="form-control form-control-solid" formControlName="oldPassword" required />
+        
+      </div>
+      <div class="mb-7">
+        <label class="required fw-semibold fs-6 mb-2">New Password</label>
+        <input type="password" class="form-control form-control-solid" formControlName="newPassword" required />
+      </div>
+      <div class="mb-7">
+        <label class="required fw-semibold fs-6 mb-2">Confirm New Password</label>
+        <input type="password" class="form-control form-control-solid" formControlName="confirmPassword" required />
+        <div *ngIf="changePasswordForm.hasError('mismatch', ['newPassword', 'confirmPassword'])">
+          <div class="text-danger">Passwords do not match!</div>
         </div>
       </div>
     </div>
     <div class="modal-footer flex-center">
       <button type="reset" class="btn btn-light me-3">Discard</button>
       <button type="submit" class="btn btn-primary">
-        <span class="indicator-label"> Change Password </span>
-        <span class="indicator-progress">
-          Please wait...
-          <span
-            class="spinner-border spinner-border-sm align-middle ms-2"
-          ></span>
-        </span>
+        <span class="indicator-label">Change Password</span>
+        <span class="indicator-progress">Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
       </button>
     </div>
   </form>
