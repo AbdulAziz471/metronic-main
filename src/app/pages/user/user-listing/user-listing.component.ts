@@ -112,7 +112,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       phoneNumber: [user?.phoneNumber || '', Validators.required],
       email: [user?.email || '', [Validators.required, Validators.email]],
       userName: [user?.userName || ''],
-      password: [''], // Generally not filled for security
+      password: [''],
       isActive: [user?.isActive ?? false],
       userRoles: this.fb.array(
         user?.userRoles?.map((role) =>

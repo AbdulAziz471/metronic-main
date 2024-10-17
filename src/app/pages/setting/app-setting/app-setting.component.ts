@@ -91,7 +91,7 @@ closeModal(): void {
       }
     );
   }
-  // Create new SMTP setting
+  // Create new App setting
   createAppSettings(): void {
     Swal.fire({
       title: 'Are you sure?',
@@ -113,14 +113,18 @@ closeModal(): void {
           },
           (error) => {
             this.isLoading = false;
-            console.error('Error creating App setting:', error);
-            Swal.fire('Error', 'There was a problem creating the App setting.', 'error');
+            // Check if the error is related to the App setting already existing
+            if (error?.status === 409 || error?.message === 'App Setting already exists') {
+              Swal.fire('Error', 'App Setting already exists.', 'error');
+            } else {
+              Swal.fire('Error', 'There was a problem creating the App setting.', 'error');
+            }
           }
         );
       }
     });
   } 
-  // Update existing SMTP setting
+  // Update existing App setting
   updateAppSettings(id: number, config: AppSetting): void {
     this.isLoading = true;
     this.AppSetting.updateAppSetting(id, config).subscribe(

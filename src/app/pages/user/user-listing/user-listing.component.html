@@ -53,7 +53,7 @@
     </div>
   </div>
 
-  <div style="overflow: visible;" class="card-body table-responsive pt-0">
+  <div style="overflow: visible" class="card-body table-responsive pt-0">
     <table
       datatable
       class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer table-hover"
@@ -286,14 +286,13 @@
           <div class="w-100 mb-7">
             <div class="form-group">
               <label class="required fw-semibold fs-6 mb-2">Roles</label>
-              <!-- <mat-form-field >
-                <mat-label>Roles</mat-label>
+              <mat-form-field>
                 <mat-select formControlName="userRoles" multiple>
-                  <mat-option *ngFor="let role of roles" [value]="role">{{ role.name }}</mat-option>
+                  <mat-option *ngFor="let role of roles" [value]="role">{{
+                    role.name
+                  }}</mat-option>
                 </mat-select>
-              </mat-form-field> -->
-              <!-- <p-multiSelect [options]="roles" formControlName="userRoles" optionLabel="name" defaultLabel="Select roles"></p-multiSelect> -->
-
+              </mat-form-field>
             </div>
           </div>
         </div>
