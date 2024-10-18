@@ -43,6 +43,7 @@ import { AppPageApiService } from 'src/app/Service/AppPageApi.service';
 import { AppActionService } from 'src/app/Service/AppActionsApi.service';
 import { forkJoin } from 'rxjs';
 import { Role, User } from './users.modal';
+import { MatOptionSelectionChange } from '@angular/material/core';
 @Component({
   selector: 'app-user-listing',
   templateUrl: './user-listing.component.html',
@@ -87,10 +88,10 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   reloadEvent: EventEmitter<boolean> = new EventEmitter();
   @ViewChild('permissionModal') permissionModal: any;
   @ViewChild('passwordModal') passwordModal: any;
-  @ViewChild('deleteSwal') deleteSwal: any; // Reference to the confirmation Swal
-  @ViewChild('successSwal') successSwal: any; // Reference to the success Swal
+  @ViewChild('deleteSwal') deleteSwal: any;
+  @ViewChild('successSwal') successSwal: any; 
   @ViewChild('noticeSwal') noticeSwal!: SwalComponent;
-  @ViewChild('formModal') formModal: any; // Reference to modal
+  @ViewChild('formModal') formModal: any; 
   swalOptions: SweetAlertOptions = {};
   constructor(
     private fb: FormBuilder,
@@ -113,39 +114,15 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       email: [user?.email || '', [Validators.required, Validators.email]],
       userName: [user?.userName || ''],
       password: [''],
-      isActive: [user?.isActive ?? false],
-      userRoles: this.fb.array(
-        user?.userRoles?.map((role) =>
-          this.fb.group({
-            id: [role.id],
-            name: [role.name],
-          })
-        ) || []
-      ), // Store role IDs
       address: [user?.address || '', Validators.required],
+      isActive: [user?.isActive ?? false],
+      userRoles: this.fb.array(user?.userRoles?.map(role => role.id) || []),
       userAllowedIPs: this.fb.array(
         user?.userAllowedIPs
           ? user.userAllowedIPs.map((ip) => this.createIPFormGroup(ip))
           : []
       ),
     });
-
-    console.log('User for form:', user);
-
-    const ipsArray = this.form.get('userAllowedIPs') as UntypedFormArray;
-    if (user?.userAllowedIPs) {
-      user.userAllowedIPs.forEach((ip) => {
-        ipsArray.push(
-          this.fb.group({
-            userId: [ip.userId],
-            ipAddress: [ip.ipAddress],
-          })
-        );
-      });
-      console.log('IPs added to form:', ipsArray.value);
-    } else {
-      console.log('No IPs to add.');
-    }
 
     const emailControl = this.form.get('email');
     if (emailControl) {
@@ -159,43 +136,95 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   createIPFormGroup(ip: any): FormGroup {
     return this.fb.group({
       userId: [ip.userId],
-      ipAddress: [ip.ipAddress, Validators.required], // ensure validation if needed
+      ipAddress: [ip.ipAddress, Validators.required], 
     });
   }
   openFormModal(content: any, action: 'create' | 'edit', user?: User): void {
     this.isEditMode = action === 'edit' && !!user;
-
+  
     console.log('Open Form Modal - Mode:', action, 'User:', user);
-
-    if (this.isEditMode) {
-      // Initialize form with the user data for editing
-      this.initializeForm(user);
-      console.log('Initializing form for edit:', user);
+  
+    if (this.isEditMode && user) {
+      console.log('Fetching user details for edit:', user.id);
+      // Call the API to fetch user details
+      this.userService.getUserbyId(user.id).subscribe({
+        next: (fetchedUser) => {
+          console.log('User details fetched:', fetchedUser);
+          this.initializeForm(fetchedUser); // Initialize form with fetched user details
+          this.modalRef = this.modalService.open(content);
+        },
+        error: (error) => {
+          console.error('Error fetching user details:', error);
+          Swal.fire('Error', 'Could not load user details for editing.', 'error');
+        }
+      });
     } else {
-      // For creating a new user, reset the form to default values
-      this.initializeForm(); // Initialize with no user to set default/empty values
+      this.initializeForm(); // Initialize form for creating a new user
       console.log('Initializing form for new user creation.');
+      this.modalRef = this.modalService.open(content);
     }
-
-    this.fetchRoles(); // Fetch roles whenever the modal is opened
-    this.modalRef = this.modalService.open(content); // Open the modal with the prepared content
+  
+    this.fetchRoles(); // Ensure roles are fetched for role selection in the form
   }
-
-  createUsers(): void {
-    this.userService.createUser(this.form.value).subscribe(
-      (response) => {
-        this.isLoading = false;
-        Swal.fire('Success', 'User created successfully!', 'success'); // Success message
-        this.loadUsers();
-        this.formModal.dismiss();
-      },
-      (error) => {
-        this.isLoading = false;
-        console.error('Error creating User:', error);
-        Swal.fire('Error', 'There was a problem creating the User.', 'error');
+  toggleRoleSelection(event: MatOptionSelectionChange, roleId: string): void {
+    const rolesArray = this.form.get('userRoles') as FormArray;
+    if (event.isUserInput) {
+      if (event.source.selected) {
+        rolesArray.push(this.fb.control(roleId));
+      } else {
+        const index = rolesArray.controls.findIndex(ctrl => ctrl.value === roleId);
+        if (index >= 0) {
+          rolesArray.removeAt(index);
+        }
       }
-    );
+    }
   }
+  
+  onSubmit(): void {
+    if (this.form.valid) {
+        const formValue = this.form.value;
+  
+        // Handle roles: include userId for existing users or use empty string for new users
+        formValue.userRoles = formValue.userRoles.map((roleId: string) => ({
+            userId: this.isEditMode ? this.selectedUser.id : '',
+            roleId: roleId
+        }));
+  
+        this.cdr.detectChanges();  
+  
+        if (this.isEditMode) {
+          this.userService.updateUser(formValue.id, formValue).subscribe({
+            next: (response) => {
+            
+              Swal.fire('Success', 'User updated successfully!', 'success');
+              this.loadUsers(); 
+              this.modalRef.close();
+            },
+            error: (error) => {
+                console.error('Error updating User:', error);
+                Swal.fire('Error', 'There was a problem updating the User.', 'error');
+            },
+          });
+        } else {
+            this.userService.createUser(formValue).subscribe({
+              next: (response) => {
+               
+                Swal.fire('Success', 'User created successfully!', 'success');
+                this.loadUsers();
+                this.modalRef.close();
+              },
+              error: (error) => {
+                  console.error('Error creating User:', error);
+                  Swal.fire('Error', 'There was a problem creating the User.', 'error');
+              },
+          });
+        }
+    } else {
+        console.log('Form is not valid:', this.form.value);
+    }
+  }
+  
+
   get userAllowedIPs(): UntypedFormArray {
     return this.form.get('userAllowedIPs') as UntypedFormArray;
   }
@@ -213,46 +242,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   removeIP(i: number): void {
     this.userAllowedIPs.removeAt(i);
   }
-  onSubmit(): void {
-    if (this.form.valid) {
-      const formValue = this.form.value;
-      if (this.isEditMode && this.selectedUser) {
-        this.userService.updateUser(formValue.id, formValue).subscribe({
-          next: (response) => {
-            Swal.fire('Success', 'User updated successfully!', 'success');
-            this.loadUsers();
-            this.modalRef.close();
-          },
-          error: (error) => {
-            console.error('Error updating User:', error);
-            Swal.fire(
-              'Error',
-              'There was a problem updating the User.',
-              'error'
-            );
-          },
-        });
-      } else {
-        this.userService.createUser(formValue).subscribe({
-          next: (response) => {
-            Swal.fire('Success', 'User created successfully!', 'success');
-            this.loadUsers();
-            this.modalRef.close();
-          },
-          error: (error) => {
-            console.error('Error creating User:', error);
-            Swal.fire(
-              'Error',
-              'There was a problem creating the User.',
-              'error'
-            );
-          },
-        });
-      }
-    } else {
-      console.log('Form is not valid:', this.form.value);
-    }
-  }
+ 
 
   openModal(content: any): void {
     this.fetchRoles();
@@ -275,12 +265,12 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadUsers(): void {
     console.log(
-      'Calling loadUsers with isActive:',
+    
       this.selectedAction.isActive
     );
     this.userService.getAllUsers(this.selectedAction).subscribe({
       next: (response) => {
-        console.log('Received users:', response);
+    
         this.users = response;
         this.cdr.detectChanges();
       },
@@ -380,7 +370,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       // Check if the ID is not null
       this.userService.deleteUser(id).subscribe(
         (response) => {
-          console.log('User deleted:', response);
+  
           this.successSwal.fire();
           this.loadUsers();
         },

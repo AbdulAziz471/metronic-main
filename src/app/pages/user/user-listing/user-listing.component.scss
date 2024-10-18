@@ -9,9 +9,7 @@
     width: 0;
     height: 0;
   }
-  .actions-header ,.action-List{
-    position: sticky; right: 0; background-color: white;
-}
+ 
 .more{
   position: relative;
 }
@@ -77,3 +75,14 @@
     z-index: 1050; 
   }
   
+
+.table-container {
+    overflow-x: scroll;
+    scrollbar-width: thin;
+
+}
+.actions-header ,.action-List{
+    position: sticky; right: 0; 
+    background-color: white !important;
+}
+

@@ -22,11 +22,9 @@ interface Profile {
 export class ProfileComponent implements OnInit {
   changePasswordForm: FormGroup;
   imgURL: any;
-  profileImageUrl: string = ''; 
   selectedProfile: Profile;
   private modalRef: NgbModalRef;
   userProfile: any = {};
-
   isLoading: boolean = false;  
   profile = {
     userName: '',
@@ -117,47 +115,51 @@ export class ProfileComponent implements OnInit {
     this.profileService.getProfile().subscribe({
       next: (response) => {
         this.userProfile = response;
-        this.userProfile.profilePhotoUrl = response.profilePhotoUrl ; 
-        this.cd.detectChanges(); 
+        this.userProfile.profilePhotoUrl = response.profilePhotoUrl;
+        this.imgURL = null; // Reset imgURL on profile load
+        this.cd.detectChanges();
       },
       error: (error) => {
         console.error('Error fetching user profile:', error);
-     
       }
     });
   }
-
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-     this.profileService.updateProfilePhoto( file).subscribe({
-      next: (response) => console.log('Profile photo updated successfully!', response),
-      error: (error) => console.error('Error updating profile photo', error)
-    });
-    }
-  }
+  
   fileEvent($event: Event): void {
     const inputElement = $event.target as HTMLInputElement;
     const file = inputElement.files ? inputElement.files[0] : null;
     if (file) {
-     // const formData = new FormData();
-     // formData.append('file', file, file.name);
-      this.profileService.updateProfilePhoto( file).subscribe({
+      this.profileService.updateProfilePhoto(file).subscribe({
         next: (response) => {
-         
-          this.imgURL = URL.createObjectURL(file); 
-         // element.value = '';
-          this.cd.detectChanges(); // Update the view
+          this.imgURL = URL.createObjectURL(file); // Update imgURL to show the new image
+          this.cd.detectChanges();
         },
         error: (error) => {
           console.error('Error updating image', error);
-         
         }
       });
     } else {
       console.error('No file selected');
     }
   }
+  
+  // fileEvent($event: Event): void {
+  //   const inputElement = $event.target as HTMLInputElement;
+  //   const file = inputElement.files ? inputElement.files[0] : null;
+  //   if (file) {
+  //     this.profileService.updateProfilePhoto( file).subscribe({
+  //       next: (response) => {
+  //         this.imgURL = URL.createObjectURL(file); 
+  //         this.cd.detectChanges();
+  //       },
+  //       error: (error) => {
+  //         console.error('Error updating image', error);
+  //         }
+  //     });
+  //   } else {
+  //     console.error('No file selected');
+  //   }
+  // }
     
   
   openFormModal(content: TemplateRef<any>, profile: Profile): void {
@@ -172,8 +174,6 @@ export class ProfileComponent implements OnInit {
       }
     });
   }
-
-  // Close the modal
   closeModal(): void {
     if (this.modalRef) {
       this.modalRef.close();

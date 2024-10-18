@@ -30,17 +30,12 @@ export class UserService {
   getAllPageAction(): Observable<any> {
     return this.http.get(`${environment.apiUrl}/api/pageactions`);
   }
-
-  // GET: Fetch a single User by ID
-  getUserbyId(id: number): Observable<any> {
+  getUserbyId(id: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/api/User/${id}`);
   }
-
-  // POST: Create a new User
-  createUser(config: any): Observable<any> {
+createUser(config: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/api/User`, config);
   }
-  // POST: Create a new User
   chnagePassword(config: any): Observable<any> {
     return this.http.post(
       `${environment.apiUrl}/api/User/resetpassword`,
@@ -50,7 +45,6 @@ export class UserService {
   updateUser(id: number, user: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/api/User/${id}`, user);
   }
- // In your user.service.ts or a similar service file
  updateUserClaims(userId: string, userClaims: any[]): Observable<any> {
   return this.http.put(`${environment.apiUrl}/api/UserClaim/${userId}`, { userClaims })
    
