@@ -1,3 +1,7 @@
+
+
+
+
 <div class="card">
   <div class="card-header border-0 pt-6">
     <div class="d-flex flex-column flex-md-row">
@@ -53,7 +57,10 @@
     </div>
   </div>
 
-  <div style="overflow: scroll" class=" table-container card-body table-responsive pt-0">
+  <div
+    style="overflow: scroll"
+    class="table-container card-body table-responsive pt-0"
+  >
     <table
       datatable
       class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer table-hover"
@@ -285,16 +292,18 @@
         <div class="d-flex gap-3 justify-content-between">
           <div class="w-100 mb-7">
             <div class="form-group d-flex flex-column">
-                            <label class="required fw-semibold fs-6 mb-2">Roles</label>
+              <label class="required fw-semibold fs-6 mb-2">Roles</label>
               <mat-form-field>
                 <mat-select formControlName="userRoles" multiple>
-                  <mat-option *ngFor="let role of roles" [value]="role.id" (onSelectionChange)="toggleRoleSelection($event, role.id!)">
+                  <mat-option *ngFor="let role of roles" [value]="role.id">
                     {{ role.name }}
                   </mat-option>
                 </mat-select>
+                
+                
+              
+                
               </mat-form-field>
-              
-              
             </div>
           </div>
         </div>
@@ -342,7 +351,7 @@
             />
           </div>
         </div>
-        <div  *ngIf="!isEditMode" class="d-flex gap-3 justify-content-between">
+        <div *ngIf="!isEditMode" class="d-flex gap-3 justify-content-between">
           <div class="w-100 mb-7">
             <label class="required fw-semibold fs-6 mb-2">Password</label>
             <input
@@ -359,7 +368,6 @@
             <label class="required fw-semibold fs-6 mb-2">Active</label>
             <mat-slide-toggle
               name="isActive"
-            
               formControlName="isActive"
               color="secondary"
             >

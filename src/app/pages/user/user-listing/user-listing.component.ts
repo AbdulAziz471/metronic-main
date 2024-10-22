@@ -12,6 +12,7 @@ import {
 import {
   FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
   NgForm,
   UntypedFormArray,
@@ -116,7 +117,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       password: [''],
       address: [user?.address || '', Validators.required],
       isActive: [user?.isActive ?? false],
-      userRoles: this.fb.array(user?.userRoles?.map(role => role.id) || []),
+      userRoles: [user?.userRoles?.map(role => role.roleId) || []],  // Just use a
       userAllowedIPs: this.fb.array(
         user?.userAllowedIPs
           ? user.userAllowedIPs.map((ip) => this.createIPFormGroup(ip))
@@ -172,23 +173,26 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       if (event.source.selected) {
         rolesArray.push(this.fb.control(roleId));
       } else {
-        const index = rolesArray.controls.findIndex(ctrl => ctrl.value === roleId);
-        if (index >= 0) {
+        const index = rolesArray.controls.findIndex(control => control.value === roleId);
+        if (index !== -1) {
           rolesArray.removeAt(index);
         }
       }
     }
   }
   
+  
+  get userRolesControls() {
+    return this.form.get('userRoles') as FormArray;
+  }
+  
   onSubmit(): void {
     if (this.form.valid) {
-        const formValue = this.form.value;
-  
-        // Handle roles: include userId for existing users or use empty string for new users
-        formValue.userRoles = formValue.userRoles.map((roleId: string) => ({
-            userId: this.isEditMode ? this.selectedUser.id : '',
-            roleId: roleId
-        }));
+      const formValue = this.form.getRawValue();
+      formValue.userRoles = formValue.userRoles.map((roleId: string) => ({
+        userId: formValue.id, 
+        roleId: roleId
+      }));
   
         this.cdr.detectChanges();  
   
@@ -560,3 +564,16 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
 }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

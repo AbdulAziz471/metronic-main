@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SimpleChange } from '@angular/core';
 import { DashboardService } from 'src/app/Service/Dashboard.service';
 import { ChangeDetectorRef } from '@angular/core';
 @Component({
@@ -10,7 +10,7 @@ export class DashboardComponent implements OnInit {
   totalUsers: number = 0;
   activeUsers: number = 0;
   inactiveUsers: number = 0;
-  onlineUsers: any[] = [];
+  onlineUsers: any[] = []; 
   recentlyRegisteredUsers: any[] = [];
 
   constructor(private dashboardService: DashboardService,
@@ -23,6 +23,7 @@ export class DashboardComponent implements OnInit {
       next: (data) => {
         console.log('Online users:', data);
         this.onlineUsers = Array.isArray(data) ? data.length : data; 
+        this.cd.detectChanges();
       },
       error: (err) => console.error('Error fetching online users:', err)
     });
@@ -58,13 +59,19 @@ export class DashboardComponent implements OnInit {
   loadOnlineUser(): void {
     this.dashboardService.getOnlineUsers().subscribe({
       next: (users) => {
-        this.onlineUsers = users;
-        console.log("Online USers", this.onlineUsers); 
-         this.cd.detectChanges();
+        if (users && Array.isArray(users)) {
+          this.onlineUsers = users;
+          console.log("Online Users", this.onlineUsers); 
+        } else {
+          console.log("No online users or invalid data received.");
+        }
+        this.cd.detectChanges();
       },
       error: (error) => console.error('Failed to fetch Online Users', error)
     });
   }
+  
+ 
   
   ngOnInit(): void {
     

@@ -1,13 +1,22 @@
 <!-- dashboard.component.html -->
 <div class="row g-5 g-xl-10 mb-5 mb-xl-10 w-100">
   <div class="w-50 col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
-    <app-cards-widget20
-      cssClass="h-md-50 mb-5 mb-xl-10"
-      description="Online Users"
-      [detailNumber]="onlineUsers.length"
-      color="#00a65a"
-      img="./assets/media/patterns/vector-1.png"
-    ></app-cards-widget20>
+    <div
+      class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50 mb-5 mb-xl-10"
+      style="
+        background-color: #00a65a;
+        background-image: url(./assets/media/patterns/vector-1.png);
+      "
+    >
+      <div class="card-header pt-5">
+        <div class="card-title d-flex flex-column">
+          <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">{{
+           onlineUsers
+          }}</span>
+          <span class="text-white opacity-75 pt-1 fw-semibold fs-6">Online Users</span>
+        </div>
+      </div>
+    </div>
     <app-cards-widget20
       cssClass="h-md-50 mb-5 mb-xl-10"
       description="Total Users"
@@ -36,7 +45,7 @@
 <!--begin::Row-->
 <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
   <!--begin::Col-->
-  <div class="w-50   col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
+  <div class="w-50 col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
     <div class="card card-xxl-stretch mb-5 mb-xl-8">
       <!-- tables-widget10.component.html -->
       <div class="card-header border-0 pt-5">
@@ -79,14 +88,12 @@
       </div>
     </div>
   </div>
-  <div class="w-50   col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
+  <div class="w-50 col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
     <div class="card card-xxl-stretch mb-5 mb-xl-8">
       <!-- tables-widget10.component.html -->
       <div class="card-header border-0 pt-5">
         <h3 class="card-title align-items-start flex-column">
-          <span class="card-label fw-bolder fs-3 mb-1"
-            >Online Users</span
-          >
+          <span class="card-label fw-bolder fs-3 mb-1">Online Users</span>
         </h3>
       </div>
       <div class="card-body py-3">

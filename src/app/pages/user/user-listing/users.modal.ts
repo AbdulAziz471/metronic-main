@@ -37,6 +37,7 @@ export interface UserClaim {
 }
 export interface Role {
   id?: string;
+  roleId?:string;
   name?: string;
   userRoles?: UserRoles[];
   roleClaims?: RoleClaim[];
