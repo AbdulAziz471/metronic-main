@@ -1,4 +1,4 @@
-import { Component, OnInit, SimpleChange } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DashboardService } from 'src/app/Service/Dashboard.service';
 import { ChangeDetectorRef } from '@angular/core';
 @Component({
