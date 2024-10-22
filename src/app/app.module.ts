@@ -20,12 +20,10 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MaterialModule } from './modules/material/material.module';
 import { AngularEditorModule } from '@kolkov/angular-editor';
-function appInitializer(authService: AuthService) {
+import { AuthApiService } from './Service/AuthApi.service';
+function appInitializer(authService: AuthApiService) {
   return () => {
-    return new Promise((resolve) => {
-      //@ts-ignore
-      authService.getUserByToken().subscribe().add(resolve);
-    });
+   
   };
 }
 
@@ -52,12 +50,12 @@ function appInitializer(authService: AuthService) {
       provide: APP_INITIALIZER,
       useFactory: appInitializer,
       multi: true,
-      deps: [AuthService],
+      deps: [AuthApiService],
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true // important to set multi to true for interceptors
+      multi: true 
     },
     provideAnimationsAsync()
   ],
