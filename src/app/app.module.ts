@@ -13,12 +13,13 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
-import { AuthInterceptor } from './Service/auth.interceptor.spec';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MaterialModule } from './modules/material/material.module';
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { AuthApiService } from './Service/AuthApi.service';
+import { AuthService } from './Service/AuthService.service';
+import { AuthInterceptor } from './Interceptor/auth.interceptor';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -37,14 +38,17 @@ import { AuthApiService } from './Service/AuthApi.service';
     NgbModule,
     SweetAlert2Module.forRoot(),
   ],
+
   providers: [
+    AuthService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true 
+      multi: true  
     },
     provideAnimationsAsync()
   ],
+  
   bootstrap: [AppComponent],
 })
 export class AppModule { }

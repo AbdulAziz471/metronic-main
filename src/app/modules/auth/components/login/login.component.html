@@ -56,7 +56,7 @@
                 message: 'Email is required',
                 control: loginForm.controls['email']
               }"></ng-container>
-            <ng-container [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
+            <ng-container  [ngTemplateOutlet]="formError" [ngTemplateOutletContext]="{
                 validation: 'email',
                 message: 'Email is invalid',
                 control: loginForm.controls['email']

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { AuthApiService } from 'src/app/Service/AuthApi.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -52,6 +53,7 @@ export class LoginComponent implements OnInit {
         this.isLoading$.next(false);
         this.hasError = true;
         console.error('Login Error:', error);
+
       }
     });
   }
