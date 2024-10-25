@@ -1,7 +1,7 @@
 import { Component, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { TranslationService } from '../../../../../../modules/i18n';
-import { AuthService, UserType } from '../../../../../../modules/auth';
+
 import { Router } from '@angular/router';
 
 import { environment } from 'src/environments/environment';
@@ -26,7 +26,7 @@ export class UserInnerComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
 
-    private auth: AuthService,
+
     private translationService: TranslationService
   ) {}
 
@@ -43,10 +43,10 @@ export class UserInnerComponent implements OnInit, OnDestroy {
     localStorage.removeItem('accessToken');
     this.router.navigate(['/auth/login']); 
   }
-  logout() {
-    this.auth.logout();
-    document.location.reload();
-  }
+  // logout() {
+  //   this.auth.logout();
+  //   document.location.reload();
+  // }
 
   selectLanguage(lang: string) {
     this.translationService.setLanguage(lang);
