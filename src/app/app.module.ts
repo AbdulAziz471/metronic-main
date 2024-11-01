@@ -17,9 +17,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MaterialModule } from './modules/material/material.module';
 import { AngularEditorModule } from '@kolkov/angular-editor';
-import { AuthApiService } from './Service/AuthApi.service';
-import { AuthService } from './Service/AuthService.service';
 import { AuthInterceptor } from './Interceptor/auth.interceptor';
+import { AuthApiService } from './Service/AuthApi.service';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -40,7 +39,7 @@ import { AuthInterceptor } from './Interceptor/auth.interceptor';
   ],
 
   providers: [
-    AuthService,
+    AuthApiService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

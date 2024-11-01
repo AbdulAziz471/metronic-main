@@ -12,23 +12,19 @@ import {
 import {
   FormArray,
   FormBuilder,
-  FormControl,
   FormGroup,
-  NgForm,
   UntypedFormArray,
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
 import {
   MatSlideToggleChange,
-  MatSlideToggleModule,
 } from '@angular/material/slide-toggle';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import Swal from 'sweetalert2';
 import { SweetAlertOptions } from 'sweetalert2';
 import { Observable } from 'rxjs';
-import moment from 'moment';
-import { Config } from 'datatables.net';
+
 import {
   UserQueryParams,
   UserClaim,
@@ -65,12 +61,12 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   password: string = ''; // New password
   confirmPassword: string = '';
   private modalRef: any;
-  selectedEmailTemapletSettingID: number | null = null;
+  selectedEmailTemplateSettingId: number | null = null;
   isEditMode: boolean = false;
   isLoading: boolean = false;
   isCollapsed1 = false;
   isCollapsed2 = true;
-  datatableConfig: Config = {};
+
   public users: any[] = [];
   selectedUser: any = {};
 
@@ -363,7 +359,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openDeleteSwal(id: number): void {
     if (id !== null) {
-      this.selectedEmailTemapletSettingID = id;
+      this.selectedEmailTemplateSettingId = id;
       this.deleteSwal.fire();
     } else {
       console.error('Error: Invalid SMTP setting ID');
@@ -437,18 +433,18 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   public pages: any[] = [];
   openPermissionModal(content: any, user: any): void {
     this.selectedUser = { ...user };
-
+  
     // Fetch complete user details including claims
     this.userService.getUserbyId(user.id).subscribe({
       next: (completeUserDetails) => {
         this.selectedUser = completeUserDetails; // Update with fresh user data including claims
-
+  
         this.callApis().subscribe({
           next: (results) => {
             this.pagesList = results.requestOne;
             this.actionList = results.requestTwo;
             this.pageActions = results.requestThree;
-
+  
             // Open the modal after ensuring all necessary data is loaded
             this.modalService.open(content, { size: 'lg' });
           },
@@ -459,15 +455,15 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       error: (error) => console.error('Error fetching user details:', error),
     });
   }
-
+  
   checkPageAction(pageId: string, actionId: string): boolean {
     const pageAction = this.pageActions.find(
       (c) => c.pageId === pageId && c.actionId === actionId
     );
-
+  
     return !!pageAction; // Return true if found, false otherwise
   }
-
+  
   checkPermission(pageId: string, actionId: string): boolean {
     return !!this.selectedUser.userClaims.find(
       (claim: UserClaim) =>
@@ -476,35 +472,41 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
         claim.claimValue === 'true'
     );
   }
-
-  onPermissionChange(
-    event: MatSlideToggleChange,
-    page: Page,
-    action: Action
-  ): void {
+  
+  onPermissionChange(event: MatSlideToggleChange, page: Page, action: Action): void {
     const isChecked = event.checked;
+    const existingClaimIndex = this.selectedUser.userClaims.findIndex(
+      (claim: UserClaim) => claim.pageId === page.id && claim.actionId === action.id
+    );
+  
     if (isChecked) {
-      const newClaim = {
-        userId: this.selectedUser.id, // Make sure selectedUser is always the target user
-        claimType: `${page.name}_${action.name}`,
-        claimValue: 'true',
-        pageId: page.id || 'default-page-id',
-        actionId: action.id || 'default-action-id',
-      };
-      this.user.userClaims.push(newClaim);
-      console.log('Added new claim:', newClaim);
-    } else {
-      const index = this.user.userClaims.findIndex(
-        (c) => c.actionId === action.id && c.pageId === page.id
-      );
-      if (index > -1) {
-        const removedClaim = this.user.userClaims.splice(index, 1)[0];
+      if (existingClaimIndex === -1) {
+        // Add new claim if it doesn't exist
+        const newClaim = {
+          userId: this.selectedUser.id,
+          claimType: `${page.name}_${action.name}`,
+          claimValue: 'true',
+          pageId: page.id || 'default-page-id',
+          actionId: action.id || 'default-action-id',
+        };
+        this.selectedUser.userClaims.push(newClaim);
+        console.log('Added new claim:', newClaim);
+      } else {
+        // Update existing claim value to 'true'
+        this.selectedUser.userClaims[existingClaimIndex].claimValue = 'true';
+        console.log('Updated existing claim to true:', this.selectedUser.userClaims[existingClaimIndex]);
+      }
+    }  else {
+      if (existingClaimIndex > -1) {
+
+        const removedClaim = this.selectedUser.userClaims.splice(existingClaimIndex, 1)[0];
         console.log('Removed claim:', removedClaim);
       } else {
         console.warn('No claim found to remove for:', page.name, action.name);
       }
     }
   }
+  
   saveUserClaims(): void {
     if (!this.selectedUser || !this.selectedUser.id) {
       Swal.fire({
@@ -514,25 +516,29 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       return;
     }
-
-    const updatedClaims = this.user.userClaims.map((claim) => {
-        const page = this.pagesList.find(p => p.id === claim.pageId);
-        const action = this.actionList.find(a => a.id === claim.actionId);
-
-        if (!page || !action) {
-          console.error('Page or Action not found', { pageId: claim.pageId, actionId: claim.actionId });
-          return null;
-        }
-
-        return {
-          userId: this.selectedUser.id,
-          claimType: `${page.name}_${action.name}`,
-          claimValue: claim.claimValue,
+  
+    // Prepare updated claims
+    const updatedClaims = this.selectedUser.userClaims.map((claim: UserClaim) => {
+      const page = this.pagesList.find((p) => p.id === claim.pageId);
+      const action = this.actionList.find((a) => a.id === claim.actionId);
+  
+      if (!page || !action) {
+        console.error('Page or Action not found', {
           pageId: claim.pageId,
           actionId: claim.actionId,
-        };
-    }).filter(claim => claim !== null);
-
+        });
+        return null;
+      }
+  
+      return {
+        userId: this.selectedUser.id,
+        claimType: `${page.name}_${action.name}`,
+        claimValue: claim.claimValue,
+        pageId: claim.pageId,
+        actionId: claim.actionId,
+      };
+    }).filter((claim: UserClaim) => claim !== null);
+  
     if (updatedClaims.length > 0) {
       this.userService.updateUserClaims(this.selectedUser.id, updatedClaims).subscribe({
         next: (response) => {
@@ -551,7 +557,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
             title: 'Failed',
             text: 'Failed to update claims.',
           });
-        }
+        },
       });
     } else {
       console.error('No valid claims to update');
@@ -561,8 +567,8 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
         text: 'No valid claims to update.',
       });
     }
-}
-
+  }
+  
 }
 
 

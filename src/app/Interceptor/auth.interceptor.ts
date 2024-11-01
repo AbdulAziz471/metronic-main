@@ -4,14 +4,14 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse
 import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { AuthService } from '../Service/AuthService.service';
+import { AuthApiService } from '../Service/AuthApi.service';
 import Swal from 'sweetalert2';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private isDialogOpen = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthApiService, private router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const authToken = this.authService.getToken();
