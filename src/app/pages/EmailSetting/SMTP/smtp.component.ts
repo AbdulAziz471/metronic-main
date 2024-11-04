@@ -12,6 +12,7 @@ import { Config } from 'datatables.net';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SMTPSetting } from './smtp.model';
 import { EmailSettingService } from 'src/app/Service/EmailSettings.service';
+import { AuthApiService } from 'src/app/Service/AuthApi.service';
 @Component({
   selector: 'app-smtp',
   templateUrl: './smtp.component.html',
@@ -47,9 +48,14 @@ export class SMTPComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private emailservies: EmailSettingService,
     private modalService: NgbModal,
-    private cdr: ChangeDetectorRef,) { }
+    private cdr: ChangeDetectorRef,
+    private authService: AuthApiService,
+  ) { }
 
   ngAfterViewInit(): void {
+  }
+  hasPermission(permission: string): boolean {
+    return this.authService.hasClaim(permission);
   }
   openFormModal(content: any, action: 'create' | 'edit', eTemplate?: SMTPSetting): void {
     if (action === 'edit' && eTemplate) {

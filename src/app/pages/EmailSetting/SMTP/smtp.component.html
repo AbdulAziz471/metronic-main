@@ -4,7 +4,7 @@
       <div class="d-flex align-items-center position-relative my-1"></div>
     </div>
     <div class="card-toolbar">
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end" *ngIf="hasPermission('email_smtp_add')" >
         <button
           type="button"
           class="btn btn-primary"
@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  <div class="card-body pt-0">
+  <div class="card-body pt-0"  *ngIf="hasPermission('email_smtp_list')">
     <table
       datatable
       class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
@@ -51,6 +51,7 @@
 
           <td>
             <button
+            *ngIf="hasPermission('email_smtp_edit')" 
               (click)="openFormModal(formModal, 'edit', setting)"
               class="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
               data-action="edit"
@@ -61,6 +62,7 @@
               ></i>
             </button>
             <button
+            *ngIf="hasPermission('email_smtp_delete')"
               (click)="openDeleteSwal(setting.id)"
               class="btn btn-icon btn-active-light-primary w-30px h-30px"
               data-action="delete"

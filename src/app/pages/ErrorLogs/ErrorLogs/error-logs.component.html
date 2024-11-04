@@ -35,14 +35,8 @@
       <tbody class="fw-semibold text-gray-600">
         <tr *ngFor="let user of users">
           <td>{{ user.logged | date : "MMMM d, y, h:mm a" }}</td>
-          <td class="d-flex align-items-center sorting_1">
-            <div class="d-flex flex-column" data-action="view" data-id="452">
-              <a
-                href="javascript:;"
-                class="text-gray-800 text-hover-primary mb-1"
-                >{{ user.level }}
-              </a>
-            </div>
+          <td  class="d-flex align-items-center sorting_1">
+             {{ user.level }}
           </td>
           <td>{{ user.message }}</td>
           <td>{{ user.source }}</td>

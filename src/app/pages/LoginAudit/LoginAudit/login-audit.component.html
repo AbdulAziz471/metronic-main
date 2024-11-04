@@ -30,7 +30,7 @@
           <th>IP Address</th>
           <th>STATUS</th>
           <th>Latitude</th>
-          <th>Longitute</th>
+          <th>Longitude</th>
         </tr>
       </thead>
       <tbody class="fw-semibold text-gray-600">
@@ -46,7 +46,8 @@
             </div>
           </td>
           <td>{{ user.remoteIP }}</td>
-          <td>{{ user.status }}</td>
+          <td style="color: white !important;"   *ngIf="user.status==='Success'" class="badge bg-primary" >{{ user.status }}</td>
+          <td style="color: white !important;"   *ngIf="user.status==='Error'"   class="badge bg-danger" >{{ user.status }}</td>
           <td>{{ user.latitude }}</td>
           <td>{{ user.longitude }}</td>
         </tr>

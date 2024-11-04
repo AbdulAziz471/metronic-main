@@ -9,6 +9,7 @@ import { Emailtemplate } from './emailtemplate.model';
 import { EmailSettingService } from 'src/app/Service/EmailSettings.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
+import { AuthApiService } from 'src/app/Service/AuthApi.service';
 @Component({
   selector: 'app-emailtemplate',
   templateUrl: './emailtemplate.component.html',
@@ -76,12 +77,15 @@ export class EmailtemplateComponent implements OnInit, AfterViewInit, OnDestroy 
     constructor(
     private emailservies: EmailSettingService,
     private modalService: NgbModal,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthApiService,
   ) { }
 
   ngAfterViewInit(): void {
   }
-
+  hasPermission(permission: string): boolean {
+    return this.authService.hasClaim(permission);
+  }
 openFormModal(content: any, action: 'create' | 'edit', eTemplate?: Emailtemplate): void {
   if (action === 'edit' && eTemplate) {
       this.isEditMode = true;

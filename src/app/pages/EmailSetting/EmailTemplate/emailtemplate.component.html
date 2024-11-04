@@ -5,7 +5,7 @@
       </div>
     </div>
     <div class="card-toolbar">
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end" *ngIf="hasPermission('email_template_add')">
         <button type="button" class="btn btn-primary" (click)="openFormModal(formModal, 'create')"  data-action="create">
           Add Email Temmplate
         </button>
@@ -15,6 +15,7 @@
 
   <div class="card-body pt-0">
     <table
+    *ngIf="hasPermission('email_template_list')"
   datatable
   class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
 >
@@ -39,6 +40,7 @@
       <td>{{setting.subject}}</td>
       <td>
         <button
+        *ngIf="hasPermission('email_template_edit')"
         (click)="openFormModal(formModal, 'edit', setting)"
           class="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
           data-action="edit"
@@ -49,6 +51,7 @@
           ></i>
         </button>
         <button
+        *ngIf="hasPermission('email_template_delete')"
         (click)="openDeleteSwal(setting.id)"
           class="btn btn-icon btn-active-light-primary w-30px h-30px"
           data-action="delete"
