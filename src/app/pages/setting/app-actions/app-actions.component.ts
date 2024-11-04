@@ -1,3 +1,4 @@
+/* eslint-disable @angular-eslint/use-lifecycle-interface */
 // app-actions.component.ts
 import { Component, OnInit , ChangeDetectorRef, EventEmitter, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
@@ -8,6 +9,7 @@ import { Config } from 'datatables.net';
 import { Observable } from 'rxjs';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
+import { AuthApiService } from 'src/app/Service/AuthApi.service';
 @Component({
   selector: 'app-app-actions',  // Make sure the selector matches the file name if needed
   templateUrl: './app-actions.component.html',
@@ -38,12 +40,15 @@ export class AppActionsComponent implements OnInit {
     constructor(
     private AppAction: AppActionService,
     private modalService: NgbModal,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService : AuthApiService,
   ) { }
 
   ngAfterViewInit(): void {
   }
-
+  hasPermission(permission: string): boolean {
+    return this.authService.hasClaim(permission);
+  }
 openFormModal(content: any, action: 'create' | 'edit', eTemplate?: AppAction): void {
   if (action === 'edit' && eTemplate) {
       this.isEditMode = true;

@@ -1,59 +1,4 @@
-<!-- app-setting.component.html -->
-<!-- <div class="card">
-  <div class="card-header">
-    <h3>App Settings</h3>
-    <button class="btn btn-primary" (click)="openModal(formModal)">Add App Setting</button>
-  </div>
-  <div class="card-body">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Key</th>
-          <th>Value</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let setting of AllAppSettings">
-          <td>{{ setting.name }}</td>
-          <td>{{ setting.key }}</td>
-          <td>{{ setting.value }}</td>
-          <td>
-            <button class="btn btn-info" (click)="selectedSetting = setting; openModal(formModal)">Edit</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div> -->
-<!-- 
-<ng-template #formModal let-modal>
-  <form #myForm="ngForm" (ngSubmit)="onSubmit(myForm)">
-    <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">{{selectedSetting.id ? 'Edit' : 'Add'}} App Setting</h4>
-      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label>Name</label>
-        <input type="text" class="form-control" name="name" [(ngModel)]="selectedSetting.name" required>
-      </div>
-      <div class="form-group">
-        <label>Key</label>
-        <input type="text" class="form-control" name="key" [(ngModel)]="selectedSetting.key" required>
-      </div>
-      <div class="form-group">
-        <label>Value</label>
-        <input type="text" class="form-control" name="value" [(ngModel)]="selectedSetting.value" required>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-light" (click)="modal.dismiss()">Cancel</button>
-      <button type="submit" class="btn btn-primary">Save</button>
-    </div>
-  </form>
-</ng-template> -->
+
 
 <div class="card">
   <div class="card-header border-0 pt-6">
@@ -61,7 +6,7 @@
       <div class="d-flex align-items-center position-relative my-1"></div>
     </div>
     <div class="card-toolbar">
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end"  *ngIf="hasPermission('app_settings_add')">
         <button
           type="button"
           class="btn btn-primary"
@@ -74,7 +19,7 @@
     </div>
   </div>
 
-  <div class="card-body pt-0">
+  <div class="card-body pt-0"*ngIf="hasPermission('app_settings_list')" >
     <table
       datatable
       class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
@@ -106,6 +51,7 @@
               class="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
               data-action="edit"
               data-id="452"
+              *ngIf="hasPermission('app_settings_edit')"
             >
               <i class="ki-duotone ki-pencil fs-3"
                 ><span class="path1"></span><span class="path2"></span
@@ -113,6 +59,7 @@
             </button>
             <button
               (click)="openDeleteSwal(setting.id)"
+              *ngIf="hasPermission('app_settings_delete')"
               class="btn btn-icon btn-active-light-primary w-30px h-30px"
               data-action="delete"
               data-id="452"

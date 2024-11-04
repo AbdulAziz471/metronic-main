@@ -1,9 +1,16 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppPageApiService } from 'src/app/Service/AppPageApi.service';
-import { AppSetting } from './app-page.model'; 
+
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
+import { AuthApiService } from 'src/app/Service/AuthApi.service';
+interface AppPage {
+  id?: number | null; 
+    name: string;
+   url: string;
+  }
+  
 @Component({
   selector: 'app-app-setting',
   templateUrl: './app-page.component.html',
@@ -11,12 +18,12 @@ import Swal, { SweetAlertOptions } from 'sweetalert2';
 })
 export class AppPageComponent implements OnInit {
   private modalRef: any;
-  public AllAppSetting: AppSetting[] = [];
-  filteredPages: AppSetting[] = [];
+  public AllAppSetting: AppPage[] = [];
+  filteredPages: AppPage[] = [];
   isEditMode: boolean = false;  
   searchTerm: string = '';
   isLoading: boolean = false;  
-  selectedAction: AppSetting = { 
+  selectedAction: AppPage = { 
     id: null, 
     name: '' ,  
     url: ''
@@ -26,9 +33,12 @@ export class AppPageComponent implements OnInit {
   constructor(
     private AppPages: AppPageApiService,
     private modalService: NgbModal,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthApiService,
   ) {}
-
+  hasPermission(permission: string): boolean {
+    return this.authService.hasClaim(permission);
+  }
   ngOnInit(): void {
     this.loadAppPage(); // Load the list when component initializes
   }
@@ -118,7 +128,7 @@ export class AppPageComponent implements OnInit {
     });
   }
   
-  openFormModal(content: any, action: 'create' | 'edit', eTemplate?: AppSetting): void {
+  openFormModal(content: any, action: 'create' | 'edit', eTemplate?: AppPage): void {
     if (action === 'edit' && eTemplate) {
         this.isEditMode = true;
         this.selectedAction = { ...eTemplate };  // Pre-fill the form with the selected setting data

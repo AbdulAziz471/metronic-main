@@ -1,5 +1,5 @@
 <div class="d-flex flex-column gap-4">
-  <div  class="d-flex gap-4">
+  <div  *ngIf="hasPermission('dashboard_list')"   class="d-flex gap-4">
     <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end w-100 " style="
         background-color: #00a65a;
         background-image: url(./assets/media/patterns/vector-1.png);
@@ -27,7 +27,7 @@
       </div>
     </div>
   </div>
-  <div  class="d-flex gap-4">
+  <div  *ngIf="hasPermission('dashboard_list')"   class="d-flex gap-4">
     <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end w-100 " style="
         background-color: #ffc107;
         background-image: url(./assets/media/patterns/vector-1.png);
@@ -58,9 +58,7 @@
     <!-- <app-cards-widget20  cssClass = "w-100"  description="Inactive Users" [detailNumber]="inactiveUsers"
       color="#dc3545" img="./assets/media/patterns/vector-1.png"></app-cards-widget20> -->
   </div>
-  <div  class="d-flex flex-row gap-4">
-
-
+  <div  *ngIf="hasPermission('dashboard_list')"   class="d-flex flex-row gap-4">
     <div class="card card-xxl-stretch mb-5 mb-xl-8 w-100">
       <!-- tables-widget10.component.html -->
       <div class="card-header border-0 pt-5">

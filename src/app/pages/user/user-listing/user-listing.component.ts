@@ -41,6 +41,7 @@ import { AppActionService } from 'src/app/Service/AppActionsApi.service';
 import { forkJoin } from 'rxjs';
 import { Role, User } from './users.modal';
 import { MatOptionSelectionChange } from '@angular/material/core';
+import { AuthApiService } from 'src/app/Service/AuthApi.service';
 @Component({
   selector: 'app-user-listing',
   templateUrl: './user-listing.component.html',
@@ -52,13 +53,12 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedRoles: number[] = [];
   form: FormGroup;
   pagesList: any[] = [];
-
   actionList: any[] = [];
   pageActions: any[] = [];
   user: { id: string; userClaims: UserClaim[] } = { id: '', userClaims: [] };
   isMenuOpen: boolean = false;
   selectedUserId: number | null = null;
-  password: string = ''; // New password
+  password: string = ''; 
   confirmPassword: string = '';
   private modalRef: any;
   selectedEmailTemplateSettingId: number | null = null;
@@ -66,10 +66,8 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoading: boolean = false;
   isCollapsed1 = false;
   isCollapsed2 = true;
-
   public users: any[] = [];
   selectedUser: any = {};
-
   onIsActiveChange() {
     console.log('isActive Changed:', this.form.value.isActive);
   }
@@ -91,6 +89,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formModal') formModal: any; 
   swalOptions: SweetAlertOptions = {};
   constructor(
+    private authService: AuthApiService,
     private fb: FormBuilder,
     private roleServices: RolesApiService,
     private userService: UserService,
@@ -177,6 +176,10 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   
+  hasPermission(permission: string): boolean {
+    return this.authService.hasClaim(permission);
+  }
+
   
   get userRolesControls() {
     return this.form.get('userRoles') as FormArray;
@@ -197,7 +200,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
             next: (response) => {
             
               Swal.fire('Success', 'User updated successfully!', 'success');
-              this.loadUsers(); 
+              this.checkPermissionAndLoadUsers();
               this.modalRef.close();
             },
             error: (error) => {
@@ -210,7 +213,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
               next: (response) => {
                
                 Swal.fire('Success', 'User created successfully!', 'success');
-                this.loadUsers();
+                this.checkPermissionAndLoadUsers();
                 this.modalRef.close();
               },
               error: (error) => {
@@ -259,15 +262,17 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {}
   ngOnInit(): void {
-    this.loadUsers();
     this.initializeForm();
+    this.checkPermissionAndLoadUsers();
   }
-
+  checkPermissionAndLoadUsers(): void {
+    if (this.authService.hasClaim('user_list')) {
+      this.loadUsers();
+    } else {
+      console.log('No permission to list users');
+    }
+  }
   loadUsers(): void {
-    console.log(
-    
-      this.selectedAction.isActive
-    );
     this.userService.getAllUsers(this.selectedAction).subscribe({
       next: (response) => {
     
@@ -318,7 +323,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.isLoading = true;
-    this.userService.chnagePassword(payload).subscribe(
+    this.userService.changePassword(payload).subscribe(
       (response) => {
         this.isLoading = false;
         Swal.fire({
@@ -372,7 +377,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
         (response) => {
   
           this.successSwal.fire();
-          this.loadUsers();
+          this.checkPermissionAndLoadUsers();
         },
         (error) => {
           console.error('Error deleting User:', error);
@@ -434,7 +439,6 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   openPermissionModal(content: any, user: any): void {
     this.selectedUser = { ...user };
   
-    // Fetch complete user details including claims
     this.userService.getUserbyId(user.id).subscribe({
       next: (completeUserDetails) => {
         this.selectedUser = completeUserDetails; // Update with fresh user data including claims

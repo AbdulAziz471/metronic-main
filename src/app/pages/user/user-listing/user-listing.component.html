@@ -4,7 +4,7 @@
 
 <div class="card">
   <div class="card-header border-0 pt-6">
-    <div class="d-flex flex-column flex-md-row">
+    <div *ngIf="hasPermission('user_list')" class="d-flex flex-column flex-md-row">
       <div class="d-flex gap-3 align-items-center position-relative my-1">
         <app-keenicon
           name="magnifier"
@@ -43,9 +43,10 @@
         />
       </div>
     </div>
-    <div class="card-toolbar">
-      <div class="d-flex justify-content-end">
+    <div class=" card-toolbar">
+      <div class="d-flex justify-content-end"  *ngIf="hasPermission('user_add')">
         <button
+       
           type="button"
           class="btn btn-primary"
           (click)="openFormModal(formModal, 'create')"
@@ -58,6 +59,7 @@
   </div>
 
   <div
+  *ngIf="hasPermission('user_list')"
     style="overflow: visible"
     class="table-container card-body table-responsive pt-0"
   >
@@ -113,8 +115,8 @@
               "
             >
               <ng-container>
-                <!-- begin::Menu item  -->
-                <div class="menu-item px-3 my-0">
+
+                <div  *ngIf="hasPermission('user_delete')"  class="menu-item px-3 my-0">
                   <a
                     (click)="openDeleteSwal(user.id)"
                     data-action="delete"
@@ -130,7 +132,7 @@
                     <span class="menu-title">Delete</span>
                   </a>
                 </div>
-                <div class="menu-item px-3 my-0">
+                <div  *ngIf="hasPermission('user_edit')" class="menu-item px-3 my-0">
                   <a
                     (click)="openFormModal(formModal, 'edit', user)"
                     data-action="edit"
@@ -144,9 +146,8 @@
                     <span class="menu-title">Edit</span>
                   </a>
                 </div>
-                <!-- end::Menu item -->
-                <!-- begin::Menu item  -->
-                <div class="menu-item px-3 my-0">
+
+                <div  *ngIf="hasPermission('user_permission_edit')" class="menu-item px-3 my-0">
                   <a
                     (click)="openPermissionModal(permissionModal, user)"
                     data-action="edit"
@@ -160,9 +161,8 @@
                     <span class="menu-title">Permissoin</span>
                   </a>
                 </div>
-                <!-- end::Menu item -->
-                <!-- begin::Menu item  -->
-                <div class="menu-item px-3 my-0">
+
+                <div *ngIf="hasPermission('rest_password_edit')" class="menu-item px-3 my-0">
                   <a
                     (click)="openPasswordModal(passwordModal, user)"
                     data-action="edit"
@@ -176,7 +176,6 @@
                     <span class="menu-title">Reset Password</span>
                   </a>
                 </div>
-                <!-- end::Menu item -->
               </ng-container>
             </div>
           </td>
@@ -185,6 +184,15 @@
     </table>
   </div>
 </div>
+
+
+
+
+
+
+
+
+
 <ng-template #passwordModal let-modal>
   <form #myForm="ngForm" (ngSubmit)="onpasswordSubmit()">
     <div class="modal-header">

@@ -1,3 +1,4 @@
+/* eslint-disable @angular-eslint/use-lifecycle-interface */
 // app-setting.component.ts
 import { ChangeDetectorRef, Component, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
@@ -9,6 +10,7 @@ import { Observable } from 'rxjs';
 
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
+import { AuthApiService } from 'src/app/Service/AuthApi.service';
 
 @Component({
   selector: 'app-app-setting',
@@ -41,12 +43,15 @@ export class AppSettingComponent implements OnInit {
     constructor(
     private AppSetting: AppSettingService,
     private modalService: NgbModal,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthApiService,
   ) { }
 
   ngAfterViewInit(): void {
   }
-
+  hasPermission(permission: string): boolean {
+    return this.authService.hasClaim(permission);
+  }
 openFormModal(content: any, action: 'create' | 'edit', eTemplate?: AppSetting): void {
   if (action === 'edit' && eTemplate) {
       this.isEditMode = true;

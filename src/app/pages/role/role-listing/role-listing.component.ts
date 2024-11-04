@@ -9,8 +9,6 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
 import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { SweetAlertOptions } from 'sweetalert2';
@@ -22,15 +20,16 @@ import { EditRoleService } from 'src/app/Service/EditRole.Service';
 import { RolesApiService } from 'src/app/Service/RolesApi.service';
 import { forkJoin } from 'rxjs';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { AuthApiService } from 'src/app/Service/AuthApi.service';
 @Component({
   selector: 'app-role-listing',
   templateUrl: './role-listing.component.html',
   styleUrls: ['./role-listing.component.scss'],
 })
 export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
-  pagesList: any[] = []; // List of pages
-  actionList: any[] = []; // List of actions
-  pageActions: any[] = []; // List of page-action mappings
+  pagesList: any[] = []; 
+  actionList: any[] = []; 
+  pageActions: any[] = []; 
   role: { id: string; name?: string; roleClaims: RoleClaim[] } = {
     id: '',
     name: '',
@@ -62,9 +61,12 @@ export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
     private roleServices: RolesApiService,
     private editroleservice: EditRoleService,
     private modalService: NgbModal,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService : AuthApiService
   ) {}
-
+  hasPermission(permission: string): boolean {
+    return this.authService.hasClaim(permission);
+  }
   ngAfterViewInit(): void {}
 
   callApis(): Observable<any> {

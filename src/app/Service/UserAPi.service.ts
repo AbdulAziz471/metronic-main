@@ -36,7 +36,7 @@ export class UserService {
 createUser(config: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/api/User`, config);
   }
-  chnagePassword(config: any): Observable<any> {
+  changePassword(config: any): Observable<any> {
     return this.http.post(
       `${environment.apiUrl}/api/User/resetpassword`,
       config

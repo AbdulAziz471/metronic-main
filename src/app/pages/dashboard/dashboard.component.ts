@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DashboardService } from 'src/app/Service/Dashboard.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { AuthApiService } from 'src/app/Service/AuthApi.service';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -12,12 +13,23 @@ export class DashboardComponent implements OnInit {
   inactiveUsers: number = 0;
   onlineUsers: any[] = []; 
   recentlyRegisteredUsers: any[] = [];
-
-  constructor(private dashboardService: DashboardService,
-    private cd: ChangeDetectorRef 
+  constructor(
+    private dashboardService: DashboardService,
+    private cd: ChangeDetectorRef ,
+    private authService: AuthApiService,
   ) {}
-
-
+  hasPermission(permission: string): boolean {
+    return this.authService.hasClaim(permission);
+  }
+  checkPermissionAndLoadUsers(): void {
+    if (this.authService.hasClaim('dashboard_list')) {
+        
+    this.loadUserStatistics();
+    this.loadRecentlyRegisteredUsers();
+    } else {
+      console.log('No permission to list users');
+    }
+  }
   loadUserStatistics(): void {
     this.dashboardService.getOnlineUsers().subscribe({
       next: (data) => {
@@ -70,13 +82,8 @@ export class DashboardComponent implements OnInit {
       error: (error) => console.error('Failed to fetch Online Users', error)
     });
   }
-  
- 
-  
   ngOnInit(): void {
-    
-    this.loadUserStatistics();
-    this.loadRecentlyRegisteredUsers();
+    this.checkPermissionAndLoadUsers();
     this.cd.detectChanges();
   }
   

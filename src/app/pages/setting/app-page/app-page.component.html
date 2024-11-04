@@ -3,7 +3,7 @@
 <div class="card">
   <div class="card-header border-0 pt-6">
     <div class="card-title">
-      <div class="d-flex align-items-center position-relative my-1">        
+      <div *ngIf="hasPermission('page_list')"  class="d-flex align-items-center position-relative my-1">        
           <app-keenicon name="magnifier" class="fs-3 position-absolute ms-5"></app-keenicon>
           <input type="text"
           [(ngModel)]="searchTerm" (keyup)="filterSettings()"
@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="card-toolbar">
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end"  *ngIf="hasPermission('page_add')" >
         <button
           type="button"
           class="btn btn-primary"
@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <div class="card-body pt-0">
+  <div class="card-body pt-0" *ngIf="hasPermission('page_list')"  >
     <table
       datatable
       class="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
@@ -50,6 +50,7 @@
           <td>{{ setting.url }}</td>
           <td>
             <button
+            *ngIf="hasPermission('page_edit')"
             (click)="openFormModal(formModal, 'edit', setting)"
               class="btn btn-icon btn-active-light-primary w-30px h-30px me-3"
               data-action="edit"
@@ -60,6 +61,7 @@
               ></i>
             </button>
             <button
+            *ngIf="hasPermission('page_delete')"
               (click)="deleteAppSetting(setting.id)"
               class="btn btn-icon btn-active-light-primary w-30px h-30px"
               data-action="delete"

@@ -22,7 +22,7 @@
         <span class="menu-arrow"></span>
       </span>
       <div class="menu-sub menu-sub-accordion" routerLinkActive="menu-active-bg">
-        <div class="menu-item">
+        <!-- <div class="menu-item">
           <a class="menu-link without-sub" routerLinkActive="active" routerLink="/apps/users">
             <span
               class="menu-bullet">
@@ -31,20 +31,26 @@
             <span class="menu-title">Users
             </span>
           </a>
-        </div>
-        <div class="menu-item">
-          <a class="menu-link without-sub" routerLinkActive="active" routerLink="/apps/roles">
-            <span
-              class="menu-bullet">
-              <span class="bullet bullet-dot"></span>
-            </span>
-            <span class="menu-title">Roles
-            </span>
+        </div> -->
+        <div class="menu-item" *ngIf="hasPermission('user_list') || hasPermission('user_add') || hasPermission('user_edit') || hasPermission('user_delete') || hasPermission('user_role_edit') || hasPermission('user_permission_edit')">
+          <a class="menu-link without-sub" routerLink="/apps/users" routerLinkActive="active">
+            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+            <span class="menu-title">Users</span>
           </a>
         </div>
+        
+        <div class="menu-item" *ngIf="hasPermission('role_list') || hasPermission('role_add') || hasPermission('role_edit') || hasPermission('role_delete')">
+          <a class="menu-link without-sub" routerLinkActive="active" routerLink="/apps/roles">
+            <span class="menu-bullet">
+              <span class="bullet bullet-dot"></span>
+            </span>
+            <span class="menu-title">Roles</span>
+          </a>
+        </div>
+        
       </div>
     </div>
-    <div class="menu-item">
+    <div class="menu-item" *ngIf="hasPermission('online_users_list')">
       <a class="menu-link without-sub" routerLink="/onlineUsers" routerLinkActive="active">
         <span class="menu-icon">
           <app-keenicon name="element-11" class="fs-2"></app-keenicon>
@@ -107,8 +113,8 @@
           </span>
           <span class="menu-arrow"></span>
         </span>
-        <div class="menu-sub menu-sub-accordion" routerLinkActive="menu-active-bg">
-          <div class="menu-item">
+        <div class="menu-sub menu-sub-accordion"  routerLinkActive="menu-active-bg">
+          <div class="menu-item" *ngIf="hasPermission('app_settings_list') || hasPermission('app_settings_add') || hasPermission('app_settings_edit')">
             <a class="menu-link without-sub" routerLinkActive="active" routerLink="/setting/app-setting">
               <span
                 class="menu-bullet">
@@ -118,7 +124,7 @@
               </span>
             </a>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" *ngIf="hasPermission('action_list') || hasPermission('action_add') || hasPermission('action_edit')  || hasPermission('action_delete') ">
             <a class="menu-link without-sub" routerLinkActive="active" routerLink="/setting/app-actions">
               <span
                 class="menu-bullet">
@@ -128,7 +134,7 @@
               </span>
             </a>
           </div>
-          <div class="menu-item">
+          <div class="menu-item" *ngIf="hasPermission('page_list') || hasPermission('page_add') || hasPermission('page_edit') || hasPermission('page_delete') ">
             <a class="menu-link without-sub" routerLinkActive="active" routerLink="/setting/app-page">
               <span
                 class="menu-bullet">
