@@ -8,7 +8,7 @@
   <div class="card-body pt-0">
     <form [formGroup]="emailForm" (ngSubmit)="sendEmail()">
       <div class="d-flex gap-5">
-        <div class="w-100 mb-7">
+        <div class="w-100 mb-7"  *ngIf="hasPermission('email_template_list')">
           <label class="required fw-semibold fs-6 mb-2">Select Template</label>
           <select class="form-select" (change)="onTemplateSelect($event)" aria-label="Default select example">
             <option *ngFor="let setting of emailtemplates" [value]="setting.id">

@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { EmailSettingService } from 'src/app/Service/EmailSettings.service';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
+import { AuthApiService } from 'src/app/Service/AuthApi.service';
 
 @Component({
   selector: 'app-send-email',
@@ -30,11 +31,22 @@ export class SendEmailComponent implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient, 
     private emailService: EmailSettingService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthApiService,
   ) {}
-
+  hasPermission(permission: string): boolean {
+    return this.authService.hasClaim(permission);
+  }
+  checkPermissionAndLoadEmailTemplates(): void {
+    if (this.authService.hasClaim('email_template_list')) {
+        
+      this.loadEmailTemplate();
+    } else {
+      console.log('No permission to list users');
+    }
+  }
   ngOnInit() {
-    this.loadEmailTemplate();
+  this.checkPermissionAndLoadEmailTemplates();
     this.emailForm = this.fb.group({
       subject: [''],  
       toAddress: [''],  

@@ -90,7 +90,7 @@
             </span>
           </a>
         </div>
-        <div class="menu-item">
+        <div class="menu-item"  *ngIf="hasPermission('send_email_list')">
           <a class="menu-link without-sub" routerLinkActive="active" routerLink="/emailSetting/sendEmail">
             <span
               class="menu-bullet">
