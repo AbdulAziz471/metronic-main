@@ -1,5 +1,5 @@
 <!-- app-user-inner.component.html -->
-<div class="menu   menu-column menu-rounded menu-gray-600 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px">
+<ng-container>
   <div class="menu-item px-3">
       <div class="menu-content d-flex align-items-center px-3">
           <div class="symbol symbol-50px me-5">
@@ -76,10 +76,6 @@
   </div>
 
   <div class="menu-item px-5">
-      <a class="menu-link px-5">Account Settings</a>
-  </div>
-
-  <div class="menu-item px-5">
       <a class="menu-link px-5" (click)="signOut()">Sign Out</a>
   </div>
-</div>
+</ng-container>

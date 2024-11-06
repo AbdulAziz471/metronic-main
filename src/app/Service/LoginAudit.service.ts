@@ -30,7 +30,7 @@ import { UserQueryParams } from '../pages/LoginAudit/LoginAudit/login-audit.moda
   
       return this.http.get(this.apiUrl, { params });
     }
-    getAllUsers(params: UserQueryParams): Observable<any> {
+    getUsers(params: UserQueryParams): Observable<any> {
       let httpParams = new HttpParams();
       for (const key in params) {
         if (params[key]) {

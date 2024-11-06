@@ -1,10 +1,7 @@
 import { Component, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import {Subscription } from 'rxjs';
 import { TranslationService } from '../../../../../../modules/i18n';
-
 import { Router } from '@angular/router';
-
-import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-user-inner',
   templateUrl: './user-inner.component.html',
@@ -85,7 +82,7 @@ const languages = [
   },
   {
     lang: 'zh',
-    name: 'Mandarin',
+    name: 'Chinese',
     flag: './assets/media/flags/china.svg',
   },
   {

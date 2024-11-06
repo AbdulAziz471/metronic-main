@@ -6,13 +6,23 @@ export const locale = {
       SELECT: 'Elige tu idioma',
     },
     MENU: {
-      NEW: 'nuevo',
-      ACTIONS: 'Comportamiento',
-      CREATE_POST: 'Crear nueva publicación',
-      PAGES: 'Pages',
-      FEATURES: 'Caracteristicas',
-      APPS: 'Aplicaciones',
-      DASHBOARD: 'Tablero'
+      DASHBOARD: 'Tablero',
+      USERMANAGEMENT: 'Gestión de Usuarios',
+      USERS: 'Usuarios',
+      ROLES: 'Roles',
+      ONLINEUSERS: 'Usuarios en Línea',
+      EMAILSETTING: 'Configuración de Correo',
+      SMTPSETTINGS: 'Configuración SMTP',
+      EMAILTEMPLATE: 'Plantilla de Correo',
+      SENDEMAIL: 'Enviar Correo',
+      SETTING: 'Configuración',
+      APPSETTINGS: 'Configuración de la Aplicación',
+      ACTIONS: 'Acciones',
+      PAGES: 'Páginas',
+      LOGS: 'Registros',
+      LOGSAUDIT: 'Auditoría de Registros',
+      ERRORLOGS: 'Registros de Errores',
+    
     },
     AUTH: {
       GENERAL: {

@@ -31,6 +31,7 @@ import {
   Action,
   Page,
   PageAction,
+  UserRoles,
 } from './users.modal';
 import { RolesApiService } from 'src/app/Service/RolesApi.service';
 import { EditRoleService } from 'src/app/Service/EditRole.Service';
@@ -50,10 +51,14 @@ import { AuthApiService } from 'src/app/Service/AuthApi.service';
 })
 export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   roles: Role[] = [];
+  usersRoles: UserRoles[] = [];
   selectedRoles: number[] = [];
   form: FormGroup;
   pagesList: any[] = [];
   actionList: any[] = [];
+  roleUsers = [];
+  otherUsers = [];
+  selectedRoleId: string;
   pageActions: any[] = [];
   user: { id: string; userClaims: UserClaim[] } = { id: '', userClaims: [] };
   isMenuOpen: boolean = false;
@@ -68,26 +73,6 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   isCollapsed2 = true;
   public users: any[] = [];
   selectedUser: any = {};
-  onIsActiveChange() {
-    console.log('isActive Changed:', this.form.value.isActive);
-  }
-  selectedAction: any = {
-    Fields: '',
-    OrderBy: '',
-    PageSize: 10,
-    isActive: true,
-    Skip: 0,
-    SearchQuery: '',
-    email: '',
-  };
-  reloadEvent: EventEmitter<boolean> = new EventEmitter();
-  @ViewChild('permissionModal') permissionModal: any;
-  @ViewChild('passwordModal') passwordModal: any;
-  @ViewChild('deleteSwal') deleteSwal: any;
-  @ViewChild('successSwal') successSwal: any; 
-  @ViewChild('noticeSwal') noticeSwal!: SwalComponent;
-  @ViewChild('formModal') formModal: any; 
-  swalOptions: SweetAlertOptions = {};
   constructor(
     private authService: AuthApiService,
     private fb: FormBuilder,
@@ -101,6 +86,28 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       userAllowedIPs: this.fb.array([]),
     });
   }
+  onIsActiveChange() {
+    console.log('isActive Changed:', this.form.value.isActive);
+  }
+  selectedAction: any = {
+    Fields: '',
+    OrderBy: '',
+    PageSize: 10,
+    isActive: true,
+    Skip: 0,
+    SearchQuery: '',
+    email: '',
+  };
+  reloadEvent: EventEmitter<boolean> = new EventEmitter();
+  @ViewChild('usersModal') usersModal: any;
+  @ViewChild('permissionModal') permissionModal: any;
+  @ViewChild('userRolesModal') userRolesModal: any;
+  @ViewChild('passwordModal') passwordModal: any;
+  @ViewChild('successSwal') successSwal: any; 
+  @ViewChild('noticeSwal') noticeSwal!: SwalComponent;
+  @ViewChild('formModal') formModal: any; 
+  swalOptions: SweetAlertOptions = {};
+ 
   initializeForm(user?: User): void {
     this.form = this.fb.group({
       id: [user?.id || ''],
@@ -135,33 +142,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       ipAddress: [ip.ipAddress, Validators.required], 
     });
   }
-  openFormModal(content: any, action: 'create' | 'edit', user?: User): void {
-    this.isEditMode = action === 'edit' && !!user;
-  
-    console.log('Open Form Modal - Mode:', action, 'User:', user);
-  
-    if (this.isEditMode && user) {
-      console.log('Fetching user details for edit:', user.id);
-      // Call the API to fetch user details
-      this.userService.getUserbyId(user.id).subscribe({
-        next: (fetchedUser) => {
-          console.log('User details fetched:', fetchedUser);
-          this.initializeForm(fetchedUser); // Initialize form with fetched user details
-          this.modalRef = this.modalService.open(content);
-        },
-        error: (error) => {
-          console.error('Error fetching user details:', error);
-          Swal.fire('Error', 'Could not load user details for editing.', 'error');
-        }
-      });
-    } else {
-      this.initializeForm(); // Initialize form for creating a new user
-      console.log('Initializing form for new user creation.');
-      this.modalRef = this.modalService.open(content);
-    }
-  
-    this.fetchRoles(); // Ensure roles are fetched for role selection in the form
-  }
+ 
   toggleRoleSelection(event: MatOptionSelectionChange, roleId: string): void {
     const rolesArray = this.form.get('userRoles') as FormArray;
     if (event.isUserInput) {
@@ -273,7 +254,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   loadUsers(): void {
-    this.userService.getAllUsers(this.selectedAction).subscribe({
+    this.userService.getUsers(this.selectedAction).subscribe({
       next: (response) => {
     
         this.users = response;
@@ -282,9 +263,16 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       error: (error) => console.error('Error fetching users', error),
     });
   }
-  get inputs() {
-    return this.form.get('inputs') as FormArray;
+  loadAllUsers(): void {
+    this.userService.getAllUser().subscribe({
+      next: (response) => {
+        this.users = response;
+        this.cdr.detectChanges();
+      },
+      error: (error) => console.error('Error fetching users', error),
+    });
   }
+ 
   fetchRoles(): void {
     this.roleServices.getAllRoles().subscribe({
       next: (roles) => {
@@ -295,12 +283,8 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
       },
     });
   }
-  onRolesChange(): void {
-   this.selectedRoles = this.form.value
-      .get('roles')
-      .value.map((roleId: string) =>
-        this.roles.find((role) => role.id === roleId)
-      );
+  get inputs() {
+    return this.form.get('inputs') as FormArray;
   }
 
   addInput(): void {
@@ -362,30 +346,37 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  openDeleteSwal(id: number): void {
-    if (id !== null) {
-      this.selectedEmailTemplateSettingId = id;
-      this.deleteSwal.fire();
-    } else {
-      console.error('Error: Invalid SMTP setting ID');
-    }
-  }
-  triggerDelete(id: number | null): void {
-    if (id !== null) {
-      // Check if the ID is not null
-      this.userService.deleteUser(id).subscribe(
-        (response) => {
-  
-          this.successSwal.fire();
-          this.checkPermissionAndLoadUsers();
-        },
-        (error) => {
-          console.error('Error deleting User:', error);
-        }
-      );
-    } else {
-      console.error('Error: Invalid User ID');
-    }
+  triggerDelete(id: number): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.deleteUser(id).subscribe(
+          response => {
+            Swal.fire(
+              'Deleted!',
+              'Your file has been deleted.',
+              'success'
+            );
+            this.loadUsers(); // Reload users after deletion
+          },
+          error => {
+            console.error('Error deleting user:', error);
+            Swal.fire(
+              'Failed!',
+              'There was a problem deleting the user.',
+              'error'
+            );
+          }
+        );
+      }
+    });
   }
 
   extractText(obj: any): string {
@@ -430,36 +421,7 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.reloadEvent.unsubscribe();
   }
-
-  openPasswordModal(content: any, user: any) {
-    this.selectedUser = { ...user };
-    this.modalService.open(content);
-  }
-  public pages: any[] = [];
-  openPermissionModal(content: any, user: any): void {
-    this.selectedUser = { ...user };
-  
-    this.userService.getUserbyId(user.id).subscribe({
-      next: (completeUserDetails) => {
-        this.selectedUser = completeUserDetails; // Update with fresh user data including claims
-  
-        this.callApis().subscribe({
-          next: (results) => {
-            this.pagesList = results.requestOne;
-            this.actionList = results.requestTwo;
-            this.pageActions = results.requestThree;
-  
-            // Open the modal after ensuring all necessary data is loaded
-            this.modalService.open(content, { size: 'lg' });
-          },
-          error: (error) =>
-            console.error('Error fetching pages/actions data', error),
-        });
-      },
-      error: (error) => console.error('Error fetching user details:', error),
-    });
-  }
-  
+ 
   checkPageAction(pageId: string, actionId: string): boolean {
     const pageAction = this.pageActions.find(
       (c) => c.pageId === pageId && c.actionId === actionId
@@ -573,7 +535,75 @@ export class UserListingComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   
+  updateRoleUsers() {
+    this.userService.updateRoleUsers(this.selectedRoleId, this.roleUsers).subscribe(() => {
+    });
+  }
+
+
+  openFormModal(content: any, action: 'create' | 'edit', user?: User): void {
+    this.isEditMode = action === 'edit' && !!user;
+  
+    console.log('Open Form Modal - Mode:', action, 'User:', user);
+  
+    if (this.isEditMode && user) {
+      console.log('Fetching user details for edit:', user.id);
+      // Call the API to fetch user details
+      this.userService.getUserbyId(user.id).subscribe({
+        next: (fetchedUser) => {
+          console.log('User details fetched:', fetchedUser);
+          this.initializeForm(fetchedUser); // Initialize form with fetched user details
+          this.modalRef = this.modalService.open(content);
+        },
+        error: (error) => {
+          console.error('Error fetching user details:', error);
+          Swal.fire('Error', 'Could not load user details for editing.', 'error');
+        }
+      });
+    } else {
+      this.initializeForm(); // Initialize form for creating a new user
+      console.log('Initializing form for new user creation.');
+      this.modalRef = this.modalService.open(content);
+    }
+  
+    this.fetchRoles(); // Ensure roles are fetched for role selection in the form
+  } 
+  openPasswordModal(content: any, user: any) {
+    this.selectedUser = { ...user };
+    this.modalService.open(content);
+  }
+  public pages: any[] = [];
+  openPermissionModal(content: any, user: any): void {
+    this.selectedUser = { ...user };
+  
+    this.userService.getUserbyId(user.id).subscribe({
+      next: (completeUserDetails) => {
+        this.selectedUser = completeUserDetails; // Update with fresh user data including claims
+  
+        this.callApis().subscribe({
+          next: (results) => {
+            this.pagesList = results.requestOne;
+            this.actionList = results.requestTwo;
+            this.pageActions = results.requestThree;
+  
+            // Open the modal after ensuring all necessary data is loaded
+            this.modalService.open(content, { size: 'lg' });
+          },
+          error: (error) =>
+            console.error('Error fetching pages/actions data', error),
+        });
+      },
+      error: (error) => console.error('Error fetching user details:', error),
+    });
+  }
+  openUsersRolesModal(content: any): void {
+    this.fetchRoles();
+    this.loadAllUsers();
+    this.modalService.open(content, { size: 'lg',}); // Open the modal
+   }
 }
+
+
 
 
 

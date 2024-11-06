@@ -8,9 +8,11 @@ import { UserQueryParams } from '../pages/user/user-listing/users.modal';
   providedIn: 'root',
 })
 export class UserService {
-  constructor(private http: HttpClient) {}
-
-  getAllUsers(params: UserQueryParams): Observable<any> {
+  constructor(private http: HttpClient) { }
+  getAllUser(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/api/user/getAllUsers`);
+  }
+  getUsers(params: UserQueryParams): Observable<any> {
     let httpParams = new HttpParams();
     for (const key in params) {
       if (params[key] !== undefined) {
@@ -33,7 +35,7 @@ export class UserService {
   getUserbyId(id: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/api/User/${id}`);
   }
-createUser(config: any): Observable<any> {
+  createUser(config: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/api/User`, config);
   }
   changePassword(config: any): Observable<any> {
@@ -45,11 +47,20 @@ createUser(config: any): Observable<any> {
   updateUser(id: number, user: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/api/User/${id}`, user);
   }
- updateUserClaims(userId: string, userClaims: any[]): Observable<any> {
-  return this.http.put(`${environment.apiUrl}/api/UserClaim/${userId}`, { userClaims })
-   
-}
+  updateUserClaims(userId: string, userClaims: any[]): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/api/UserClaim/${userId}`, { userClaims })
+
+  }
   deleteUser(id: number): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/api/User/${id}`);
+  }
+  // New method for getting users by role ID
+  getRoleUsers(roleId: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/api/RoleUsers/${roleId}`);
+  }
+
+  // New method for updating users' roles
+  updateRoleUsers(roleId: string, users: any[]): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/api/RoleUsers/${roleId}`, users);
   }
 }

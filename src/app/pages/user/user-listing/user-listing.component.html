@@ -44,7 +44,15 @@
       </div>
     </div>
     <div class=" card-toolbar">
-      <div class="d-flex justify-content-end"  *ngIf="hasPermission('user_add')">
+      <div class="d-flex justify-content-end gap-2"  *ngIf="hasPermission('user_add')">
+        <button
+        type="button"
+        class="btn btn-success"
+        (click)="openUsersRolesModal(usersModal)"
+      >
+        User Roles
+      </button>
+      
         <button
        
           type="button"
@@ -118,7 +126,7 @@
 
                 <div  *ngIf="hasPermission('user_delete')"  class="menu-item px-3 my-0">
                   <a
-                    (click)="openDeleteSwal(user.id)"
+                  (click)="triggerDelete(user.id)"
                     data-action="delete"
                     class="menu-link px-3 py-2"
                   >
@@ -536,23 +544,40 @@
     </div>
   </form>
 </ng-template>
-<swal
-  #deleteSwal
-  title="Are you sure to delete?"
-  text="This cannot be undone"
-  icon="warning"
-  [showCancelButton]="true"
-  [focusCancel]="true"
-  (confirm)="triggerDelete(selectedEmailTemplateSettingId)"
-  [customClass]="{
-    confirmButton: 'btn btn-danger',
-    cancelButton: 'btn btn-active-light'
-  }"
-></swal>
-<swal
-  #successSwal
-  title="Delete successfully!"
-  text=""
-  icon="success"
-  [customClass]="{ confirmButton: 'btn btn-success' }"
-></swal>
+
+
+
+
+<ng-template #usersModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">User Roles</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="d-flex flex-column scroll-y me-n7 pe-7">
+      <div class="d-flex gap-3 justify-content-between">
+        <div class="w-100 mb-7">
+          <div class="form-group d-flex flex-column">
+            <label class="required fw-semibold fs-6 mb-2">Roles</label>
+            <mat-form-field>
+              <mat-select formControlName="userRoles" >
+                <mat-option *ngFor="let role of roles" [value]="role.id">
+                  {{ role.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.dismiss('Close click')">Close</button>
+  </div>
+</ng-template>

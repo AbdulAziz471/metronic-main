@@ -17,25 +17,15 @@
         <span class="menu-icon">
           <app-keenicon name="profile-user" class="fs-2"></app-keenicon>
         </span>
-        <span class="menu-title" data-link="/apps">User Management
+        <span class="menu-title" data-link="/apps" translate="MENU.USERMANAGEMENT">
         </span>
         <span class="menu-arrow"></span>
       </span>
       <div class="menu-sub menu-sub-accordion" routerLinkActive="menu-active-bg">
-        <!-- <div class="menu-item">
-          <a class="menu-link without-sub" routerLinkActive="active" routerLink="/apps/users">
-            <span
-              class="menu-bullet">
-              <span class="bullet bullet-dot"></span>
-            </span>
-            <span class="menu-title">Users
-            </span>
-          </a>
-        </div> -->
         <div class="menu-item" *ngIf="hasPermission('user_list') || hasPermission('user_add') || hasPermission('user_edit') || hasPermission('user_delete') || hasPermission('user_role_edit') || hasPermission('user_permission_edit')">
           <a class="menu-link without-sub" routerLink="/apps/users" routerLinkActive="active">
             <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-            <span class="menu-title">Users</span>
+            <span class="menu-title" translate="MENU.USERS"></span>
           </a>
         </div>
         
@@ -44,7 +34,7 @@
             <span class="menu-bullet">
               <span class="bullet bullet-dot"></span>
             </span>
-            <span class="menu-title">Roles</span>
+            <span class="menu-title"translate="MENU.ROLES"></span>
           </a>
         </div>
         
@@ -55,7 +45,7 @@
         <span class="menu-icon">
           <app-keenicon name="element-11" class="fs-2"></app-keenicon>
         </span>
-        <span class="menu-title" >Online Users</span>
+        <span class="menu-title" translate="MENU.ONLINEUSERS" ></span>
       </a>
     </div>
      <!-- Pages -->
@@ -65,7 +55,7 @@
           <app-keenicon name="element-plus" class="fs-2"></app-keenicon>
         </span>
         <span
-          class="menu-title">Email Settings
+          class="menu-title"  translate="MENU.EMAILSETTING">
         </span>
         <span class="menu-arrow"></span>
       </span>
@@ -76,7 +66,7 @@
               class="menu-bullet">
               <span class="bullet bullet-dot"></span>
             </span>
-            <span class="menu-title">SMTP Settings
+            <span class="menu-title"  translate="MENU.SMTPSETTINGS">
             </span>
           </a>
         </div>
@@ -86,8 +76,8 @@
               class="menu-bullet">
               <span class="bullet bullet-dot"></span>
             </span>
-            <span class="menu-title">Email Template
-            </span>
+            <span class="menu-title"  translate="MENU.EMAILTEMPLATE">Email Template
+            </span> 
           </a>
         </div>
         <div class="menu-item"  *ngIf="hasPermission('send_email_list')">
@@ -96,7 +86,7 @@
               class="menu-bullet">
               <span class="bullet bullet-dot"></span>
             </span>
-            <span class="menu-title">Send Email
+            <span class="menu-title"  translate="MENU.SENDEMAIL">Send Email
             </span>
           </a>
         </div>
@@ -109,9 +99,9 @@
             <app-keenicon name="element-plus" class="fs-2"></app-keenicon>
           </span>
           <span
-            class="menu-title">Settings
+            class="menu-title"  translate="MENU.SETTING">
           </span>
-          <span class="menu-arrow"></span>
+          <span class="menu-arrow" ></span>
         </span>
         <div class="menu-sub menu-sub-accordion"  routerLinkActive="menu-active-bg">
           <div class="menu-item" *ngIf="hasPermission('app_settings_list') || hasPermission('app_settings_add') || hasPermission('app_settings_edit')">
@@ -120,7 +110,7 @@
                 class="menu-bullet">
                 <span class="bullet bullet-dot"></span>
               </span>
-              <span class="menu-title">App Settings 
+              <span class="menu-title"  translate="MENU.APPSETTINGS">
               </span>
             </a>
           </div>
@@ -130,7 +120,7 @@
                 class="menu-bullet">
                 <span class="bullet bullet-dot"></span>
               </span>
-              <span class="menu-title">Action
+              <span class="menu-title"  translate="MENU.ACTIONS">
               </span>
             </a>
           </div>
@@ -140,7 +130,7 @@
                 class="menu-bullet">
                 <span class="bullet bullet-dot"></span>
               </span>
-              <span class="menu-title"> Pages
+              <span class="menu-title"  translate="MENU.PAGES">
               </span>
             </a>
           </div>
@@ -154,7 +144,7 @@
           <app-keenicon name="phone" class="fs-2"></app-keenicon>
         </span>
         <span class="menu-title"
-              data-link="/error">Logs
+              data-link="/error"  translate="MENU.LOGS">
         </span>
         <span class="menu-arrow"></span>
       </span>
@@ -165,7 +155,7 @@
               class="menu-bullet">
               <span class="bullet bullet-dot"></span>
             </span>
-            <span class="menu-title">Logs Audit
+            <span class="menu-title"  translate="MENU.LOGSAUDIT">
               
             </span>
           </a>
@@ -176,7 +166,7 @@
               class="menu-bullet">
               <span class="bullet bullet-dot"></span>
             </span>
-            <span class="menu-title"> Error Logs
+            <span class="menu-title"  translate="MENU.ERRORLOGS"> 
             </span>
           </a>
         </div>
