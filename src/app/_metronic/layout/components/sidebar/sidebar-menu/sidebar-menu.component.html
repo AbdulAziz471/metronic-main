@@ -13,7 +13,7 @@
     </div>
      <!-- Customers -->
      <div class="menu-item menu-accordion" data-kt-menu-trigger="click" routerLinkActive="here show">
-      <span class="menu-link">
+      <span class="menu-link" *ngIf="hasPermission('role_list') || hasPermission('role_add') || hasPermission('role_edit') || hasPermission('role_delete') || hasPermission('role_list') || hasPermission('role_add') || hasPermission('role_edit') || hasPermission('role_delete')">
         <span class="menu-icon">
           <app-keenicon name="profile-user" class="fs-2"></app-keenicon>
         </span>
@@ -50,7 +50,7 @@
     </div>
      <!-- Pages -->
     <div class="menu-item menu-accordion" data-kt-menu-trigger="click" routerLinkActive="here show">
-      <span class="menu-link">
+      <span class="menu-link" *ngIf="hasPermission('email_smtp_list') || hasPermission('email_smtp_add') || hasPermission('email_smtp_edit')  || hasPermission('email_smtp_delete')|| hasPermission('email_template_list') || hasPermission('email_template_add') || hasPermission('email_template_edit')  || hasPermission('email_template_delete') || hasPermission('send_email_list')">
         <span class="menu-icon">
           <app-keenicon name="element-plus" class="fs-2"></app-keenicon>
         </span>
@@ -94,7 +94,7 @@
     </div>
       <!-- Pages -->
       <div class="menu-item menu-accordion" data-kt-menu-trigger="click" routerLinkActive="here show">
-        <span class="menu-link">
+        <span class="menu-link" *ngIf="hasPermission('app_settings_list') || hasPermission('app_settings_add') || hasPermission('app_settings_edit') || hasPermission('action_list') || hasPermission('action_add') || hasPermission('action_edit')  || hasPermission('action_delete') || hasPermission('page_list') || hasPermission('page_add') || hasPermission('page_edit') || hasPermission('page_delete') ">
           <span class="menu-icon">
             <app-keenicon name="element-plus" class="fs-2"></app-keenicon>
           </span>
