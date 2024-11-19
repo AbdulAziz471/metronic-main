@@ -9,6 +9,7 @@ export const locale = {
       DASHBOARD: 'Tablero',
       USERMANAGEMENT: 'Gestión de Usuarios',
       USERS: 'Usuarios',
+      USERSROLES : 'ROLES DE USUARIO',
       ROLES: 'Roles',
       ONLINEUSERS: 'Usuarios en Línea',
       EMAILSETTING: 'Configuración de Correo',

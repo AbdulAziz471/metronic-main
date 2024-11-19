@@ -9,6 +9,7 @@ export const locale = {
       DASHBOARD: 'Dashboard',
       USERMANAGEMENT: 'User Management',
       USERS: 'Users',
+      USERSROLES: 'Users Role',
       ROLES: 'Roles',
       ONLINEUSERS: 'Online Users',
       EMAILSETTING: 'Email Settings',

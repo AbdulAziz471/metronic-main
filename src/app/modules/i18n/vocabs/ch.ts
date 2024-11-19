@@ -9,6 +9,7 @@ export const locale = {
       DASHBOARD: '仪表板',
       USERMANAGEMENT: '用户管理',
       USERS: '用户',
+      USERSROLES: '用户角色',
       ROLES: '角色',
       ONLINEUSERS: '在线用户',
       EMAILSETTING: '邮件设置',

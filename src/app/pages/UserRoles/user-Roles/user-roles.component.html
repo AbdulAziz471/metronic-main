@@ -1,0 +1,29 @@
+
+
+
+
+<div class="card">
+  <div class="card-header border-0 pt-6">
+    <div class="w-100 mb-7">
+      <div class="form-group d-flex flex-column">
+        <label class="required fw-semibold fs-6 mb-2">Roles</label>
+        <div class="dark role-selector">
+          <mat-form-field appearance="fill">
+            <mat-label>Select a Role</mat-label>
+            <mat-select (selectionChange)="onRoleChange($event)">
+              <mat-option *ngFor="let role of roles" [value]="role.id">
+                {{ role.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+

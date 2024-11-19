@@ -10,6 +10,7 @@ export const locale = {
       USERMANAGEMENT: 'Gestion des utilisateurs',
       USERS: 'Utilisateurs',
       ROLES: 'Rôles',
+      USERSROLES: 'RÔLES UTILISATEURS',
       ONLINEUSERS: 'Utilisateurs en ligne',
       EMAILSETTING: 'Paramètres de messagerie',
       SMTPSETTINGS: 'Paramètres SMTP',

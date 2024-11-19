@@ -371,13 +371,13 @@ export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
     page: Page,
     action: Action
   ): void {
-    const foundClaim = this.selectedAction.roleClaims.find(
+    const foundClaimIndex = this.selectedAction.roleClaims.findIndex(
       (claim) => claim.pageId === page.id && claim.actionId === action.id
     );
   
     if (event.checked) {
-      if (!foundClaim) {
-        // Adding a new claim if it does not exist
+      if (foundClaimIndex === -1) {
+        // Add the permission if it does not exist
         this.selectedAction.roleClaims.push({
           roleId: this.selectedAction.id,
           claimType: `${page.name}_${action.name}`,
@@ -385,14 +385,19 @@ export class RoleListingComponent implements OnInit, AfterViewInit, OnDestroy {
           pageId: page.id!,
           actionId: action.id!,
         });
+        console.log(`Permission added: Page=${page.name}, Action=${action.name}`);
       } else {
-     
-        foundClaim.claimValue = 'true';
+        // Update the existing permission to active
+        this.selectedAction.roleClaims[foundClaimIndex].claimValue = 'true';
+        console.log(`Permission updated to active: Page=${page.name}, Action=${action.name}`);
       }
     } else {
-      if (foundClaim) {
-        foundClaim.claimValue = 'false';
+      if (foundClaimIndex !== -1) {
+        // Remove the permission completely
+        this.selectedAction.roleClaims.splice(foundClaimIndex, 1);
+        console.log(`Permission removed: Page=${page.name}, Action=${action.name}`);
       }
     }
   }
+  
 }

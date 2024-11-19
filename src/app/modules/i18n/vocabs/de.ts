@@ -10,6 +10,7 @@ export const locale = {
       USERMANAGEMENT: 'Benutzerverwaltung',
       USERS: 'Benutzer',
       ROLES: 'Rollen',
+      USERSROLES : 'BenutzerRollen',
       ONLINEUSERS: 'Online-Benutzer',
       EMAILSETTING: 'E-Mail-Einstellungen',
       SMTPSETTINGS: 'SMTP-Einstellungen',
